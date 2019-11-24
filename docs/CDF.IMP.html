@@ -1,0 +1,648 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module IMP</title>
+<meta name="description" content="Documentation of Coq module IMP" />
+<link href="coq2html.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="coq2html.js"> </script>
+</head>
+
+<body onload="hideAll('proofscript')">
+<h1 class="title">Module IMP</h1>
+<div class="coq">
+<span class="id">From</span> <span class="id">Coq</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Arith.Arith.html">Arith</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.ZArith.html">ZArith</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.micromega.Psatz.html">Psatz</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Bool.Bool.html">Bool</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html">String</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html">List</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Program.Equality.html">Program.Equality</a></span>.<br/>
+<span class="id">From</span> <span class="id">CDF</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="CDF.Sequences.html">Sequences</a></span>.<br/>
+<br/>
+<span class="kwd">Local</span> <span class="kwd">Open</span> <span class="kwd">Scope</span> <span class="id">string_scope</span>.<br/>
+<span class="kwd">Local</span> <span class="kwd">Open</span> <span class="kwd">Scope</span> <span class="id">Z_scope</span>.<br/>
+<span class="kwd">Local</span> <span class="kwd">Open</span> <span class="kwd">Scope</span> <span class="id">list_scope</span>.<br/>
+<br/>
+<h1> 1. Le langage IMP </h1>
+<br/>
+<h2> 1.1 Expressions arithmétiques </h2>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="ident">ident</a></span> := <span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string">string</a></span>.<br/>
+<br/>
+<div class="doc">La syntaxe abstraite: une expression arithmétique est ou bien... </div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="aexp">aexp</a></span> : <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="CONST">CONST</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>)                   <span class="docright">(* une constante, ou *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="VAR">VAR</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>)                 <span class="docright">(* une variable, ou  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="PLUS">PLUS</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)     <span class="docright">(* la somme de deux expressions, ou  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="MINUS">MINUS</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>).   <span class="docright">(* la différence de deux expressions.  *)</span><br/>
+<br/>
+<div class="doc">La sémantique dénotationnelle: une fonction d'évaluation qui calcule
+  la valeur entière dénotée par une expression.  La fonction est
+  paramétrée par un état mémoire <span class="bracket"><span class="id">s</span></span> qui donne la valeur de chaque variable. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="store">store</a></span> : <span class="kwd">Type</span> := <span class="id"><a href="CDF.IMP.html#ident">ident</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>.<br/>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="aeval">aeval</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id">n</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">x</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> + <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> - <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Ce genre de fonctions d'évaluation / de sémantique dénotationnelle
+  ont de nombreux usages.  Tout d'abord, <span class="bracket"><span class="id">aeval</span></span> permet d'évaluer une
+  expression donnée dans un état mémoire donné. </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)))  (<span class="kwd">fun</span> <span class="id">x</span> =&gt; 2)).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> = 3 : <span class="id">Z</span> </span>. </div>
+<br/>
+<div class="doc">Nous pouvons aussi faire une évaluation partielle si l'état mémoire est inconnu. </div>
+<br/>
+<span class="kwd">Eval</span> <span class="id">cbn</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 10) (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)))).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> = <span class="kwd">fun</span> <span class="id">s</span> : <span class="id">store</span> =&gt; <span class="id">s</span> "<span class="id">x</span>" + 9 </span>. </div>
+<br/>
+<div class="doc">Nous pouvons démontrer des propriétés mathématiques d'une expression donnée. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="aeval_xplus1">aeval_xplus1</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">x</span>, <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span>) (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)) <span class="id"><a href="CDF.IMP.html#s">s</a></span> &gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</div>
+<div class="proofscript" id="proof1">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="id">cbn</span>. <span class="id">lia</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Enfin, nous pouvons démontrer des propriétés "méta" de la sémantique,
+  vraies pour toutes les expressions arithmétiques.  Par exemple:
+  la valeur d'une expression dépend uniquement des valeurs de ses
+  variables libres.
+  Les variables libres d'une expression sont définies par le prédicat
+  récursif suivant:
+</div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="free_in_aexp">free_in_aexp</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>) (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#False">False</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id">y</span> =&gt; <span class="id">y</span> = <span class="id"><a href="CDF.IMP.html#x">x</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> <span class="id">a1</span> <span class="id">a2</span> | <span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#free_in_aexp">free_in_aexp</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id">a1</span> \/ <span class="id"><a href="CDF.IMP.html#free_in_aexp">free_in_aexp</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id">a2</span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<span class="kwd">Theorem</span> <span class="id"><a name="aeval_free">aeval_free</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s1</span> <span class="id">s2</span> <span class="id">a</span>,<br/>
+&nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">x</span>, <span class="id"><a href="CDF.IMP.html#free_in_aexp">free_in_aexp</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#s1">s1</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> = <span class="id"><a href="CDF.IMP.html#s2">s2</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="id"><a href="CDF.IMP.html#s1">s1</a></span> = <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="id"><a href="CDF.IMP.html#s2">s2</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</div>
+<div class="proofscript" id="proof2">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">a</span>; <span class="id">cbn</span>; <span class="tactic">intros</span> <span class="id">SAMEFREE</span>.<br/>
+- <span class="comment">(*&nbsp;Cas&nbsp;a&nbsp;=&nbsp;CONST&nbsp;n&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;Cas&nbsp;a&nbsp;=&nbsp;VAR&nbsp;x&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id">SAMEFREE</span>. <span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;Cas&nbsp;a&nbsp;=&nbsp;PLUS&nbsp;a1&nbsp;a2&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id">IHa1</span>, <span class="id">IHa2</span>; <span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;Case&nbsp;a&nbsp;=&nbsp;MINUS&nbsp;a1&nbsp;a2&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id">IHa1</span>, <span class="id">IHa2</span>; <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Des langages comme Java ou OCaml calculent non pas avec des entiers mathématiques
+  en précision arbitraire, mais avec des entiers "machine" pris modulo <span class="bracket">2^<span class="id">N</span></span>.
+  Pour refléter cette arithmétique modulaire, il suffit de définir une autre
+  fonction d'évaluation qui normalise toutes les valeurs entières par
+  réduction modulo <span class="bracket">2^<span class="id">N</span></span>. </div>
+<br/>
+<span class="kwd">Module</span> <span class="id"><a name="AExp_modulo">AExp_modulo</a></span>.<br/>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_modulo.N">N</a></span> := 64.  <span class="docright">(* Exemple d'une machine 64 bits.  *)</span><br/>
+<br/>
+<div class="doc">Reduce <span class="bracket"><span class="id">x</span></span> modulo <span class="bracket">2^<span class="id">N</span></span> to the range <span class="bracket">[-2^(<span class="id">N</span>-1), 2^(<span class="id">N</span>-1) - 1]</span>. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_modulo.normalize">normalize</a></span> (<span class="id">x</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) :=<br/>
+&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">y</span> := <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id">mod</span> (2^<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span>) <span class="kwd">in</span> <span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#y">y</a></span> &lt;? 2^(<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span>-1) <span class="kwd">then</span> <span class="id"><a href="CDF.IMP.html#y">y</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#y">y</a></span> - 2^<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span>.<br/>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="AExp_modulo.aeval">aeval</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> <span class="id">n</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> (<span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">x</span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> + <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> - <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.IMP.html#AExp_modulo.aeval">aeval</a></span> (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> (2^<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span> - 1)) (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)) (<span class="kwd">fun</span> <span class="id">_</span> =&gt; 0)).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket">0 : <span class="id">Z</span></span>. </div>
+<br/>
+<span class="kwd">End</span> <span class="id"><a href="CDF.IMP.html#AExp_modulo">AExp_modulo</a></span>.<br/>
+<br/>
+<h2> 1.2 Extensions du langage des expressions arithmétiques </h2>
+<br/>
+<div class="doc">On peut étendre le langage avec de nouvelles opérations de plusieurs
+    manières.  La plus simple est via des formes dérivées qui s'expriment
+    en termes d'opérateurs existants.  Par exemple, l'opérateur "opposé" est: </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="OPP">OPP</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) : <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span> := <span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 0) <span class="id"><a href="CDF.IMP.html#a">a</a></span>.<br/>
+<br/>
+<div class="doc">Sa sémantique est celle que nous attendions. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="aeval_OPP">aeval_OPP</a></span>: <span class="kwd">forall</span> <span class="id">s</span> <span class="id">a</span>, <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> (<span class="id"><a href="CDF.IMP.html#OPP">OPP</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span> = - (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</div>
+<div class="proofscript" id="proof3">
+&nbsp;&nbsp;<span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="id">lia</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Parfois, il faut ajouter des constructeurs au type <span class="bracket"><span class="id">aexp</span></span>
+    et des cas à la fonction <span class="bracket"><span class="id">aeval</span></span>.  Ajoutons par exemple la multiplication. </div>
+<br/>
+<span class="kwd">Module</span> <span class="id"><a name="AExp_mul">AExp_mul</a></span>.<br/>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="AExp_mul.aexp">aexp</a></span> : <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_mul.CONST">CONST</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_mul.VAR">VAR</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_mul.PLUS">PLUS</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_mul.MINUS">MINUS</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_mul.TIMES">TIMES</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>).      <span class="docright">(* NOUVEAU!  *)</span><br/>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="AExp_mul.aeval">aeval</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#AExp_mul.aexp">aexp</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_mul.CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id">n</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_mul.VAR">VAR</a></span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">x</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_mul.PLUS">PLUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> + <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_mul.MINUS">MINUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> - <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_mul.TIMES">TIMES</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> * <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<span class="kwd">End</span> <span class="id"><a href="CDF.IMP.html#AExp_mul">AExp_mul</a></span>.<br/>
+<br/>
+<div class="doc">Ajoutons aussi la division... </div>
+<br/>
+<span class="kwd">Module</span> <span class="id"><a name="AExp_div">AExp_div</a></span>.<br/>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="AExp_div.aexp">aexp</a></span> : <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_div.CONST">CONST</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_div.VAR">VAR</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_div.PLUS">PLUS</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_div.MINUS">MINUS</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_div.TIMES">TIMES</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="AExp_div.QUOT">QUOT</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>).    <span class="docright">(* NOUVEAU!  *)</span><br/>
+<br/>
+<div class="doc">Problème! l'évaluation d'une expression peut maintenant échouer,
+  dans le cas d'une division par zéro.  Il faut donc changer le type de <span class="bracket"><span class="id">aeval</span></span>
+  pour refléter cette possibilité d'erreur.  Maintenant, <span class="bracket"><span class="id">aeval</span></span> renvoie
+  un type option <span class="bracket"><span class="id">option</span> <span class="id">Z</span></span>.
+  Le résultat <span class="bracket"><span class="id">Some</span> <span class="id">n</span></span> signifie "pas d'erreur, la valeur est <span class="bracket"><span class="id">n</span></span>".
+  Le résultat <span class="bracket"><span class="id">None</span></span> signifie "erreur pendant l'évaluation".
+  Si nous savons traiter les erreurs, nous pouvons rendre notre sémantique
+  plus réaliste sur d'autres aspects du calcul:
+  - les variables peuvent être non initialisées; utiliser une telle variable
+    dans une expression est une erreur;
+  - les opérations arithmétiques peuvent déborder de l'intervalle des
+    entiers représentables en machine (p.ex. sur 64 bits); c'est aussi une erreur.
+</div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.min_int">min_int</a></span> := - (2 ^ 63).  <span class="docright">(* le plus petit entier représentable en machine  *)</span><br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.max_int">max_int</a></span> := 2 ^ 63 - 1.  <span class="docright">(* le plus grand entier représentable en machine  *)</span><br/>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.machine_integer">machine_integer</a></span> : <span class="kwd">Type</span> := { <span class="id">n</span> : <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> | <span class="id"><a href="CDF.IMP.html#AExp_div.min_int">min_int</a></span> &lt;= <span class="id"><a href="CDF.IMP.html#n">n</a></span> &lt;= <span class="id"><a href="CDF.IMP.html#AExp_div.max_int">max_int</a></span> }.<br/>
+<br/>
+<span class="kwd">Program</span> <span class="kwd">Definition</span> <span class="id"><a name="AExp_div.check_for_overflow">check_for_overflow</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>): <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.machine_integer">machine_integer</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.ZArith_dec.html#Z_le_dec">Z_le_dec</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.min_int">min_int</a></span> <span class="id"><a href="CDF.IMP.html#n">n</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">then</span> <span class="kwd">if</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.ZArith_dec.html#Z_le_dec">Z_le_dec</a></span> <span class="id"><a href="CDF.IMP.html#n">n</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.max_int">max_int</a></span> <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.IMP.html#n">n</a></span> <span class="kwd">else</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">else</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span>.<br/>
+<br/>
+<span class="kwd">Program</span> <span class="kwd">Fixpoint</span> <span class="id"><a name="AExp_div.aeval">aeval</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.machine_integer">machine_integer</a></span>) (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#AExp_div.aexp">aexp</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.machine_integer">machine_integer</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_div.check_for_overflow">check_for_overflow</a></span> <span class="id">n</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.VAR">VAR</a></span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">x</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.PLUS">PLUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a1</span>, <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a2</span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n1</span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n2</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_div.check_for_overflow">check_for_overflow</a></span> (<span class="id">n1</span> + <span class="id">n2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id">_</span>, <span class="id">_</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.MINUS">MINUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a1</span>, <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a2</span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n1</span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n2</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_div.check_for_overflow">check_for_overflow</a></span> (<span class="id">n1</span> - <span class="id">n2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id">_</span>, <span class="id">_</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.TIMES">TIMES</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a1</span>, <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a2</span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n1</span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n2</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_div.check_for_overflow">check_for_overflow</a></span> (<span class="id">n1</span> * <span class="id">n2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id">_</span>, <span class="id">_</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.QUOT">QUOT</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a1</span>, <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">a2</span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n1</span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">n2</span> =&gt; <span class="kwd">if</span> <span class="id">n2</span> =? 0 <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#AExp_div.check_for_overflow">check_for_overflow</a></span> (<span class="id">n1</span> / <span class="id">n2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id">_</span>, <span class="id">_</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<span class="kwd">End</span> <span class="id"><a href="CDF.IMP.html#AExp_div">AExp_div</a></span>.<br/>
+<br/>
+<h2> 1.3 Expressions booléennes </h2>
+<br/>
+<div class="doc">Le langage IMP offre des boucles et des conditionnelles (if/then/else)
+    qui utilisent comme conditions des expressions à valeur booléenne (true/false).
+    Voici la syntaxe abstraite de ces expressions booléennes. </div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="bexp">bexp</a></span> : <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="TRUE">TRUE</a></span>                              <span class="docright">(* toujours vrai  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="FALSE">FALSE</a></span>                             <span class="docright">(* toujours faux  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="EQUAL">EQUAL</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)       <span class="docright">(* teste si <span class="bracket"><span class="id">a1</span> = <span class="id">a2</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="LESSEQUAL">LESSEQUAL</a></span> (<span class="id">a1</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)   <span class="docright">(* teste si <span class="bracket"><span class="id">a1</span> &lt;= <span class="id">a2</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="NOT">NOT</a></span> (<span class="id">b1</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>)                    <span class="docright">(* négation  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="AND">AND</a></span> (<span class="id">b1</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>) (<span class="id">b2</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>).        <span class="docright">(* conjonction  *)</span><br/>
+<br/>
+<div class="doc">De même que les expressions arithmétiques dénotent des entiers,
+    les expressions booléennes dénotent les booléens <span class="bracket"><span class="id">true</span></span> ou <span class="bracket"><span class="id">false</span></span>. </div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="beval">beval</a></span> (<span class="id">b</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#bool">bool</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#TRUE">TRUE</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#FALSE">FALSE</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#EQUAL">EQUAL</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> =? <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> &lt;=? <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> <span class="id">b1</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#negb">negb</a></span> (<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AND">AND</a></span> <span class="id">b1</span> <span class="id">b2</span> =&gt; <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> &amp;&amp; <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Il y a de nombreuses formes dérivées utiles. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="NOTEQUAL">NOTEQUAL</a></span> (<span class="id">a1</span> <span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) : <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span> := <span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> (<span class="id"><a href="CDF.IMP.html#EQUAL">EQUAL</a></span> <span class="id"><a href="CDF.IMP.html#a1">a1</a></span> <span class="id"><a href="CDF.IMP.html#a2">a2</a></span>).<br/>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="GREATEREQUAL">GREATEREQUAL</a></span> (<span class="id">a1</span> <span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) : <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span> := <span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> <span class="id"><a href="CDF.IMP.html#a2">a2</a></span> <span class="id"><a href="CDF.IMP.html#a1">a1</a></span>.<br/>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="GREATER">GREATER</a></span> (<span class="id">a1</span> <span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) : <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span> := <span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> (<span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> <span class="id"><a href="CDF.IMP.html#a1">a1</a></span> <span class="id"><a href="CDF.IMP.html#a2">a2</a></span>).<br/>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="LESS">LESS</a></span> (<span class="id">a1</span> <span class="id">a2</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) : <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span> := <span class="id"><a href="CDF.IMP.html#GREATER">GREATER</a></span> <span class="id"><a href="CDF.IMP.html#a2">a2</a></span> <span class="id"><a href="CDF.IMP.html#a1">a1</a></span>.<br/>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="OR">OR</a></span> (<span class="id">b1</span> <span class="id">b2</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>) : <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span> := <span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> (<span class="id"><a href="CDF.IMP.html#AND">AND</a></span> (<span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> <span class="id"><a href="CDF.IMP.html#b1">b1</a></span>) (<span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> <span class="id"><a href="CDF.IMP.html#b2">b2</a></span>)).<br/>
+<br/>
+<h3> Exercice (1 étoile) </h3>
+<div class="doc">Prouvez que la forme <span class="bracket"><span class="id">OR</span></span> a bien la sémantique attendue. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="beval_OR">beval_OR</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">b1</span> <span class="id">b2</span>, <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> (<span class="id"><a href="CDF.IMP.html#OR">OR</a></span> <span class="id"><a href="CDF.IMP.html#b1">b1</a></span> <span class="id"><a href="CDF.IMP.html#b2">b2</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span> = <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b1">b1</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> || <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b2">b2</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</div>
+<div class="proofscript" id="proof4">
+&nbsp;&nbsp;<span class="tactic">intros</span>; <span class="id">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Indication:&nbsp;taper&nbsp;"SearchAbout&nbsp;negb"&nbsp;pour&nbsp;voir&nbsp;les&nbsp;lemmes&nbsp;disponibles<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;qui&nbsp;portent&nbsp;sur&nbsp;la&nbsp;négation&nbsp;booléenne.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Indication:&nbsp;ou&nbsp;faites&nbsp;simplement&nbsp;une&nbsp;analyse&nbsp;de&nbsp;cas&nbsp;sur<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[beval&nbsp;b1&nbsp;s]&nbsp;et&nbsp;[beval&nbsp;b2&nbsp;s],&nbsp;il&nbsp;n'y&nbsp;a&nbsp;que&nbsp;4&nbsp;cas&nbsp;à&nbsp;considérer.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;À&nbsp;COMPLÉTER&nbsp;*)</span><br/>
+Abort.</div>
+<br/>
+<h2> 1.4 Commandes </h2>
+<br/>
+<div class="doc">Pour finir la définition du langage IMP, voici la syntaxe abstraite
+    des commandes, aussi appelés "statements" en Anglais. </div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="com">com</a></span>: <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="SKIP">SKIP</a></span>                                     <span class="docright">(* ne rien faire  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="ASSIGN">ASSIGN</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>) (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>)              <span class="docright">(* affectation: <span class="bracket"><span class="id">v</span> := <span class="id">a</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="SEQ">SEQ</a></span> (<span class="id">c1</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) (<span class="id">c2</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>)                  <span class="docright">(* séquence: <span class="bracket"><span class="id">c1</span>; <span class="id">c2</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="IFTHENELSE">IFTHENELSE</a></span> (<span class="id">b</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>) (<span class="id">c1</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) (<span class="id">c2</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) <span class="docright">(* conditionnelle: <span class="bracket"><span class="kwd">if</span> <span class="id">b</span> <span class="kwd">then</span> <span class="id">c1</span> <span class="kwd">else</span> <span class="id">c2</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="WHILE">WHILE</a></span> (<span class="id">b</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>) (<span class="id">c1</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>).               <span class="docright">(* boucle: <span class="bracket"><span class="id">while</span> <span class="id">b</span> <span class="tactic">do</span> <span class="id">c1</span> <span class="id">done</span></span>  *)</span><br/>
+<br/>
+<div class="doc">Écrivons <span class="bracket"><span class="id">c1</span> ;; <span class="id">c2</span></span> au lieu de <span class="bracket"><span class="id">SEQ</span> <span class="id">c1</span> <span class="id">c2</span></span>, c'est plus lisible. </div>
+<br/>
+<span class="kwd">Infix</span> ";;" := <span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> (<span class="tactic">at</span> <span class="id">level</span> 80, <span class="id">right</span> <span class="id">associativity</span>).<br/>
+<br/>
+<div class="doc">Voici un programme IMP qui effectue la division euclidienne par
+    soustractions successives.  À la fin du programme, la variable
+    "q" contient le quotient de "a" par "b", et la variable "r"
+    contient le reste de la division.  En pseudocode, cela s'écrit:
+<pre>
+       r := a; q := 0;
+       while b &lt;= r do r := r - b; q := q + 1 done</pre>
+    En syntaxe abstraite, on écrit:
+</div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="Euclidean_division">Euclidean_division</a></span> :=<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> "<span class="id">r</span>" (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">a</span>") ;;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> "<span class="id">q</span>" (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 0) ;;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> (<span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">b</span>") (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">r</span>"))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> "<span class="id">r</span>" (<span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">r</span>") (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">b</span>")) ;;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> "<span class="id">q</span>" (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">q</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1))).<br/>
+<br/>
+<div class="doc">Une opération essentielle sur les états mémoire:
+    <span class="bracket"><span class="id">update</span> <span class="id">x</span> <span class="id">v</span> <span class="id">s</span></span> est l'état où <span class="bracket"><span class="id">x</span></span> vaut <span class="bracket"><span class="id">v</span></span> et tout autre variable <span class="bracket"><span class="id">y</span></span>
+    vaut ce qu'elle vaut dans <span class="bracket"><span class="id">s</span></span>. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="update">update</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>) (<span class="id">v</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="CDF.IMP.html#store">store</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">fun</span> <span class="id">y</span> =&gt; <span class="kwd">if</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id"><a href="CDF.IMP.html#y">y</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.IMP.html#v">v</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#y">y</a></span>.<br/>
+<br/>
+<div class="doc">Naïvement, nous aimerions définir la sémantique d'une commande
+    avec une fonction d'exécution <span class="bracket"><span class="id">cexec</span> <span class="id">s</span> <span class="id">c</span></span> qui exécute la commande <span class="bracket"><span class="id">c</span></span>
+    dans l'état initial <span class="bracket"><span class="id">s</span></span> et renvoie l'état final au moment où <span class="bracket"><span class="id">c</span></span> termine. </div>
+<br/>
+<span class="id">Fail</span> <span class="kwd">Fixpoint</span> <span class="id"><a name="cexec">cexec</a></span> (<span class="id">c</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="CDF.IMP.html#store">store</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> =&gt; <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> <span class="id">x</span> <span class="id">a</span> =&gt; <span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id">x</span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id">c1</span> <span class="id">c2</span> =&gt; <span class="kwd">let</span> <span class="id">s</span>' := <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id">c1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">in</span> <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id">c2</span> <span class="id">s</span>'<br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#IFTHENELSE">IFTHENELSE</a></span> <span class="id">b</span> <span class="id">c1</span> <span class="id">c2</span> =&gt; <span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id">c1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id">c2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id">b</span> <span class="id">c1</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">then</span> (<span class="kwd">let</span> <span class="id">s</span>' := <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id">c1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">in</span> <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id">b</span> <span class="id">c1</span>) <span class="id">s</span>')<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Coq rejette cette définition, à juste titre, car toutes les fonctions Coq
+    doivent terminer.  Or, le cas <span class="bracket"><span class="id">WHILE</span></span> peut boucler!  par exemple
+    si nous avons la boucle infinie <span class="bracket"><span class="id">WHILE</span> <span class="id">TRUE</span> <span class="id">SKIP</span></span>.  
+    Essayons un tout autre style de sémantique, à base de suites de réductions.
+</div>
+<br/>
+<h2> 1.5 Sémantique à réductions </h2>
+<br/>
+<div class="doc">La relation <span class="bracket"> <span class="tactic">red</span> (<span class="id">c</span>, <span class="id">s</span>) (<span class="id">c</span>', <span class="id">s</span>') </span> représente une réduction élémentaire,
+    c'est à dire la première étape de calcul lorsqu'on exécute la commande <span class="bracket"><span class="id">c</span></span>
+    dans l'état mémoire initial <span class="bracket"><span class="id">s</span></span>.
+    <span class="bracket"><span class="id">s</span>'</span> est l'état mémoire "après" l'étape de calcul.
+    <span class="bracket"><span class="id">c</span>'</span> est une commande qui représente le résidu de la réduction:
+    tous les calculs qui restent à faire ensuite.
+    La relation de réduction est représentée par un prédicat inductif Coq,
+    avec un cas (un "constructeur") pour chaque règle de réduction.
+</div>
+<br/>
+<span class="kwd">Inductive</span> <span class="tactic">red</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span> * <span class="id"><a href="CDF.IMP.html#store">store</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#com">com</a></span> * <span class="id"><a href="CDF.IMP.html#store">store</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="red_assign">red_assign</a></span>: <span class="kwd">forall</span> <span class="id">x</span> <span class="id">a</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="red_seq_done">red_seq_done</a></span>: <span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="red_seq_step">red_seq_step</a></span>: <span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c</span> <span class="id">s1</span> <span class="id">c2</span> <span class="id">s2</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c1">c1</a></span>, <span class="id"><a href="CDF.IMP.html#s1">s1</a></span>) (<span class="id"><a href="CDF.IMP.html#c2">c2</a></span>, <span class="id"><a href="CDF.IMP.html#s2">s2</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s1">s1</a></span>) (<span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id"><a href="CDF.IMP.html#c2">c2</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s2">s2</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="red_ifthenelse">red_ifthenelse</a></span>: <span class="kwd">forall</span> <span class="id">b</span> <span class="id">c1</span> <span class="id">c2</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#IFTHENELSE">IFTHENELSE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="id"><a href="CDF.IMP.html#c2">c2</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) ((<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#c2">c2</a></span>), <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="red_while_done">red_while_done</a></span>: <span class="kwd">forall</span> <span class="id">b</span> <span class="id">c</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="red_while_loop">red_while_loop</a></span>: <span class="kwd">forall</span> <span class="id">b</span> <span class="id">c</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>), <span class="id"><a href="CDF.IMP.html#s">s</a></span>).<br/>
+<br/>
+<div class="doc">Une propriété intéressante de cette relation de réduction est qu'elle est
+    fonctionnelle: une configuration <span class="bracket">(<span class="id">c</span>,<span class="id">s</span>)</span> se réduit en au plus une configuration.
+    Cela correspond au fait que le langage IMP est déterministe. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="red_determ">red_determ</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">cs</span> <span class="id">cs1</span>, <span class="tactic">red</span> <span class="id"><a href="CDF.IMP.html#cs">cs</a></span> <span class="id"><a href="CDF.IMP.html#cs1">cs1</a></span> -&gt; <span class="kwd">forall</span> <span class="id">cs2</span>, <span class="tactic">red</span> <span class="id"><a href="CDF.IMP.html#cs">cs</a></span> <span class="id"><a href="CDF.IMP.html#cs2">cs2</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#cs1">cs1</a></span> = <span class="id"><a href="CDF.IMP.html#cs2">cs2</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</div>
+<div class="proofscript" id="proof5">
+&nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="tactic">intros</span> <span class="id">cs2</span> <span class="id">R2</span>; <span class="tactic">inversion</span> <span class="id">R2</span>; <span class="tactic">subst</span>; <span class="tactic">eauto</span>.<br/>
+- <span class="tactic">inversion</span> <span class="id">H3</span>.<br/>
+- <span class="tactic">inversion</span> <span class="id">H</span>.<br/>
+- <span class="tactic">assert</span> (<span class="id">EQ</span>: (<span class="id">c2</span>, <span class="id">s2</span>) = (<span class="id">c4</span>, <span class="id">s3</span>)) <span class="tactic">by</span> <span class="tactic">auto</span>. <span class="tactic">congruence</span>.<br/>
+- <span class="tactic">congruence</span>.<br/>
+- <span class="tactic">congruence</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">On définit la sémantique d'une commande en itérant les étapes de réduction.
+    La commande <span class="bracket"><span class="id">c</span></span> dans l'état initial <span class="bracket"><span class="id">s</span></span> termine dans l'état final <span class="bracket"><span class="id">s</span>'</span>
+    si en un nombre fini de réductions on va de <span class="bracket">(<span class="id">c</span>, <span class="id">s</span>)</span> à <span class="bracket">(<span class="id">skip</span>, <span class="id">s</span>')</span>.
+</div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="terminates">terminates</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) (<span class="id">c</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) (<span class="id">s</span>': <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id">s</span>').<br/>
+<br/>
+<div class="doc">L'opérateur <span class="bracket"><span class="id">star</span></span> est défini dans la bibliothèque <span class="bracket"><span class="id">Sequences</span></span>.
+    <span class="bracket"><span class="id">star</span> <span class="id">R</span></span> est la fermeture réflexive transitive d'une relation <span class="bracket"><span class="id">R</span></span>,
+    que l'on note souvent <span class="bracket"><span class="id">R</span>*</span> sur papier.  La relation <span class="bracket"><span class="id">star</span> <span class="tactic">red</span></span>
+    représente donc zéro, une ou plusieurs étapes de réduction. </div>
+<br/>
+<div class="doc">De même, la commande <span class="bracket"><span class="id">c</span></span> diverge (ne termine pas) dans l'état initial <span class="bracket"><span class="id">s</span></span>
+    s'il existe une suite infinie de réductions issue de <span class="bracket">(<span class="id">c</span>, <span class="id">s</span>)</span>.
+    L'opérateur <span class="bracket"><span class="id">infseq</span></span> est lui aussi défini dans la bibliothèque <span class="bracket"><span class="id">Sequences</span></span>.
+</div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="diverges">diverges</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) (<span class="id">c</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>).<br/>
+<br/>
+<div class="doc">En général, un troisième type d'exécutions est possible: partir en erreur
+   ("going wrong") après un nombre fini de réductions.
+   Une configuration <span class="bracket">(<span class="id">c</span>', <span class="id">s</span>')</span> est en erreur si elle ne se réduit pas
+   et elle n'est pas terminale, c'est à dire <span class="bracket"><span class="id">c</span>' &lt;&gt; <span class="id">SKIP</span></span>. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="goes_wrong">goes_wrong</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) (<span class="id">c</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c</span>', <span class="id">exists</span> <span class="id">s</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id">c</span>', <span class="id">s</span>') /\ <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> <span class="tactic">red</span> (<span class="id">c</span>', <span class="id">s</span>') /\ <span class="id">c</span>' &lt;&gt; <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>.<br/>
+<br/>
+<h3> Exercice (2 étoiles) </h3>
+<div class="doc">Montrer que les commandes Imp ne partent jamais en erreur.
+    Indication: commencer par montrer la propriété de "progression" ci-dessous,
+    qui dit qu'une commande autre que <span class="bracket"><span class="id">SKIP</span></span> peut toujours se réduire. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="red_progress">red_progress</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span>, <span class="id"><a href="CDF.IMP.html#c">c</a></span> = <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> \/ <span class="id">exists</span> <span class="id">c</span>', <span class="id">exists</span> <span class="id">s</span>', <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id">c</span>', <span class="id">s</span>').<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof6')">Proof.</div>
+<div class="proofscript" id="proof6">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c</span>; <span class="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;À&nbsp;COMPLÉTER&nbsp;*)</span><br/>
+Abort.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="not_goes_wrong">not_goes_wrong</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span>, ~(<span class="id"><a href="CDF.IMP.html#goes_wrong">goes_wrong</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof7')">Proof.</div>
+<div class="proofscript" id="proof7">
+&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">c</span> <span class="id">s</span> (<span class="id">c</span>' &amp; <span class="id">s</span>' &amp; <span class="id">STAR</span> &amp; <span class="id">IRRED</span> &amp; <span class="id">NOTSKIP</span>).<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;À&nbsp;COMPLÉTER&nbsp;*)</span><br/>
+Abort.</div>
+<br/>
+<div class="doc">Un lemme technique: les suites de réductions peuvent s'effectuer
+   dans la partie gauche d'une séquence.  Cela généralise la règle <span class="bracket"><span class="id">red_seq_step</span></span>. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="red_seq_steps">red_seq_steps</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c2</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>' <span class="id">c</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id">c</span>', <span class="id">s</span>') -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="tactic">red</span> ((<span class="id"><a href="CDF.IMP.html#c">c</a></span>;;<span class="id"><a href="CDF.IMP.html#c2">c2</a></span>), <span class="id"><a href="CDF.IMP.html#s">s</a></span>) ((<span class="id">c</span>';;<span class="id"><a href="CDF.IMP.html#c2">c2</a></span>), <span class="id">s</span>').<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof8')">Proof.</div>
+<div class="proofscript" id="proof8">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>.<br/>
+- <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
+- <span class="tactic">destruct</span> <span class="id">b</span> <span class="kwd">as</span> [<span class="id">c1</span> <span class="id">st1</span>].<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span> <span class="kwd">with</span> (<span class="id">c1</span>;;<span class="id">c2</span>, <span class="id">st1</span>). <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_seq_step">red_seq_step</a></span>. <span class="tactic">auto</span>. <span class="tactic">auto</span>.  <br/>
+Qed.</div>
+<br/>
+<h2> 1.6 Sémantique naturelle </h2>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="cexec">cexec</a></span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#com">com</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#store">store</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="cexec_skip">cexec_skip</a></span>: <span class="kwd">forall</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="cexec_assign">cexec_assign</a></span>: <span class="kwd">forall</span> <span class="id">s</span> <span class="id">x</span> <span class="id">a</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span>) (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.IMP.html#x">x</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="cexec_seq">cexec_seq</a></span>: <span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c2</span> <span class="id">s</span> <span class="id">s</span>' <span class="id">s</span>'',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="id">s</span>' -&gt; <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id">s</span>' <span class="id"><a href="CDF.IMP.html#c2">c2</a></span> <span class="id">s</span>'' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="id"><a href="CDF.IMP.html#c2">c2</a></span>) <span class="id">s</span>''<br/>
+&nbsp;&nbsp;| <span class="id"><a name="cexec_ifthenelse">cexec_ifthenelse</a></span>: <span class="kwd">forall</span> <span class="id">b</span> <span class="id">c1</span> <span class="id">c2</span> <span class="id">s</span> <span class="id">s</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#c2">c2</a></span>) <span class="id">s</span>' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="id"><a href="CDF.IMP.html#IFTHENELSE">IFTHENELSE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="id"><a href="CDF.IMP.html#c2">c2</a></span>) <span class="id">s</span>'<br/>
+&nbsp;&nbsp;| <span class="id"><a name="cexec_while_done">cexec_while_done</a></span>: <span class="kwd">forall</span> <span class="id">b</span> <span class="id">c</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="cexec_while_loop">cexec_while_loop</a></span>: <span class="kwd">forall</span> <span class="id">b</span> <span class="id">c</span> <span class="id">s</span> <span class="id">s</span>' <span class="id">s</span>'',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="id">s</span>' -&gt; <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id">s</span>' (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>) <span class="id">s</span>'' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#b">b</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span>) <span class="id">s</span>''.<br/>
+<br/>
+<div class="doc">Le prédicat <span class="bracket"><span class="id">cexec</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>'</span> est vrai ssi il existe une dérivation finie
+    de cette conclusion au moyen des axiomes et des règles d'inférence ci-dessus.
+    La structure de cette dérivation représente les calculs effectués par <span class="bracket"><span class="id">c</span></span>
+    sous forme d'arbre --- et non plus sous forme de suite de réductions.
+    La finitude de la dérivation garantit que seules les exécutions qui terminent
+    satisfont <span class="bracket"><span class="id">cexec</span></span>.  Et en effet <span class="bracket"><span class="id">WHILE</span> <span class="id">TRUE</span> <span class="id">SKIP</span></span> ne satisfait pas <span class="bracket"><span class="id">cexec</span></span>. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="cexec_infinite_loop">cexec_infinite_loop</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span>, ~ <span class="id">exists</span> <span class="id">s</span>', <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#TRUE">TRUE</a></span> <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>) <span class="id">s</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof9')">Proof.</div>
+<div class="proofscript" id="proof9">
+&nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">A</span>: <span class="kwd">forall</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>', <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="id">s</span>' -&gt; <span class="id"><a href="CDF.IMP.html#c">c</a></span> = <span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#TRUE">TRUE</a></span> <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#False">False</a></span>).<br/>
+&nbsp;&nbsp;{ <span class="tactic">induction</span> 1; <span class="tactic">intros</span> <span class="id">EQ</span>; <span class="tactic">inversion</span> <span class="id">EQ</span>.<br/>
+&nbsp;&nbsp;- <span class="tactic">subst</span> <span class="id">b</span> <span class="id">c</span>. <span class="id">cbn</span> <span class="kwd">in</span> <span class="id">H</span>. <span class="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;- <span class="tactic">subst</span> <span class="id">b</span> <span class="id">c</span>. <span class="tactic">apply</span> <span class="id">IHcexec2</span>. <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">s</span> (<span class="id">s</span>' &amp; <span class="id">EXEC</span>). <span class="tactic">apply</span> <span class="id">A</span> <span class="kwd">with</span> (<span class="id">s</span> := <span class="id">s</span>) (<span class="id">c</span> := <span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#TRUE">TRUE</a></span> <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>) (<span class="id">s</span>' := <span class="id">s</span>'); <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Nous allons montrer l'équivalence entre les évaluations qui terminent
+    d'après la sémantique naturelle
+        (existence d'une dérivation de <span class="bracket"><span class="id">cexec</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>'</span>)
+    et d'après la sémantique par réductions
+        (existence d'une suite de réductions de <span class="bracket">(<span class="id">c</span>,<span class="id">s</span>)</span> vers <span class="bracket">(<span class="id">SKIP</span>, <span class="id">s</span>')</span>.
+    Commençons par l'implication sémantique naturelle =&gt; suite de réductions,
+    qui se montre par une jolie récurrence sur la dérivation de <span class="bracket"><span class="id">cexec</span></span>. </div>
+<br/>
+<span class="kwd">Theorem</span> <span class="id"><a name="cexec_to_terminates">cexec_to_terminates</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>', <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="id">s</span>' -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id">s</span>').<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof10')">Proof.</div>
+<div class="proofscript" id="proof10">
+&nbsp;&nbsp;<span class="tactic">induction</span> 1.<br/>
+- <span class="comment">(*&nbsp;SKIP&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
+- <span class="comment">(*&nbsp;ASSIGN&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_assign">red_assign</a></span>. <br/>
+- <span class="comment">(*&nbsp;SEQ&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_seq_steps">red_seq_steps</a></span>. <span class="tactic">apply</span> <span class="id">IHcexec1</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span>.  <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_seq_done">red_seq_done</a></span>.  <span class="tactic">apply</span> <span class="id">IHcexec2</span>.<br/>
+- <span class="comment">(*&nbsp;IFTHENELSE&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_ifthenelse">red_ifthenelse</a></span>. <span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;WHILE&nbsp;stop&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_while_done">red_while_done</a></span>. <span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;WHILE&nbsp;loop&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_while_loop">red_while_loop</a></span>. <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_seq_steps">red_seq_steps</a></span>. <span class="tactic">apply</span> <span class="id">IHcexec1</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_seq_done">red_seq_done</a></span>. <span class="tactic">apply</span> <span class="id">IHcexec2</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">L'implication réciproque, d'une suite de réductions vers une dérivation
+    de <span class="bracket"><span class="id">cexec</span></span>, est plus subtile.  Voici le lemme clé, qui montre comment
+    une étape de réduction suivie d'une exécution <span class="bracket"><span class="id">cexec</span></span> peuvent se
+    combiner en une exécution <span class="bracket"><span class="id">cexec</span></span>. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="red_append_cexec">red_append_cexec</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">s1</span> <span class="id">c2</span> <span class="id">s2</span>, <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c1">c1</a></span>, <span class="id"><a href="CDF.IMP.html#s1">s1</a></span>) (<span class="id"><a href="CDF.IMP.html#c2">c2</a></span>, <span class="id"><a href="CDF.IMP.html#s2">s2</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span>', <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s2">s2</a></span> <span class="id"><a href="CDF.IMP.html#c2">c2</a></span> <span class="id">s</span>' -&gt; <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s1">s1</a></span> <span class="id"><a href="CDF.IMP.html#c1">c1</a></span> <span class="id">s</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof11')">Proof.</div>
+<div class="proofscript" id="proof11">
+&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">until</span> <span class="id">s2</span>; <span class="tactic">intros</span> <span class="id">STEP</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">STEP</span>; <span class="tactic">intros</span>.<br/>
+- <span class="comment">(*&nbsp;red_assign&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">inversion</span> <span class="id">H</span>; <span class="tactic">subst</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_assign">cexec_assign</a></span>. <br/>
+- <span class="comment">(*&nbsp;red_seq_done&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_seq">cexec_seq</a></span> <span class="kwd">with</span> <span class="id">s2</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_skip">cexec_skip</a></span>. <span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;red&nbsp;seq&nbsp;step&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">inversion</span> <span class="id">H</span>; <span class="tactic">subst</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_seq">cexec_seq</a></span> <span class="kwd">with</span> <span class="id">s</span>'0.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id">IHSTEP</span>; <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;red_ifthenelse&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_ifthenelse">cexec_ifthenelse</a></span>. <span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;red_while_done&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">inversion</span> <span class="id">H0</span>; <span class="tactic">subst</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_while_done">cexec_while_done</a></span>. <span class="tactic">auto</span>.<br/>
+- <span class="comment">(*&nbsp;red&nbsp;while&nbsp;loop&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">inversion</span> <span class="id">H0</span>; <span class="tactic">subst</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_while_loop">cexec_while_loop</a></span> <span class="kwd">with</span> <span class="id">s</span>'0; <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Il s'ensuit (par récurrence sur la suite de réductions)
+    qu'une commande qui se réduit vers <span class="bracket"><span class="id">SKIP</span></span> s'exécute
+    d'après la sémantique naturelle avec le même état final. </div>
+<br/>
+<span class="kwd">Theorem</span> <span class="id"><a name="reds_to_cexec">reds_to_cexec</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="tactic">red</span> (<span class="id"><a href="CDF.IMP.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id">s</span>') -&gt; <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="id">s</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof12')">Proof.</div>
+<div class="proofscript" id="proof12">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>.<br/>
+- <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#cexec_skip">cexec_skip</a></span>.<br/>
+- <span class="tactic">destruct</span> <span class="id">b</span> <span class="kwd">as</span> [<span class="id">c1</span> <span class="id">s1</span>]. <span class="tactic">apply</span> <span class="id"><a href="CDF.IMP.html#red_append_cexec">red_append_cexec</a></span> <span class="kwd">with</span> <span class="id">c1</span> <span class="id">s1</span>; <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<h2> 1.7 Interpréteur borné </h2>
+<br/>
+<div class="doc">Il s'est révélé impossible de définir la sémantique des commandes par
+    une fonction d'exécution Coq.  Cependant, nous pouvons définir une
+    approximation d'une telle fonction, en bornant a priori la profondeur
+    de la récursion, à l'aide d'un paramètre supplémentaire <span class="bracket"><span class="id">fuel</span></span> de type <span class="bracket"><span class="id">nat</span></span>.
+    Le "fuel" est décrémenté de 1 à chaque appel récursif.  S'il tombe à zéro,
+    l'exécution renvoie <span class="bracket"><span class="id">None</span></span>, ce qui signifie que l'état final à la fin
+    de l'exécution de la commande n'a pas pu être calculé: soit la commande
+    diverge, soit il faut davantage de "fuel" pour l'exécuter entièrement. </div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="cexec_f">cexec_f</a></span> (<span class="id">fuel</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) (<span class="id">c</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.IMP.html#store">store</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#fuel">fuel</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#O">O</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#S">S</a></span> <span class="id">fuel</span>' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> <span class="id">x</span> <span class="id">a</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id">x</span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>) <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id">c1</span> <span class="id">c2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> <span class="id">fuel</span>' <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">c1</span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span>  =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">s</span>' =&gt; <span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> <span class="id">fuel</span>' <span class="id">s</span>' <span class="id">c2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#IFTHENELSE">IFTHENELSE</a></span> <span class="id">b</span> <span class="id">c1</span> <span class="id">c2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> <span class="id">fuel</span>' <span class="id"><a href="CDF.IMP.html#s">s</a></span> (<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">then</span> <span class="id">c1</span> <span class="kwd">else</span> <span class="id">c2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id">b</span> <span class="id">c1</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="kwd">then</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> <span class="id">fuel</span>' <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">c1</span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span>  =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">s</span>' =&gt; <span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> <span class="id">fuel</span>' <span class="id">s</span>' (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id">b</span> <span class="id">c1</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">else</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Cette fonction approchée est très utile pour calculer la sémantique
+    sur des programmes de test.  Par exemple, calculons le quotient et
+    le reste de 14 divisé par 3 avec le programme IMP de division euclidienne
+    donné ci-dessus. </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span><br/>
+&nbsp;&nbsp;(<span class="kwd">let</span> <span class="id">s</span> := <span class="id"><a href="CDF.IMP.html#update">update</a></span> "<span class="id">a</span>" 14 (<span class="id"><a href="CDF.IMP.html#update">update</a></span> "<span class="id">b</span>" 3 (<span class="kwd">fun</span> <span class="id">_</span> =&gt; 0)) <span class="kwd">in</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> 100 <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#Euclidean_division">Euclidean_division</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">s</span>' =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> (<span class="id">s</span>' "<span class="id">q</span>", <span class="id">s</span>' "<span class="id">r</span>")<br/>
+&nbsp;&nbsp;&nbsp;<span class="kwd">end</span>).<br/>
+<br/>
+<h3> Exercice (3 étoiles) </h3>
+<br/>
+<div class="doc">Montrer que la fonction <span class="bracket"><span class="id">cexec_f</span></span> est correcte vis-à-vis de la sémantique
+    naturelle <span class="bracket"><span class="id">cexec</span></span>, en démontrant les deux lemmes suivants. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="cexec_f_sound">cexec_f_sound</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">fuel</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>', <span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> <span class="id"><a href="CDF.IMP.html#fuel">fuel</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">s</span>' -&gt; <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="id">s</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof13')">Proof.</div>
+<div class="proofscript" id="proof13">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">fuel</span> <span class="kwd">as</span> [ | <span class="id">fuel</span> ]; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
+- <span class="tactic">discriminate</span>.<br/>
+- <span class="tactic">destruct</span> <span class="id">c</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;À&nbsp;COMPLÉTER&nbsp;*)</span><br/>
+Abort.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="cexec_f_complete">cexec_f_complete</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>', <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> <span class="id">s</span>' -&gt;<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">fuel1</span>, <span class="kwd">forall</span> <span class="id">fuel</span>, (<span class="id"><a href="CDF.IMP.html#fuel">fuel</a></span> &gt;= <span class="id"><a href="CDF.IMP.html#fuel1">fuel1</a></span>)%<span class="id">nat</span> -&gt; <span class="id"><a href="CDF.IMP.html#cexec_f">cexec_f</a></span> <span class="id"><a href="CDF.IMP.html#fuel">fuel</a></span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id"><a href="CDF.IMP.html#c">c</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">s</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof14')">Proof.</div>
+<div class="proofscript" id="proof14">
+&nbsp;&nbsp;<span class="tactic">induction</span> 1.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;À&nbsp;COMPLÉTER&nbsp;*)</span><br/>
+Abort.</div>
+
+</div>
+<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</div>
+</body>
+</html>
