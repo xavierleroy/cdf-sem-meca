@@ -1,3 +1,7 @@
+*~
+.coqdeps.d
+CoqMakefile
+CoqMakefile.conf
 .*.aux
 *.a
 *.cma
