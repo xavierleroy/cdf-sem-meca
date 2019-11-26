@@ -103,35 +103,6 @@ Qed.</div>
 &nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id">IHa1</span>, <span class="id">IHa2</span>; <span class="tactic">auto</span>.<br/>
 Qed.</div>
 <br/>
-<div class="doc">Des langages comme Java ou OCaml calculent non pas avec des entiers mathématiques
-  en précision arbitraire, mais avec des entiers "machine" pris modulo <span class="bracket">2^<span class="id">N</span></span>.
-  Pour refléter cette arithmétique modulaire, il suffit de définir une autre
-  fonction d'évaluation qui normalise toutes les valeurs entières par
-  réduction modulo <span class="bracket">2^<span class="id">N</span></span>. </div>
-<br/>
-<span class="kwd">Module</span> <span class="id"><a name="AExp_modulo">AExp_modulo</a></span>.<br/>
-<br/>
-<span class="kwd">Definition</span> <span class="id"><a name="AExp_modulo.N">N</a></span> := 64.  <span class="docright">(* Exemple d'une machine 64 bits.  *)</span><br/>
-<br/>
-<div class="doc">Reduce <span class="bracket"><span class="id">x</span></span> modulo <span class="bracket">2^<span class="id">N</span></span> to the range <span class="bracket">[-2^(<span class="id">N</span>-1), 2^(<span class="id">N</span>-1) - 1]</span>. </div>
-<br/>
-<span class="kwd">Definition</span> <span class="id"><a name="AExp_modulo.normalize">normalize</a></span> (<span class="id">x</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) :=<br/>
-&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">y</span> := <span class="id"><a href="CDF.IMP.html#x">x</a></span> <span class="id">mod</span> (2^<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span>) <span class="kwd">in</span> <span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#y">y</a></span> &lt;? 2^(<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span>-1) <span class="kwd">then</span> <span class="id"><a href="CDF.IMP.html#y">y</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.IMP.html#y">y</a></span> - 2^<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span>.<br/>
-<br/>
-<span class="kwd">Fixpoint</span> <span class="id"><a name="AExp_modulo.aeval">aeval</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> :=<br/>
-&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="kwd">with</span><br/>
-&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> <span class="id">n</span><br/>
-&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> (<span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">x</span>)<br/>
-&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> + <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
-&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_modulo.normalize">normalize</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span> - <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id"><a href="CDF.IMP.html#s">s</a></span>)<br/>
-&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
-<br/>
-<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.IMP.html#AExp_modulo.aeval">aeval</a></span> (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> (2^<span class="id"><a href="CDF.IMP.html#AExp_modulo.N">N</a></span> - 1)) (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)) (<span class="kwd">fun</span> <span class="id">_</span> =&gt; 0)).<br/>
-<br/>
-<div class="doc">Résultat: <span class="bracket">0 : <span class="id">Z</span></span>. </div>
-<br/>
-<span class="kwd">End</span> <span class="id"><a href="CDF.IMP.html#AExp_modulo">AExp_modulo</a></span>.<br/>
-<br/>
 <h2> 1.2 Extensions du langage des expressions arithmétiques </h2>
 <br/>
 <div class="doc">On peut étendre le langage avec de nouvelles opérations de plusieurs
@@ -194,20 +165,17 @@ Qed.</div>
   - les variables peuvent être non initialisées; utiliser une telle variable
     dans une expression est une erreur;
   - les opérations arithmétiques peuvent déborder de l'intervalle des
-    entiers représentables en machine (p.ex. sur 64 bits); c'est aussi une erreur.
+    entiers représentables en machine (p.ex. sur 64 bits); c'est aussi
+    une erreur.
 </div>
 <br/>
-<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.min_int">min_int</a></span> := - (2 ^ 63).  <span class="docright">(* le plus petit entier représentable en machine  *)</span><br/>
-<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.max_int">max_int</a></span> := 2 ^ 63 - 1.  <span class="docright">(* le plus grand entier représentable en machine  *)</span><br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.min_int">min_int</a></span> := - (2 ^ 63).  <span class="docright">(* le plus petit entier représentable  *)</span><br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.max_int">max_int</a></span> := 2 ^ 63 - 1.  <span class="docright">(* le plus grand entier représentable  *)</span><br/>
 <br/>
-<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.machine_integer">machine_integer</a></span> : <span class="kwd">Type</span> := { <span class="id">n</span> : <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> | <span class="id"><a href="CDF.IMP.html#AExp_div.min_int">min_int</a></span> &lt;= <span class="id"><a href="CDF.IMP.html#n">n</a></span> &lt;= <span class="id"><a href="CDF.IMP.html#AExp_div.max_int">max_int</a></span> }.<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="AExp_div.check_for_overflow">check_for_overflow</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>): <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">if</span> (<span class="id"><a href="CDF.IMP.html#AExp_div.min_int">min_int</a></span> &lt;=? <span class="id"><a href="CDF.IMP.html#n">n</a></span>) &amp;&amp; (<span class="id"><a href="CDF.IMP.html#n">n</a></span> &lt;=? <span class="id"><a href="CDF.IMP.html#AExp_div.max_int">max_int</a></span>) <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.IMP.html#n">n</a></span> <span class="kwd">else</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span>.<br/>
 <br/>
-<span class="kwd">Program</span> <span class="kwd">Definition</span> <span class="id"><a name="AExp_div.check_for_overflow">check_for_overflow</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>): <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.machine_integer">machine_integer</a></span> :=<br/>
-&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.ZArith_dec.html#Z_le_dec">Z_le_dec</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.min_int">min_int</a></span> <span class="id"><a href="CDF.IMP.html#n">n</a></span><br/>
-&nbsp;&nbsp;<span class="kwd">then</span> <span class="kwd">if</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.ZArith_dec.html#Z_le_dec">Z_le_dec</a></span> <span class="id"><a href="CDF.IMP.html#n">n</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.max_int">max_int</a></span> <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.IMP.html#n">n</a></span> <span class="kwd">else</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
-&nbsp;&nbsp;<span class="kwd">else</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span>.<br/>
-<br/>
-<span class="kwd">Program</span> <span class="kwd">Fixpoint</span> <span class="id"><a name="AExp_div.aeval">aeval</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.machine_integer">machine_integer</a></span>) (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#AExp_div.aexp">aexp</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.IMP.html#AExp_div.machine_integer">machine_integer</a></span> :=<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="AExp_div.aeval">aeval</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#AExp_div.aexp">aexp</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> :=<br/>
 &nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.IMP.html#a">a</a></span> <span class="kwd">with</span><br/>
 &nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id"><a href="CDF.IMP.html#AExp_div.check_for_overflow">check_for_overflow</a></span> <span class="id">n</span><br/>
 &nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AExp_div.VAR">VAR</a></span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.IMP.html#s">s</a></span> <span class="id">x</span><br/>
