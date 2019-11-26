@@ -87,35 +87,6 @@ Proof.
   rewrite IHa1, IHa2; auto.
 Qed.
 
-(** Des langages comme Java ou OCaml calculent non pas avec des entiers mathématiques
-  en précision arbitraire, mais avec des entiers "machine" pris modulo [2^N].
-  Pour refléter cette arithmétique modulaire, il suffit de définir une autre
-  fonction d'évaluation qui normalise toutes les valeurs entières par
-  réduction modulo [2^N]. *)
-
-Module AExp_modulo.
-
-Definition N := 64.  (**r Exemple d'une machine 64 bits. *)
-
-(** Reduce [x] modulo [2^N] to the range [[-2^(N-1), 2^(N-1) - 1]]. *)
-
-Definition normalize (x: Z) :=
-  let y := x mod (2^N) in if y <? 2^(N-1) then y else y - 2^N.
-
-Fixpoint aeval (a: aexp) (s: store) : Z :=
-  match a with
-  | CONST n => normalize n
-  | VAR x => normalize (s x)
-  | PLUS a1 a2 => normalize (aeval a1 s + aeval a2 s)
-  | MINUS a1 a2 => normalize (aeval a1 s - aeval a2 s)
-  end.
-
-Eval compute in (aeval (PLUS (CONST (2^N - 1)) (CONST 1)) (fun _ => 0)).
-
-(** Résultat: [0 : Z]. *)
-
-End AExp_modulo.
-
 (** ** 1.2 Extensions du langage des expressions arithmétiques *)
 
 (** On peut étendre le langage avec de nouvelles opérations de plusieurs
@@ -178,20 +149,17 @@ Inductive aexp : Type :=
   - les variables peuvent être non initialisées; utiliser une telle variable
     dans une expression est une erreur;
   - les opérations arithmétiques peuvent déborder de l'intervalle des
-    entiers représentables en machine (p.ex. sur 64 bits); c'est aussi une erreur.
+    entiers représentables en machine (p.ex. sur 64 bits); c'est aussi
+    une erreur.
 *)
 
-Definition min_int := - (2 ^ 63).  (**r le plus petit entier représentable en machine *)
-Definition max_int := 2 ^ 63 - 1.  (**r le plus grand entier représentable en machine *)
+Definition min_int := - (2 ^ 63).  (**r le plus petit entier représentable *)
+Definition max_int := 2 ^ 63 - 1.  (**r le plus grand entier représentable *)
 
-Definition machine_integer : Type := { n : Z | min_int <= n <= max_int }.
+Definition check_for_overflow (n: Z): option Z :=
+  if (min_int <=? n) && (n <=? max_int) then Some n else None.
 
-Program Definition check_for_overflow (n: Z): option machine_integer :=
-  if Z_le_dec min_int n
-  then if Z_le_dec n max_int then Some n else None
-  else None.
-
-Program Fixpoint aeval (s: ident -> option machine_integer) (a: aexp) : option machine_integer :=
+Fixpoint aeval (s: ident -> option Z) (a: aexp) : option Z :=
   match a with
   | CONST n => check_for_overflow n
   | VAR x => s x
