@@ -1,13 +1,13 @@
 From Coq Require Import Arith ZArith Psatz Bool String List Program.Equality.
-From CDF Require Import Sequences.
+From CDF Require Import Sequences Simulation.
 
 Local Open Scope string_scope.
 Local Open Scope Z_scope.
 Local Open Scope list_scope.
 
-(** * 1. Le langage IMP *)
+(** * 1.  Le langage IMP *)
 
-(** ** 1.1 Expressions arithmétiques *)
+(** ** 1.1.  Expressions arithmétiques *)
 
 Definition ident := string.
 
@@ -87,7 +87,7 @@ Proof.
   rewrite IHa1, IHa2; auto.
 Qed.
 
-(** ** 1.2 Extensions du langage des expressions arithmétiques *)
+(** ** 1.2.  Extensions du langage des expressions arithmétiques *)
 
 (** On peut étendre le langage avec de nouvelles opérations de plusieurs
     manières.  La plus simple est via des formes dérivées qui s'expriment
@@ -187,7 +187,7 @@ Fixpoint aeval (s: ident -> option Z) (a: aexp) : option Z :=
 
 End AExp_div.
 
-(** ** 1.3 Expressions booléennes *)
+(** ** 1.3.  Expressions booléennes *)
 
 (** Le langage IMP offre des boucles et des conditionnelles (if/then/else)
     qui utilisent comme conditions des expressions à valeur booléenne (true/false).
@@ -240,7 +240,7 @@ Proof.
   (* À COMPLÉTER *)
 Abort.
 
-(** ** 1.4 Commandes *)
+(** ** 1.4.  Commandes *)
 
 (** Pour finir la définition du langage IMP, voici la syntaxe abstraite
     des commandes, aussi appelés "statements" en Anglais. *)
@@ -303,7 +303,7 @@ Fail Fixpoint cexec (c: com) (s: store) : store :=
     Essayons un tout autre style de sémantique, à base de suites de réductions.
 *)
 
-(** ** 1.5 Sémantique à réductions *)
+(** ** 1.5.  Sémantique à réductions *)
 
 (** La relation [ red (c, s) (c', s') ] représente une réduction élémentaire,
     c'est à dire la première étape de calcul lorsqu'on exécute la commande [c]
@@ -410,7 +410,7 @@ Proof.
   apply star_step with (c1;;c2, st1). apply red_seq_step. auto. auto.  
 Qed.
 
-(** ** 1.6 Sémantique naturelle *)
+(** ** 1.6.  Sémantique naturelle *)
 
 Inductive cexec: store -> com -> store -> Prop :=
   | cexec_skip: forall s,
@@ -457,7 +457,7 @@ Qed.
     Commençons par l'implication sémantique naturelle => suite de réductions,
     qui se montre par une jolie récurrence sur la dérivation de [cexec]. *)
 
-Theorem cexec_to_terminates:
+Theorem cexec_to_reds:
   forall s c s', cexec s c s' -> star red (c, s) (SKIP, s').
 Proof.
   induction 1.
@@ -517,7 +517,7 @@ Proof.
 - destruct b as [c1 s1]. apply red_append_cexec with c1 s1; auto.
 Qed.
 
-(** ** 1.7 Interpréteur borné *)
+(** ** 1.7.  Interpréteur borné *)
 
 (** Il s'est révélé impossible de définir la sémantique des commandes par
     une fonction d'exécution Coq.  Cependant, nous pouvons définir une
@@ -585,3 +585,315 @@ Proof.
   induction 1.
   (* À COMPLÉTER *)
 Abort.
+
+(** ** 1.8.  Sémantique à transitions et continuations *)
+
+(** Pour les besoins de la vérification du compilateur (module [Compil]),
+    nous introduisons une autre forme de sémantique "à petits pas",
+    alternative à la sémantique par réductions, où la commande que
+    l'on exécute est explicitement décomposée en
+    - une sous-commande en cours d'examen, où le calcul a lieu;
+    - un contexte qui décrit la position de cette sous-commande dans la 
+      commande toute entière; ou, de manière équivalente, une continuation
+      qui décrit les parties de la commande toute entière restant à exécuter
+      une fois la sous-commande terminée.
+
+    Par conséquent, la sémantique se présente comme une relation de transition
+    entre triplets (sous-commande, continuation, état mémoire).
+
+    Voici la syntaxe des continuations:
+*)
+
+Inductive cont : Type :=
+  | Kstop
+  | Kseq (c: com) (k: cont)
+  | Kwhile (b: bexp) (c: com) (k: cont).
+
+(** Signification intuitive de ces 3 constructeurs:
+  - [Kstop] signifie qu'il ne reste plus rien à faire une fois que la
+    sous-commande a terminé.  En d'autres termes, la sous-commande
+    en cours d'examen est la commande tout entière.
+  - [Kseq c k] signifie que, une fois la sous-commande terminée,
+    il faudra exécuter la commande [c], puis continuer comme décrit par [k].
+  - [Kwhile b c k] signifie que, une fois la sous-commande terminée,
+    il faudra exécuter à nouveau la boucle [WHILE b DO c END].
+    Lorsque cette boucle aura terminé, il faudra continuer comme décrit par [k].
+*)
+
+(** Un autre moyen de former une intuition à propos des continuations
+    est d'étudier la fonction [apply_cont k c] ci-dessous.  Elle prend
+    la sous-commande [c] et la continuation [k[, et reconstruit la
+    commande complète.  Il s'agit juste de mettre [c] en position gauche dans
+    l'imbrication de séquences décrite par [k].
+*)
+
+Fixpoint apply_cont (k: cont) (c: com) : com :=
+  match k with
+  | Kstop => c
+  | Kseq c1 k1 => apply_cont k1 (SEQ c c1)
+  | Kwhile b1 c1 k1 => apply_cont k1 (SEQ c (WHILE b1 c1))
+  end.
+
+(** Les transitions entre triplets (sous-commande, continuation, état)
+    sont de trois sortes conceptuellement différentes:
+    - Étapes de calcul: évaluer une expression arithmétique ou booléenne;
+      modifier le triplet en conséquence du résultat.
+    - Focalisation: remplacer la sous-commande par une sous-sous-commande
+      qui doit être exécutée ensuite, en enrichissant la continuation
+      en conséquence.
+    - Reprise: lorsque la sous-commande est [SKIP] et donc est terminée,
+      examiner la tête de la continuation pour trouver la sous-commande
+      à exécuter ensuite.
+
+    Voici les règles de transition, annotées par les sortes d'actions
+    qu'elles effectuent.
+*)
+
+Inductive step: com * cont * store -> com * cont * store -> Prop :=
+
+  | step_assign: forall x a k s,              (**r calcul *)
+      step (ASSIGN x a, k, s) (SKIP, k, update x (aeval a s) s)
+
+  | step_seq: forall c1 c2 s k,               (**r focalisation *)
+      step (SEQ c1 c2, k, s) (c1, Kseq c2 k, s)
+
+  | step_ifthenelse: forall b c1 c2 k s,      (**r calcul *)
+      step (IFTHENELSE b c1 c2, k, s) ((if beval b s then c1 else c2), k, s)
+
+  | step_while_done: forall b c k s,          (**r calcul *)
+      beval b s = false ->
+      step (WHILE b c, k, s) (SKIP, k, s)
+
+  | step_while_loop: forall b c k s,          (**r calcul + focalisation *)
+      beval b s = true ->
+      step (WHILE b c, k, s) (c, Kwhile b c k, s)
+
+  | step_skip_seq: forall c k s,              (**r reprise *)
+      step (SKIP, Kseq c k, s) (c, k, s)
+
+  | step_skip_while: forall b c k s,          (**r reprise *)
+      step (SKIP, Kwhile b c k, s) (WHILE b c, k, s).
+
+(** Comme toujours avec les sémantiques "à petits pas", on définit
+    la terminaison et la divergence en termes de suites de transitions.
+    Les états initiaux sont de la forme [(c, Kstop, s_initial)]
+    et les états finaux [(SKIP, Kstop, s_final)].
+*)
+
+Definition kterminates (s: store) (c: com) (s': store) : Prop :=
+  star step (c, Kstop, s) (SKIP, Kstop, s').
+
+Definition kdiverges (s: store) (c: com) : Prop :=
+  infseq step (c, Kstop, s).
+
+(** *** Extension à d'autres structures de contrôle *)
+
+(** Un aspect remarquable des sémantiques à continuations est 
+    qu'elles s'étendent facilement à d'autres structures de contrôle
+    que "if-then-else" et les boucles "while".  Par exemple,
+    on peut ajouter la construction "break" de C, C++, Java, qui termine
+    immédiatement la boucle "while" englobante.  Supposons qu'on ajoute
+    un constructeur [BREAK] au type [com] des commandes.  Pour lui
+    donner une sémantique, il suffit d'ajouter deux règles de reprise:
+<<
+  | step_break_seq: forall c k s,
+      step (BREAK, Kseq c k, s) (BREAK, k, s)
+  | step_break_while: forall b c k s,
+      step (BREAK, Kwhile b c k, s) (SKIP, k, s)
+>>
+    La première règle propage le [BREAK] à travers les séquences en attente,
+    sautant par dessus les calculs correspondants.  À un moment,
+    on rencontre une continuation [Kwhile], et cela signifie que le [BREAK]
+    a trouvé la boucle englobante qui lui correspond.  La seconde règle
+    enlève alors la continuation [Kwhile] et remplace le [BREAK] par un
+    [SKIP], ce qui a pour effet de terminer la boucle!
+*)
+
+(** *** Exercice (2 étoiles) *)
+(** En plus de "break", C, C++ et Java ont aussi une commande "continue"
+  qui termine l'exécution du corps de la boucle englobante, et reprend
+  l'exécution de la boucle à la prochaine itération.  (Au lieu d'arrêter
+  la boucle comme le ferait "break".)  Donner les règles de transition
+  pour la commande "continue". *)
+
+(** *** Exercice (3 étoiles) *)
+(** En Java, les boucles, les "break" et les "continue" peuvent porter
+    une étiquette.  "break" sans étiquette fait sortir de la boucle
+    englobante la plus proche, mais "break" avec une étiquette fait
+    sortir de la boucle englobante qui porte la même étiquette.
+    De même pour "continue".  Donner les règles de transition pour
+    "break" et "continue" avec étiquettes optionnelles. *)
+
+(** *** Correspondance entre la sémantique à continuations et la sémantique à réductions *)
+
+(** Pour nous rassurer, nous pouvons montrer que les deux sémantiques "à petits pas"
+    sont équivalentes, au sens où elles définissent des notions équivalentes
+    de terminaison et de divergence.
+
+    Pour montrer cela, nous utilisons l'approche par diagrammes de simulation
+    également utilisée pour montrer la correction du compilateur IMP (module [Compil]).
+    Cette démonstration est assez technique et peut être omise en première lecture.
+    
+    Voici la correspondance entre une configuration de la sémantique à continuations
+    et une configuration de la sémantique à réductions.
+*)
+
+Inductive match_conf : com * cont * store -> com * store -> Prop :=
+  | match_conf_intro: forall c k s c',
+      c' = apply_cont k c ->
+      match_conf (c, k, s) (c', s).
+
+(** Montrons que toute transition de la sémantique à continuations est simulée
+    par des transitions de la sémantique à réductions. 
+    La mesure anti-bégaiement consiste à compter l'imbrication des séquences
+    dans la commande. *)
+
+Fixpoint num_seq (c: com) : nat :=
+  match c with
+  | SEQ c1 c2 => S (num_seq c1)
+  | _ => O
+  end.
+
+Definition kmeasure (C: com * cont * store) : nat :=
+  let '(c, k, s) := C in num_seq c.
+
+Remark red_apply_cont:
+  forall k c1 s1 c2 s2,
+  red (c1, s1) (c2, s2) ->
+  red (apply_cont k c1, s1) (apply_cont k c2, s2).
+Proof.
+  induction k; intros; simpl; eauto using red_seq_step.
+Qed.
+
+Lemma simulation_cont_red:
+  forall C1 C1', step C1 C1' ->
+  forall C2, match_conf C1 C2 ->
+  exists C2',
+     (plus red C2 C2' \/ (star red C2 C2' /\ kmeasure C1' < kmeasure C1))%nat
+  /\ match_conf C1' C2'.
+Proof.
+  destruct 1; intros C2 MC; inversion MC; subst; cbn.
+  2: econstructor; split; [right; split; [apply star_refl | lia] | constructor; auto ].
+  1-6: econstructor; split; [left; apply plus_one; apply red_apply_cont; auto using red | constructor; auto].
+Qed.
+
+(** Il s'ensuit que terminer d'après la sémantique à continuations implique
+    terminer d'après la sémantique à réductions, et de même pour la divergence. *)
+
+Theorem kterminates_terminates:
+  forall s c s', kterminates s c s' -> terminates s c s'.
+Proof.
+  intros. 
+  destruct (simulation_star _ _ _ _ _ _ simulation_cont_red _ _ H (c, s)) as ((c' & s'') & STAR & INV).
+  constructor; auto.
+  inversion INV; subst. apply STAR.
+Qed.
+
+Theorem kdiverges_diverges:
+  forall s c, kdiverges s c ->  diverges s c.
+Proof.
+  intros. 
+  apply (simulation_infseq _ _ _ _ _ _ simulation_cont_red _ _ H).
+  constructor; auto.
+Qed.
+
+(** L'implication réciproque s'obtient par un diagramme de simulation dans l'autre sens.
+    Il faut d'abord un lemme techniques sur les réductions de commandes 
+    de la forme [apply_cont k c]. *)
+
+Inductive red_apply_cont_cases: cont -> com -> store -> com -> store -> Prop :=
+  | racc_base: forall c1 s1 c2 s2 k,
+      red (c1, s1) (c2, s2) ->
+      red_apply_cont_cases k c1 s1 (apply_cont k c2) s2
+  | racc_skip_seq: forall c k s,
+      red_apply_cont_cases (Kseq c k) SKIP s (apply_cont k c) s
+  | racc_skip_while: forall b c k s,
+      red_apply_cont_cases (Kwhile b c k) SKIP s (apply_cont k (WHILE b c)) s.
+
+Lemma invert_red_apply_cont:
+  forall k c s c' s',
+  red (apply_cont k c, s) (c', s') ->
+  red_apply_cont_cases k c s c' s'.
+Proof.
+  induction k; simpl; intros. 
+- (* Kstop *)
+  change c' with (apply_cont Kstop c'). apply racc_base; auto.
+- (* Kseq *)
+  specialize (IHk _ _ _ _ H). inversion IHk; subst.
+  + (* base *)
+    inversion H0; clear H0; subst.
+    * (* seq finish *)
+      apply racc_skip_seq.
+    * (* seq step *)
+      change (apply_cont k (c4;;c)) with (apply_cont (Kseq c k) c4). 
+      apply racc_base; auto.
+- (* Kwhile *)
+  specialize (IHk _ _ _ _ H). inversion IHk; subst.
+  inversion H0; clear H0; subst.
+    * (* seq finish *)
+      apply racc_skip_while.
+    * (* seq step *)
+      change (apply_cont k (c4;;WHILE b c)) with (apply_cont (Kwhile b c k) c4). 
+      apply racc_base; auto.
+Qed.
+
+Definition rmeasure (C: com * store) : nat := O.   (**r no stuttering to worry about *)
+
+Lemma simulation_red_cont:
+  forall C1 C1', red C1 C1' ->
+  forall C2, match_conf C2 C1 ->
+  exists C2',
+     (plus step C2 C2' \/ (star step C2 C2' /\ rmeasure C1' < rmeasure C1))%nat
+  /\ match_conf C2' C1'.
+Proof.
+  intros C1 C1' R C2 MC. inversion MC; subst. destruct C1' as (c' & s').
+  assert (A: red_apply_cont_cases k c s c' s') by (apply invert_red_apply_cont; auto).
+  clear MC R. inversion A; subst; clear A.
+- cut (exists C2', plus step (c, k, s) C2' /\ match_conf C2' (apply_cont k c2, s')).
+  intros (C2' & A & B). exists C2'; auto.
+  revert k. dependent induction H; intros.
+  + econstructor; split. apply plus_one; constructor. constructor; auto.
+  + econstructor; split.
+    eapply plus_left. constructor. eapply star_one. constructor.
+    constructor; auto.
+  + edestruct IHred as (((cx & kx) & sx) & A & B); eauto.
+    econstructor; split.
+    eapply plus_left. constructor. apply plus_star. eexact A. 
+    exact B.
+  + econstructor; split. apply plus_one; constructor. constructor; auto.
+  + econstructor; split. apply plus_one; apply step_while_done; auto. constructor; auto.
+  + econstructor; split. apply plus_one; apply step_while_loop; auto. constructor; auto.
+- econstructor; split. 
+  left; apply plus_one; constructor.
+  constructor; auto.
+- econstructor; split. 
+  left; apply plus_one; constructor.
+  constructor; auto.
+Qed.
+
+Lemma apply_cont_is_skip:
+  forall k c, apply_cont k c = SKIP -> k = Kstop /\ c = SKIP.
+Proof.
+  induction k; cbn; intros.
+- auto.
+- apply IHk in H. intuition discriminate.
+- apply IHk in H. intuition discriminate.
+Qed.
+
+Theorem terminates_kterminates:
+  forall s c s', terminates s c s' -> kterminates s c s'.
+Proof.
+  intros. 
+  destruct (simulation_star _ _ _ _ _ _ simulation_red_cont _ _ H (c, Kstop, s)) as ((c' & s'') & STAR & INV).
+  constructor; auto.
+  inversion INV; subst.
+  edestruct apply_cont_is_skip; eauto. subst k c0. apply STAR.
+Qed.
+
+Theorem diverges_kdiverges:
+  forall s c, diverges s c ->  kdiverges s c.
+Proof.
+  intros. 
+  apply (simulation_infseq _ _ _ _ _ _ simulation_red_cont _ _ H).
+  constructor; auto.
+Qed.
