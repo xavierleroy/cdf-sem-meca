@@ -149,7 +149,18 @@ Proof.
 - intros a1 (i1 & F1). subst a1. exists (f (1 + i1)); split; auto. exists (1 + i1); auto.
 Qed.  
 
-(** Une variante très utile de ce principe de coinduction s'appuie sur
+(** Un lemme d'inversion sur [infseq]: si [infseq a], i.e. il existe une
+  suite infinie issue de [a], alors [a] peut faire une transition
+  vers un état [b] qui lui aussi vérifie [infseq b]. *)
+
+Lemma infseq_inv:
+  forall a, infseq a -> exists b, R a b /\ infseq b.
+Proof.
+  intros a (X & Xa & XP). destruct (XP a Xa) as (b & Rab & Xb). 
+  exists b; split; auto. exists X; auto.
+Qed.
+
+(** Une variante très utile du principe de coinduction s'appuie sur
   un ensemble [X] where for every [a] in [X], we can make one *or
   several* transitions to reach a [b] in [X].  *)
 
@@ -166,7 +177,7 @@ Proof.
     exists b; split; auto. exists a3; auto.
   + exists b; split; auto. exists a2; auto.
 Qed.
- 
+
 (** ** Propriétés de déterminisme des relations de transition fonctionnelles *)
 
 (** Une relation de transition est fonctionnelle si tout état peut faire
@@ -201,13 +212,13 @@ Qed.
 
 (** Un état ne peut à la fois diverger et terminer sur un état irréductible. *)
 
-Lemma infseq_inv:
+Lemma infseq_inv':
   forall a b, R a b -> infseq a -> infseq b.
 Proof.
-  intros a b Rab (X & Xa & XP).
-  destruct (XP a Xa) as (b' & Rab' & Xb'). 
-  assert (b' = b) by (eapply R_functional; eauto). subst b'.
-  exists X; auto.
+  intros a b Rab Ia. 
+  destruct (infseq_inv Ia) as (b' & Rab' & Xb').
+  assert (b' = b) by (eapply R_functional; eauto). 
+  subst b'. auto.
 Qed.
 
 Lemma infseq_star_inv:
@@ -215,13 +226,7 @@ Lemma infseq_star_inv:
 Proof.
   induction 1; intros.
 - auto. 
-- apply IHstar. apply infseq_inv with a; auto.
-Qed.
-
-Lemma infseq_step:
-  forall a, infseq a -> exists b, R a b.
-Proof.
-  intros a (X & Xa & XP). destruct (XP a Xa) as (b & Rab & Xb). exists b; auto.
+- apply IHstar. apply infseq_inv' with a; auto.
 Qed.
 
 Lemma infseq_finseq_excl:
@@ -229,7 +234,7 @@ Lemma infseq_finseq_excl:
   star a b -> irred b -> infseq a -> False.
 Proof.
   intros.
-  destruct (@infseq_step b) as (c & Rbc). eapply infseq_star_inv; eauto. 
+  destruct (@infseq_inv b) as (c & Rbc & _). eapply infseq_star_inv; eauto. 
   apply (H0 c); auto.
 Qed.
 
@@ -239,13 +244,12 @@ Qed.
 Lemma infseq_all_seq_inf:
   forall a, infseq a -> all_seq_inf a.
 Proof.
-  intros. unfold all_seq_inf. intros. 
-  apply infseq_step. eapply infseq_star_inv; eauto.
+  intros. unfold all_seq_inf. intros.
+  destruct (@infseq_inv b) as (c & Rbc & _). eapply infseq_star_inv; eauto.
+  exists c; auto.
 Qed.
 
 End SEQUENCES.
 
-
-  
 
 
