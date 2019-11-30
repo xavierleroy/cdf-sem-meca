@@ -8,7 +8,7 @@ Section SIMULATION_DIAGRAM.
 
 (** Le diagramme est paramétré par
     - les sémantiques "à petits pas" des deux programmes:
-      type des configurations, relation de transition entre configurations;
+      type des configurations et relation de transition entre configurations;
     - un invariant qui relie les configurations des deux programmes.
 *)
 
@@ -54,7 +54,8 @@ Proof.
   auto.
 Qed.
 
-(** Raisonnons maintenant sur un programme source qui effectue une infinité de transitions.
+(** Raisonnons maintenant sur un programme source qui effectue
+    une infinité de transitions.
     D'abord nous montrons que le programme transformé peut toujours avancer
     dans son exécution tout en préservant la relation [inv].
     La démonstration est par récurrence sur le nombre maximal [N] d'étapes
@@ -78,13 +79,13 @@ Proof.
   destruct (infseq_inv INF1) as (c1' & STEP1 & INF1').
   destruct (simulation _ _ STEP1 _ INV) as (c2' & P & INV').
   destruct P as [STEPS2 | [STEPS2 MEAS']].
-  + (* one or several transitions *)
+  + (* une ou plusieurs transitions *)
     exists c1'; exists c2'; auto.
-  + (* zero, one or several transitions *)
+  + (* zéro, une ou plusieurs transitions *)
     inversion STEPS2; subst; clear STEPS2.
-    * (* zero transitions *)
+    * (* zéro transitions *)
       eapply IHN; eauto. lia.
-    * (* one or several transitions *)
+    * (* une ou plusieurs transitions *)
       exists c1'; exists c2'; split. eapply plus_left; eauto. auto.
 Qed.
 

@@ -622,7 +622,7 @@ Inductive cont : Type :=
 
 (** Un autre moyen de former une intuition à propos des continuations
     est d'étudier la fonction [apply_cont k c] ci-dessous.  Elle prend
-    la sous-commande [c] et la continuation [k[, et reconstruit la
+    la sous-commande [c] et la continuation [k], et reconstruit la
     commande complète.  Il s'agit juste de mettre [c] en position gauche dans
     l'imbrication de séquences décrite par [k].
 *)
@@ -686,56 +686,19 @@ Definition kterminates (s: store) (c: com) (s': store) : Prop :=
 Definition kdiverges (s: store) (c: com) : Prop :=
   infseq step (c, Kstop, s).
 
-(** *** Extension à d'autres structures de contrôle *)
-
-(** Un aspect remarquable des sémantiques à continuations est 
-    qu'elles s'étendent facilement à d'autres structures de contrôle
-    que "if-then-else" et les boucles "while".  Par exemple,
-    on peut ajouter la construction "break" de C, C++, Java, qui termine
-    immédiatement la boucle "while" englobante.  Supposons qu'on ajoute
-    un constructeur [BREAK] au type [com] des commandes.  Pour lui
-    donner une sémantique, il suffit d'ajouter deux règles de reprise:
-<<
-  | step_break_seq: forall c k s,
-      step (BREAK, Kseq c k, s) (BREAK, k, s)
-  | step_break_while: forall b c k s,
-      step (BREAK, Kwhile b c k, s) (SKIP, k, s)
->>
-    La première règle propage le [BREAK] à travers les séquences en attente,
-    sautant par dessus les calculs correspondants.  À un moment,
-    on rencontre une continuation [Kwhile], et cela signifie que le [BREAK]
-    a trouvé la boucle englobante qui lui correspond.  La seconde règle
-    enlève alors la continuation [Kwhile] et remplace le [BREAK] par un
-    [SKIP], ce qui a pour effet de terminer la boucle!
-*)
-
-(** *** Exercice (2 étoiles) *)
-(** En plus de "break", C, C++ et Java ont aussi une commande "continue"
-  qui termine l'exécution du corps de la boucle englobante, et reprend
-  l'exécution de la boucle à la prochaine itération.  (Au lieu d'arrêter
-  la boucle comme le ferait "break".)  Donner les règles de transition
-  pour la commande "continue". *)
-
-(** *** Exercice (3 étoiles) *)
-(** En Java, les boucles, les "break" et les "continue" peuvent porter
-    une étiquette.  "break" sans étiquette fait sortir de la boucle
-    englobante la plus proche, mais "break" avec une étiquette fait
-    sortir de la boucle englobante qui porte la même étiquette.
-    De même pour "continue".  Donner les règles de transition pour
-    "break" et "continue" avec étiquettes optionnelles. *)
-
 (** *** Correspondance entre la sémantique à continuations et la sémantique à réductions *)
 
-(** Pour nous rassurer, nous pouvons montrer que les deux sémantiques "à petits pas"
-    sont équivalentes, au sens où elles définissent des notions équivalentes
-    de terminaison et de divergence.
+(** Pour nous rassurer, nous pouvons montrer que les deux sémantiques
+    "à petits pas" sont équivalentes, au sens où elles définissent des
+    notions équivalentes de terminaison et de divergence.
 
-    Pour montrer cela, nous utilisons l'approche par diagrammes de simulation
-    également utilisée pour montrer la correction du compilateur IMP (module [Compil]).
-    Cette démonstration est assez technique et peut être omise en première lecture.
+    Pour montrer cela, nous utilisons l'approche par diagrammes de
+    simulation également utilisée pour montrer la correction du
+    compilateur IMP (module [Compil]).  Cette démonstration est assez
+    technique et peut être omise en première lecture.
     
-    Voici la correspondance entre une configuration de la sémantique à continuations
-    et une configuration de la sémantique à réductions.
+    Voici la correspondance entre une configuration de la sémantique à
+    continuations et une configuration de la sémantique à réductions.
 *)
 
 Inductive match_conf : com * cont * store -> com * store -> Prop :=
@@ -777,8 +740,9 @@ Proof.
   1-6: econstructor; split; [left; apply plus_one; apply red_apply_cont; auto using red | constructor; auto].
 Qed.
 
-(** Il s'ensuit que terminer d'après la sémantique à continuations implique
-    terminer d'après la sémantique à réductions, et de même pour la divergence. *)
+(** Il s'ensuit que terminer d'après la sémantique à continuations
+    implique terminer d'après la sémantique à réductions, et de même
+    pour la divergence. *)
 
 Theorem kterminates_terminates:
   forall s c s', kterminates s c s' -> terminates s c s'.
@@ -797,9 +761,9 @@ Proof.
   constructor; auto.
 Qed.
 
-(** L'implication réciproque s'obtient par un diagramme de simulation dans l'autre sens.
-    Il faut d'abord un lemme techniques sur les réductions de commandes 
-    de la forme [apply_cont k c]. *)
+(** L'implication réciproque s'obtient par un diagramme de simulation
+    dans l'autre sens.  Il faut d'abord un lemme techniques sur les
+    réductions de commandes de la forme [apply_cont k c]. *)
 
 Inductive red_apply_cont_cases: cont -> com -> store -> com -> store -> Prop :=
   | racc_base: forall c1 s1 c2 s2 k,
@@ -837,7 +801,7 @@ Proof.
       apply racc_base; auto.
 Qed.
 
-Definition rmeasure (C: com * store) : nat := O.   (**r no stuttering to worry about *)
+Definition rmeasure (C: com * store) : nat := O.   (**r il n'y a jamais de bégaiement *)
 
 Lemma simulation_red_cont:
   forall C1 C1', red C1 C1' ->

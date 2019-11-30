@@ -1,0 +1,1042 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Module Compil</title>
+<meta name="description" content="Documentation of Coq module Compil" />
+<link href="coq2html.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="coq2html.js"> </script>
+</head>
+
+<body onload="hideAll('proofscript')">
+<h1 class="title">Module Compil</h1>
+<div class="coq">
+<span class="id">From</span> <span class="id">Coq</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Arith.Arith.html">Arith</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.ZArith.html">ZArith</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.micromega.Psatz.html">Psatz</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Bool.Bool.html">Bool</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html">String</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html">List</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Program.Equality.html">Program.Equality</a></span>.<br/>
+<span class="id">From</span> <span class="id">CDF</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="CDF.Sequences.html">Sequences</a></span> <span class="id"><a href="CDF.IMP.html">IMP</a></span> <span class="id"><a href="CDF.Simulation.html">Simulation</a></span>.<br/>
+<br/>
+<span class="kwd">Local</span> <span class="kwd">Open</span> <span class="kwd">Scope</span> <span class="id">string_scope</span>.<br/>
+<span class="kwd">Local</span> <span class="kwd">Open</span> <span class="kwd">Scope</span> <span class="id">Z_scope</span>.<br/>
+<span class="kwd">Local</span> <span class="kwd">Open</span> <span class="kwd">Scope</span> <span class="id">list_scope</span>.<br/>
+<br/>
+<h1> 2. Compilation de IMP vers une machine à pile </h1>
+<br/>
+<h2> 2.1.  Le langage cible: une machine à pile </h2>
+<br/>
+<div class="doc">Notre compilateur traduit IMP en le langage d'une machine très simple
+    qui manipule une pile de nombres avec des instructions qui dépilent
+    leurs arguments et empilent leur résultat.
+    Cette machine ressemble aux anciennes calculatrices HP et leur
+    "notation polonaise inversée".  Elle est aussi proche d'un
+    sous-ensemble de la JVM, la machine virtuelle Java.
+</div>
+<br/>
+<h3> 2.1.1.  Le jeu d'instructions </h3>
+<br/>
+<div class="doc">Voici le jeu d'instructions de la machine: </div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="instr">instr</a></span> : <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="Iconst">Iconst</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>)           <span class="docright">(* empile l'entier <span class="bracket"><span class="id">n</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Ivar">Ivar</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>)         <span class="docright">(* empile la valeur courante de la variable <span class="bracket"><span class="id">x</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Isetvar">Isetvar</a></span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>)      <span class="docright">(* dépile un entier, affecte-le à la variable <span class="bracket"><span class="id">x</span></span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Iadd">Iadd</a></span>                    <span class="docright">(* dépile deux entiers, empile leur somme  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Iopp">Iopp</a></span>                    <span class="docright">(* dépile un entier, empile son opposé  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Ibranch">Ibranch</a></span> (<span class="id">d</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>)          <span class="docright">(* saute <span class="bracket"><span class="id">d</span></span> instructions vers l'avant ou l'arrière  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Ibeq">Ibeq</a></span> (<span class="id">d1</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) (<span class="id">d0</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>)    <span class="docright">(* dépile deux entiers, saute <span class="bracket"><span class="id">d1</span></span> instructions si égaux, <span class="bracket"><span class="id">d0</span></span> si différents  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Ible">Ible</a></span> (<span class="id">d1</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) (<span class="id">d0</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>)    <span class="docright">(* dépile deux entiers, saute <span class="bracket"><span class="id">d1</span></span> instructions si <span class="bracket">&lt;=</span>, <span class="bracket"><span class="id">d0</span></span> si <span class="bracket">&gt;</span>  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Ihalt">Ihalt</a></span>.                  <span class="docright">(* arrête l'exécution  *)</span><br/>
+<br/>
+<div class="doc">Un code machine est une liste d'instructions. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="code">code</a></span> := <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list">list</a></span> <span class="id"><a href="CDF.Compil.html#instr">instr</a></span>.<br/>
+<br/>
+<div class="doc">La longueur (nombre d'instructions) d'un code machine. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="codelen">codelen</a></span> (<span class="id">c</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> := <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.of_nat">Z.of_nat</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#length">List.length</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>).<br/>
+<br/>
+<h3> 2.1.2.  Sémantique opérationnelle </h3>
+<br/>
+<div class="doc">La machine opère sur un code <span class="bracket"><span class="id">C</span></span> (une liste fixée d'instructions)
+    et trois composants qui varient pendant l'exécution:
+<ul>
+<li>
+ un pointeur de code <span class="bracket"><span class="id">pc</span></span>, indiquant une position dans <span class="bracket"><span class="id">C</span></span>
+</li>
+<li>
+ une pile d'évaluation, contenant des nombres entiers
+</li>
+<li>
+ un état mémoire, associant à chaque variable sa valeur entière.
+</li>
+</ul>
+</div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="stack">stack</a></span> : <span class="kwd">Type</span> := <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#list">list</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>.<br/>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="config">config</a></span> : <span class="kwd">Type</span> := (<span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> * <span class="id"><a href="CDF.Compil.html#stack">stack</a></span> * <span class="id"><a href="CDF.IMP.html#store">store</a></span>)%<span class="id">type</span>.<br/>
+<br/>
+<div class="doc"><span class="bracket"><span class="id">instr_at</span> <span class="id">C</span> <span class="id">pc</span> = <span class="id">Some</span> <span class="id">i</span></span> si <span class="bracket"><span class="id">i</span></span> est l'instruction à la position
+    <span class="bracket"><span class="id">pc</span></span> dans le code <span class="bracket"><span class="id">C</span></span>. </div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="instr_at">instr_at</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>) (<span class="id">pc</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#option">option</a></span> <span class="id"><a href="CDF.Compil.html#instr">instr</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span><br/>
+&nbsp;&nbsp;| <span class="id">i</span> :: <span class="id">C</span>' =&gt; <span class="kwd">if</span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> =? 0 <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">i</span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id">C</span>' (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> - 1)<br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">La sémantique de la machine est définie en style opérationnel "à petits pas"
+    par une relation de transition.  Chaque transition représente l'exécution
+    d'une instruction, à savoir, l'instruction à la position <span class="bracket"><span class="id">pc</span></span> du code <span class="bracket"><span class="id">C</span></span>.
+    La relation de transition relie les configurations de la machine
+    "avant" et "après" l'exécution de l'instruction.  
+    La relation est paramétrée par le code <span class="bracket"><span class="id">C</span></span> pour le programme complet.
+    Il y a un cas pour chaque type d'instruction, sauf <span class="bracket"><span class="id">Ihalt</span></span>, qui
+    ne fait pas de transition.
+</div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="transition">transition</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>): <span class="id"><a href="CDF.Compil.html#config">config</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#config">config</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_const">trans_const</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">n</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Iconst">Iconst</a></span> <span class="id"><a href="CDF.Compil.html#n">n</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>    , <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>     , <span class="id"><a href="CDF.Compil.html#s">s</a></span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1, <span class="id"><a href="CDF.Compil.html#n">n</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_var">trans_var</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">x</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Ivar">Ivar</a></span> <span class="id"><a href="CDF.Compil.html#x">x</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>    , <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>       , <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1, <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id"><a href="CDF.Compil.html#x">x</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_setvar">trans_setvar</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">x</span> <span class="id">n</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Isetvar">Isetvar</a></span> <span class="id"><a href="CDF.Compil.html#x">x</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>    , <span class="id"><a href="CDF.Compil.html#n">n</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>     , <span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Compil.html#x">x</a></span> <span class="id"><a href="CDF.Compil.html#n">n</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_add">trans_add</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">n1</span> <span class="id">n2</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Iadd">Iadd</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>    , <span class="id"><a href="CDF.Compil.html#n2">n2</a></span> :: <span class="id"><a href="CDF.Compil.html#n1">n1</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span> , <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1, (<span class="id"><a href="CDF.Compil.html#n1">n1</a></span> + <span class="id"><a href="CDF.Compil.html#n2">n2</a></span>) :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_opp">trans_opp</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">n</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Iopp">Iopp</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>    , <span class="id"><a href="CDF.Compil.html#n">n</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>    , <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1, (- <span class="id"><a href="CDF.Compil.html#n">n</a></span>) :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_branch">trans_branch</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">d</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d">d</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1 + <span class="id"><a href="CDF.Compil.html#d">d</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> , <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">pc</span>', <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_beq">trans_beq</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">d1</span> <span class="id">d0</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Ibeq">Ibeq</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1 + (<span class="kwd">if</span> <span class="id"><a href="CDF.Compil.html#n1">n1</a></span> =? <span class="id"><a href="CDF.Compil.html#n2">n2</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> , <span class="id"><a href="CDF.Compil.html#n2">n2</a></span> :: <span class="id"><a href="CDF.Compil.html#n1">n1</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">pc</span>', <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>            , <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a name="trans_ble">trans_ble</a></span>: <span class="kwd">forall</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span> <span class="id">d1</span> <span class="id">d0</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Ible">Ible</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1 + (<span class="kwd">if</span> <span class="id"><a href="CDF.Compil.html#n1">n1</a></span> &lt;=? <span class="id"><a href="CDF.Compil.html#n2">n2</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> , <span class="id"><a href="CDF.Compil.html#n2">n2</a></span> :: <span class="id"><a href="CDF.Compil.html#n1">n1</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">pc</span>', <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>            , <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
+<br/>
+<div class="doc">Comme nous l'avions fait dans le cas de la sémantique à réduction d'IMP,
+    nous définissons l'exécution d'un code machine en termes de suites
+    de transitions. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="transitions">transitions</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>): <span class="id"><a href="CDF.Compil.html#config">config</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#config">config</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>).<br/>
+<br/>
+<div class="doc">L'exécution démarre avec <span class="bracket"><span class="id">pc</span> = 0</span> et une pile vide.
+    Elle s'arrête avec succès quand <span class="bracket"><span class="id">pc</span></span> pointe sur une instruction <span class="bracket"><span class="id">Ihalt</span></span>
+    et la pile est vide. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="machine_terminates">machine_terminates</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>) (<span class="id">s_init</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) (<span class="id">s_final</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>, <span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (0, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s_init">s_init</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s_final">s_final</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span>.<br/>
+<br/>
+<div class="doc">La machine peut aussi diverger ("boucler") en faisant une infinité
+    de transitions. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="machine_diverges">machine_diverges</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>) (<span class="id">s_init</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (0, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s_init">s_init</a></span>).<br/>
+<br/>
+<div class="doc">Enfin, la machine peut se bloquer en erreur après un nombre fini
+    de transitions. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="machine_goes_wrong">machine_goes_wrong</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>) (<span class="id">s_init</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span> <span class="id">stk</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (0, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s_init">s_init</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;/\ (<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> &lt;&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> \/ <span class="id"><a href="CDF.Compil.html#stk">stk</a></span> &lt;&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>).<br/>
+<br/>
+<h3> Exercice (2 étoiles). </h3>
+<br/>
+<div class="doc">Pour tester l'exécution d'un code machine, il est pratique de définir
+    la sémantique de la machine comme une fonction exécutable et non
+    plus seulement par une relation.  Nous avons déjà vu cette approche
+    dans le cadre du langage IMP avec la fonction <span class="bracket"><span class="id">cexec_f</span></span>.  
+    Afin de garantir la terminaison de la fonction d'exécution,
+    il faut borner a priori le nombre d'instruction exécutées
+    à l'aide d'un paramètre <span class="bracket"><span class="id">fuel</span></span> de type <span class="bracket"><span class="id">nat</span></span>.  Dès lors, il y a
+    trois résultats possibles pour une exécution:
+</div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="machine_result">machine_result</a></span> : <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="OK">OK</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>)    <span class="docright">(* la machine s'arrête sur l'état final donné  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Stuck">Stuck</a></span>            <span class="docright">(* la machine rencontre une erreur  *)</span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="Timeout">Timeout</a></span>.         <span class="docright">(* la machine n'a plus de fuel  *)</span><br/>
+<br/>
+<div class="doc">Compléter les cas manquants dans la définition ci-dessous. </div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="mach_exec">mach_exec</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>) (<span class="id">fuel</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">pc</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) (<span class="id">stk</span>: <span class="id"><a href="CDF.Compil.html#stack">stack</a></span>) (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="CDF.Compil.html#machine_result">machine_result</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#fuel">fuel</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#O">O</a></span> =&gt; <span class="id"><a href="CDF.Compil.html#Timeout">Timeout</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#S">S</a></span> <span class="id">fuel</span>' =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> =&gt; <span class="id"><a href="CDF.Compil.html#OK">OK</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> (<span class="id"><a href="CDF.Compil.html#Iconst">Iconst</a></span> <span class="id">n</span>), <span class="id">stk</span> =&gt; <span class="id"><a href="CDF.Compil.html#mach_exec">mach_exec</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">fuel</span>' (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1) (<span class="id">n</span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>) <span class="id"><a href="CDF.Compil.html#s">s</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id">_</span>, <span class="id">_</span> =&gt; <span class="id"><a href="CDF.Compil.html#Stuck">Stuck</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<h2> 2.2. Le schéma de compilation </h2>
+<br/>
+<div class="doc">Nous allons maintenant définir la compilation des expressions et des
+    commandes IMP vers des morceaux de code machine. </div>
+<br/>
+<div class="doc">Le code produit pour une expression arithmétique <span class="bracket"><span class="id">a</span></span> s'exécute
+    en séquence (sans faire de branchements) et laisse la valeur de <span class="bracket"><span class="id">a</span></span>
+    au sommet de la pile.
+    C'est la traduction bien connue de la notation algébrique vers 
+    la notation polonaise inverse.  La seule subtilité est que la machine
+    n'a pas d'instruction de soustraction, et donc, pour calculer <span class="bracket"><span class="id">a</span> - <span class="id">b</span></span>,
+    il faut ajouter <span class="bracket"><span class="id">a</span></span> et l'opposé de <span class="bracket"><span class="id">b</span></span>.
+</div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="compile_aexp">compile_aexp</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.IMP.html#aexp">aexp</a></span>) : <span class="id"><a href="CDF.Compil.html#code">code</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#a">a</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> <span class="id">n</span> =&gt; <span class="id"><a href="CDF.Compil.html#Iconst">Iconst</a></span> <span class="id">n</span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.Compil.html#Ivar">Ivar</a></span> <span class="id">x</span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> <span class="id">a1</span> <span class="id">a2</span>  =&gt; <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a1</span> ++ <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a2</span> ++ <span class="id"><a href="CDF.Compil.html#Iadd">Iadd</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a1</span> ++ <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a2</span> ++ <span class="id"><a href="CDF.Compil.html#Iopp">Iopp</a></span> :: <span class="id"><a href="CDF.Compil.html#Iadd">Iadd</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Exemples de code compilé </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1) (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 2))).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"><span class="id">Iconst</span> 1 :: <span class="id">Iconst</span> 2 :: <span class="id">Iadd</span> :: <span class="id">nil</span></span> </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#MINUS">MINUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">y</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)))).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"><span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Iconst</span> 1 :: <span class="id">Iopp</span> :: <span class="id">Iadd</span> :: <span class="id">Iadd</span> :: <span class="id">nil</span></span>. </div>
+<br/>
+<div class="doc">Pour une expressions booléenne <span class="bracket"><span class="id">b</span></span>, notre premier réflexe serait
+    de produire du code machine qui laisse <span class="bracket">1</span> ou <span class="bracket">0</span> au sommet de la
+    pile, suivant que <span class="bracket"><span class="id">b</span></span> est vraie ou fausse.  Le code produit pour
+    les commandes <span class="bracket"><span class="id">IFTHENELSE</span></span> et <span class="bracket"><span class="id">WHILE</span></span> effectuerait alors un saut
+    <span class="bracket"><span class="id">Ibeq</span></span> conditionnel sur cette valeur 0/1 de <span class="bracket"><span class="id">b</span></span>.
+    Cependant, il est plus simple et plus efficace de traduire l'expression
+    booléenne <span class="bracket"><span class="id">b</span></span> par un code machine qui saute <span class="bracket"><span class="id">d1</span></span> ou <span class="bracket"><span class="id">d0</span></span> instructions
+    en avant, suivant que <span class="bracket"><span class="id">b</span></span> est vraie ou fausse.  La valeur 0/1 de <span class="bracket"><span class="id">b</span></span>
+    n'est jamais calculée explicitement, et la pile est inchangée.
+</div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="compile_bexp">compile_bexp</a></span> (<span class="id">b</span>: <span class="id"><a href="CDF.IMP.html#bexp">bexp</a></span>) (<span class="id">d1</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) (<span class="id">d0</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) : <span class="id"><a href="CDF.Compil.html#code">code</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#TRUE">TRUE</a></span> =&gt; <span class="kwd">if</span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> =? 0 <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#FALSE">FALSE</a></span> =&gt; <span class="kwd">if</span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span> =? 0 <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#EQUAL">EQUAL</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a1</span> ++ <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a2</span> ++ <span class="id"><a href="CDF.Compil.html#Ibeq">Ibeq</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> <span class="id">a1</span> <span class="id">a2</span> =&gt; <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a1</span> ++ <span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a2</span> ++ <span class="id"><a href="CDF.Compil.html#Ible">Ible</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> <span class="id">b1</span> =&gt; <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b1</span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#AND">AND</a></span> <span class="id">b1</span> <span class="id">b2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">code2</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b2</span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span> <span class="kwd">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">code1</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b1</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#code2">code2</a></span> + <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) <span class="kwd">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code1">code1</a></span> ++ <span class="id"><a href="CDF.Compil.html#code2">code2</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Se reporter aux transparents du cours pour une explication du
+    mystérieux déplacement <span class="bracket"><span class="id">codelen</span> <span class="id">code2</span> + <span class="id">d0</span></span> dans le cas <span class="bracket"><span class="id">AND</span></span>. </div>
+<br/>
+<div class="doc">Vite des exemples. </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> (<span class="id"><a href="CDF.IMP.html#EQUAL">EQUAL</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)) 12 34).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Iconst</span> 1 :: <span class="id">Ibeq</span> 12 34 :: <span class="id">nil</span> </span>. </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> (<span class="id"><a href="CDF.IMP.html#AND">AND</a></span> (<span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1) (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>"))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 10))) 0 10).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> <span class="id">Iconst</span> 1 :: <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Ible</span> 0 13 ::
+                <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Iconst</span> 10 :: <span class="id">Ible</span> 0 10 :: <span class="id">nil</span> </span> </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> (<span class="id"><a href="CDF.IMP.html#OR">OR</a></span> (<span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1) (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>"))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.IMP.html#LESSEQUAL">LESSEQUAL</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 10))) 0 10).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> <span class="id">Iconst</span> 1 :: <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Ible</span> 3 0 ::
+                <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Iconst</span> 10 :: <span class="id">Ible</span> 0 10 :: <span class="id">nil</span> </span> </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> (<span class="id"><a href="CDF.IMP.html#NOT">NOT</a></span> (<span class="id"><a href="CDF.IMP.html#AND">AND</a></span> <span class="id"><a href="CDF.IMP.html#TRUE">TRUE</a></span> <span class="id"><a href="CDF.IMP.html#FALSE">FALSE</a></span>)) 12 34).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> <span class="id">Ibranch</span> 12 :: <span class="id">nil</span> </span> </div>
+<br/>
+<div class="doc">Pour finir, voici la compilation des commandes.  
+    Le code produit pour la commande <span class="bracket"><span class="id">c</span></span> met à jour l'état mémoire
+    (les valeurs des variables) comme prescrit par la sémantique de <span class="bracket"><span class="id">c</span></span>.
+    Il ne change pas la pile.
+    Là encore, on se reportera aux transparents du cours pour une
+    explication des déplacements sur les instructions de branchement.
+</div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="compile_com">compile_com</a></span> (<span class="id">c</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) : <span class="id"><a href="CDF.Compil.html#code">code</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> <span class="id">x</span> <span class="id">a</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id">a</span> ++ <span class="id"><a href="CDF.Compil.html#Isetvar">Isetvar</a></span> <span class="id">x</span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id">c1</span> <span class="id">c2</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c1</span> ++ <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c2</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#IFTHENELSE">IFTHENELSE</a></span> <span class="id">b</span> <span class="id">ifso</span> <span class="id">ifnot</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">code_ifso</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">ifso</span> <span class="kwd">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">code_ifnot</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">ifnot</span> <span class="kwd">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#code_ifso">code_ifso</a></span> + 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id"><a href="CDF.Compil.html#code_ifso">code_ifso</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#code_ifnot">code_ifnot</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:: <span class="id"><a href="CDF.Compil.html#code_ifnot">code_ifnot</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id">b</span> <span class="id">body</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">code_body</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">body</span> <span class="kwd">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">code_test</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#code_body">code_body</a></span> + 1) <span class="kwd">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_test">code_test</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id"><a href="CDF.Compil.html#code_body">code_body</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> (- (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#code_test">code_test</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#code_body">code_body</a></span> + 1)) :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Le code compilé pour un programme complet <span class="bracket"><span class="id">p</span></span> (une commande)
+    est similaire, mais termine proprement sur une instruction <span class="bracket"><span class="id">Ihalt</span></span>. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="compile_program">compile_program</a></span> (<span class="id">p</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) : <span class="id"><a href="CDF.Compil.html#code">code</a></span> :=<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#p">p</a></span> ++ <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>.<br/>
+<br/>
+<div class="doc">Exemples de compilation: </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> (<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> "<span class="id">x</span>" (<span class="id"><a href="CDF.IMP.html#PLUS">PLUS</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)))).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Iconst</span> 1 :: <span class="id">Iadd</span> :: <span class="id">Isetvar</span> "<span class="id">x</span>" :: <span class="id">Ihalt</span> :: <span class="id">nil</span> </span> </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.IMP.html#TRUE">TRUE</a></span> <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>)).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> <span class="id">Ibranch</span> (-1) :: <span class="id">Ihalt</span> :: <span class="id">nil</span> </span>. </div>
+<br/>
+<span class="kwd">Eval</span> <span class="tactic">compute</span> <span class="kwd">in</span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> (<span class="id"><a href="CDF.IMP.html#IFTHENELSE">IFTHENELSE</a></span> (<span class="id"><a href="CDF.IMP.html#EQUAL">EQUAL</a></span> (<span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> "<span class="id">x</span>") (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 1)) (<span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> "<span class="id">x</span>" (<span class="id"><a href="CDF.IMP.html#CONST">CONST</a></span> 0)) <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>)).<br/>
+<br/>
+<div class="doc">Résultat: <span class="bracket"> <span class="id">Ivar</span> "<span class="id">x</span>" :: <span class="id">Iconst</span> 1 :: <span class="id">Ibeq</span> 0 3 ::
+                 <span class="id">Iconst</span> 0 :: <span class="id">Isetvar</span> "<span class="id">x</span>" :: <span class="id">Ibranch</span> 0 :: <span class="id">Ihalt</span> :: <span class="id">nil</span> </span>. </div>
+<br/>
+<h3> Exercice (1 étoile) </h3>
+<br/>
+<div class="doc">Le dernier exemple ci-dessus montre une inefficacité mineure dans le code
+    engendré pour <span class="bracket"><span class="id">IFTHENELSE</span> <span class="id">b</span> <span class="id">c</span> <span class="id">SKIP</span></span>, à savoir l'instruction <span class="bracket"><span class="id">Ibranch</span> 0</span>.
+    Pouvez-vous modifier <span class="bracket"><span class="id">compile_com</span></span> pour éviter cette inefficacité?
+    Indication: la fonction ci-dessous vous sera utile. </div>
+<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="smart_Ibranch">smart_Ibranch</a></span> (<span class="id">d</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) : <span class="id"><a href="CDF.Compil.html#code">code</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="CDF.Compil.html#d">d</a></span> =? 0 <span class="kwd">then</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d">d</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>.<br/>
+<br/>
+<h2> 2.3.  Correction du code produit pour les expressions </h2>
+<br/>
+<div class="doc">Pour raisonner sur les étapes d'exécution du code compilé, il faut
+    considérer des morceaux de code machine <span class="bracket"><span class="id">C2</span></span> qui sont à la position <span class="bracket"><span class="id">pc</span></span>
+    dans le code produit pour le programme tout entier, <span class="bracket"><span class="id">C</span> = <span class="id">C1</span> ++ <span class="id">C2</span> ++ <span class="id">C3</span></span>.
+    Le prédicat <span class="bracket"><span class="id">code_at</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C2</span></span> ci-dessous décrit exactement cette situation. </div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="code_at">code_at</a></span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#code">code</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="code_at_intro">code_at_intro</a></span>: <span class="kwd">forall</span> <span class="id">C1</span> <span class="id">C2</span> <span class="id">C3</span> <span class="id">pc</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> (<span class="id"><a href="CDF.Compil.html#C1">C1</a></span> ++ <span class="id"><a href="CDF.Compil.html#C2">C2</a></span> ++ <span class="id"><a href="CDF.Compil.html#C3">C3</a></span>) <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>.<br/>
+<br/>
+<div class="doc">Voici des lemmes utiles concernant les prédicats <span class="bracket"><span class="id">instr_at</span></span> et <span class="bracket"><span class="id">code_at</span></span>. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="codelen_cons">codelen_cons</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">i</span> <span class="id">c</span>, <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id"><a href="CDF.Compil.html#c">c</a></span>) = <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> + 1.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</div>
+<div class="proofscript" id="proof1">
+&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>; <span class="id">lia</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="codelen_app">codelen_app</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c2</span>, <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#c1">c1</a></span> ++ <span class="id"><a href="CDF.Compil.html#c2">c2</a></span>) = <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c1">c1</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c2">c2</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</div>
+<div class="proofscript" id="proof2">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c1</span>; <span class="tactic">intros</span>. <br/>
+- <span class="tactic">auto</span>.<br/>
+- <span class="id">cbn</span> [<span class="id">app</span>]. <span class="tactic">rewrite</span> ! <span class="id"><a href="CDF.Compil.html#codelen_cons">codelen_cons</a></span>. <span class="tactic">rewrite</span> <span class="id">IHc1</span>. <span class="id">lia</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="instr_at_app">instr_at_app</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">i</span> <span class="id">c2</span> <span class="id">c1</span> <span class="id">pc</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c1">c1</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> (<span class="id"><a href="CDF.Compil.html#c1">c1</a></span> ++ <span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id"><a href="CDF.Compil.html#c2">c2</a></span>) <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#i">i</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</div>
+<div class="proofscript" id="proof3">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c1</span>; <span class="tactic">simpl</span>; <span class="tactic">intros</span>; <span class="tactic">subst</span> <span class="id">pc</span>.<br/>
+- <span class="tactic">auto</span>.<br/>
+- <span class="tactic">assert</span> (<span class="id">A</span>: <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id">a</span> :: <span class="id">c1</span>) =? 0 = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span>). <br/>
+&nbsp;&nbsp;{ <span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_neq">Z.eqb_neq</a></span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span>. <span class="id">cbn</span> [<span class="id">length</span>]. <span class="id">lia</span>. }<br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id">A</span>. <span class="tactic">rewrite</span> <span class="id"><a href="CDF.Compil.html#codelen_cons">codelen_cons</a></span>. <span class="tactic">apply</span> <span class="id">IHc1</span>. <span class="id">lia</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="code_at_head">code_at_head</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">i</span> <span class="id">C</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id">C</span>') -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#i">i</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</div>
+<div class="proofscript" id="proof4">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">simpl</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#instr_at_app">instr_at_app</a></span>. <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="code_at_tail">code_at_tail</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">i</span> <span class="id">C</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id">C</span>') -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1) <span class="id">C</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</div>
+<div class="proofscript" id="proof5">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <br/>
+&nbsp;&nbsp;<span class="id">change</span> (<span class="id">C1</span> ++ (<span class="id">i</span> :: <span class="id">C</span>') ++ <span class="id">C3</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="id">C1</span> ++ (<span class="id">i</span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>) ++ <span class="id">C</span>' ++ <span class="id">C3</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> &lt;- <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>. <span class="id">constructor</span>. <span class="tactic">rewrite</span> <span class="id"><a href="CDF.Compil.html#codelen_app">codelen_app</a></span>. <span class="tactic">subst</span> <span class="id">pc</span>. <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="code_at_app_left">code_at_app_left</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span> <span class="id">C2</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#C1">C1</a></span> ++ <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof6')">Proof.</div>
+<div class="proofscript" id="proof6">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>. <span class="id">constructor</span>. <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="code_at_app_right">code_at_app_right</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span> <span class="id">C2</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#C1">C1</a></span> ++ <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span>) <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof7')">Proof.</div>
+<div class="proofscript" id="proof7">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>. <span class="tactic">rewrite</span> &lt;- <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">constructor</span>. <span class="tactic">rewrite</span> <span class="id"><a href="CDF.Compil.html#codelen_app">codelen_app</a></span>. <span class="tactic">subst</span> <span class="id">pc</span>. <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="code_at_app_right2">code_at_app_right2</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span> <span class="id">C2</span> <span class="id">C3</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#C1">C1</a></span> ++ <span class="id"><a href="CDF.Compil.html#C2">C2</a></span> ++ <span class="id"><a href="CDF.Compil.html#C3">C3</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span>) <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof8')">Proof.</div>
+<div class="proofscript" id="proof8">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#code_at_app_right">code_at_app_right</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#code_at_app_left">code_at_app_left</a></span> <span class="kwd">with</span> (<span class="id">C2</span> := <span class="id">C3</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>; <span class="tactic">auto</span>. <br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="code_at_nil">code_at_nil</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof9')">Proof.</div>
+<div class="proofscript" id="proof9">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">subst</span>. <span class="id">change</span> (<span class="id">C1</span> ++ <span class="id">C3</span>) <span class="kwd">with</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> ++ <span class="id">C1</span> ++ <span class="id">C3</span>).<br/>
+&nbsp;&nbsp;<span class="id">constructor</span>. <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="instr_at_code_at_nil">instr_at_code_at_nil</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">i</span>, <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#i">i</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof10')">Proof.</div>
+<div class="proofscript" id="proof10">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">C</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
+- <span class="tactic">discriminate</span>.<br/>
+- <span class="tactic">destruct</span> (<span class="id">pc</span> =? 0) <span class="id">eqn</span>:<span class="id">PC</span>.<br/>
++ <span class="tactic">assert</span> (<span class="id">pc</span> = 0) <span class="tactic">by</span> (<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq">Z.eqb_eq</a></span>; <span class="tactic">auto</span>). <span class="tactic">subst</span> <span class="id">pc</span>. <br/>
+&nbsp;&nbsp;<span class="id">change</span> (<span class="id">a</span> :: <span class="id">C</span>) <span class="kwd">with</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> ++ <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> ++ (<span class="id">a</span> :: <span class="id">C</span>)). <span class="id">constructor</span>. <span class="tactic">auto</span>.<br/>
++ <span class="tactic">assert</span> (<span class="id">A</span>: <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id">C</span> (<span class="id">pc</span> - 1) <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>) <span class="tactic">by</span> <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">inversion</span> <span class="id">A</span>; <span class="tactic">subst</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#code_at_intro">code_at_intro</a></span> <span class="kwd">with</span> (<span class="id">C1</span> := <span class="id">a</span> :: <span class="id">C1</span>) (<span class="id">C3</span> := <span class="id">C3</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id"><a href="CDF.Compil.html#codelen_cons">codelen_cons</a></span>. <span class="id">lia</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Nous mettons ces lemmes dans une "base d'indices" ("hint database")
+    afin que Coq puisse les utiliser automatiquement. </div>
+<br/>
+<span class="kwd">Hint</span> <span class="kwd">Resolve</span> <span class="id">code_at_head</span> <span class="id">code_at_tail</span> <span class="id">code_at_app_left</span> <span class="id">code_at_app_right</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">code_at_app_right2</span> <span class="id">code_at_nil</span> <span class="id">instr_at_code_at_nil</span>: <span class="id">code</span>.<br/>
+<span class="kwd">Hint</span> <span class="id">Rewrite</span> <span class="id"><a href="CDF.Compil.html#codelen_app">codelen_app</a></span> <span class="id"><a href="CDF.Compil.html#codelen_cons">codelen_cons</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.add_assoc">Z.add_assoc</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.add_0_r">Z.add_0_r</a></span> : <span class="id">code</span>.<br/>
+<br/>
+<div class="doc">Rappelons le contrat que nous avons donné pour le code
+    compilé pour une expression arithmétique <span class="bracket"><span class="id">a</span></span>.  Il est censé
+  - s'exécuter en séquence (pas de branchements)
+  - laisser la valeur de <span class="bracket"><span class="id">a</span></span> au sommet de la pile
+  - préserver l'état mémoire.
+    Démontrons que le code <span class="bracket"><span class="id">compile_aexp</span> <span class="id">a</span></span> respecte ce contrat.
+    La démonstration est une jolie récurrence sur la forme de <span class="bracket"><span class="id">a</span></span>. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="compile_aexp_correct">compile_aexp_correct</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">s</span> <span class="id">a</span> <span class="id">pc</span> <span class="id">stk</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id"><a href="CDF.Compil.html#a">a</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id"><a href="CDF.Compil.html#a">a</a></span>), <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.Compil.html#a">a</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span> :: <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof11')">Proof.</div>
+<div class="proofscript" id="proof11">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">a</span>; <span class="tactic">simpl</span>; <span class="tactic">intros</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;CONST&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_const">trans_const</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <br/>
+<br/>
+- <span class="comment">(*&nbsp;VAR&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_var">trans_var</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <br/>
+<br/>
+- <span class="comment">(*&nbsp;PLUS&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id">IHa1</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id">IHa2</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_add">trans_add</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;MINUS&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id">IHa1</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id">IHa2</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_opp">trans_opp</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>.<br/>
+&nbsp;&nbsp;<span class="tactic">replace</span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id">s</span> - <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id">s</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a1</span> <span class="id">s</span> + (- <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id">a2</span> <span class="id">s</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">by</span> <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_add">trans_add</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">La vérification de la compilation des expressions booléennes est similaire.
+    On rappelle le contrat pour le code produit par <span class="bracket"><span class="id">compile_bexp</span> <span class="id">b</span> <span class="id">d1</span> <span class="id">d0</span></span>:
+  - il doit sauter <span class="bracket"><span class="id">d1</span></span> instructions si <span class="bracket"><span class="id">b</span></span> s'évalue à vrai,
+    <span class="bracket"><span class="id">d0</span></span> instruction si <span class="bracket"><span class="id">b</span></span> s'évalue à faux;
+  - il doit préserver la pile et l'état mémoire.
+</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="compile_bexp_correct">compile_bexp_correct</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">s</span> <span class="id">b</span> <span class="id">d1</span> <span class="id">d0</span> <span class="id">pc</span> <span class="id">stk</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) + (<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>), <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof12')">Proof.</div>
+<div class="proofscript" id="proof12">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">b</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;TRUE&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id">d1</span> =? 0) <span class="id">eqn</span>:<span class="id">Z</span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;déplacement&nbsp;=&nbsp;zéro:&nbsp;aucune&nbsp;instruction&nbsp;n'est&nbsp;produite&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">d1</span> = 0) <span class="tactic">by</span> (<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq">Z.eqb_eq</a></span>; <span class="tactic">auto</span>). <span class="tactic">subst</span> <span class="id">d1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;un&nbsp;branchement&nbsp;est&nbsp;produit&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span> <span class="kwd">with</span> (<span class="id">d</span> := <span class="id">d1</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;FALSE&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id">d0</span> =? 0) <span class="id">eqn</span>:<span class="id">Z</span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;déplacement&nbsp;=&nbsp;zéro:&nbsp;aucune&nbsp;instruction&nbsp;n'est&nbsp;produite&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">d0</span> = 0) <span class="tactic">by</span> (<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.eqb_eq">Z.eqb_eq</a></span>; <span class="tactic">auto</span>). <span class="tactic">subst</span> <span class="id">d0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;un&nbsp;branchement&nbsp;est&nbsp;produit&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span> <span class="kwd">with</span> (<span class="id">d</span> := <span class="id">d0</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;EQUAL&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_aexp_correct">compile_aexp_correct</a></span> <span class="kwd">with</span> (<span class="id">a</span> := <span class="id">a1</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_aexp_correct">compile_aexp_correct</a></span> <span class="kwd">with</span> (<span class="id">a</span> := <span class="id">a2</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_beq">trans_beq</a></span> <span class="kwd">with</span> (<span class="id">d1</span> := <span class="id">d1</span>) (<span class="id">d0</span> := <span class="id">d0</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;LESSEQUAL&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_aexp_correct">compile_aexp_correct</a></span> <span class="kwd">with</span> (<span class="id">a</span> := <span class="id">a1</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_aexp_correct">compile_aexp_correct</a></span> <span class="kwd">with</span> (<span class="id">a</span> := <span class="id">a2</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_ble">trans_ble</a></span> <span class="kwd">with</span> (<span class="id">d1</span> := <span class="id">d1</span>) (<span class="id">d0</span> := <span class="id">d0</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;NOT&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">replace</span> (<span class="kwd">if</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#negb">negb</a></span> (<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id">s</span>) <span class="kwd">then</span> <span class="id">d1</span> <span class="kwd">else</span> <span class="id">d0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id">s</span> <span class="kwd">then</span> <span class="id">d0</span> <span class="kwd">else</span> <span class="id">d1</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id">IHb</span>. <span class="tactic">auto</span>. <br/>
+&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id">s</span>); <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;AND&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code2</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b2</span> <span class="id">d1</span> <span class="id">d0</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code1</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b1</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span> + <span class="id">d0</span>)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id">IHb1</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="id">fold</span> <span class="id">code1</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b1</span> <span class="id">s</span>); <span class="id">cbn</span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;b1&nbsp;s'évalue&nbsp;en&nbsp;true,&nbsp;le&nbsp;code&nbsp;pour&nbsp;b2&nbsp;est&nbsp;exécuté&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id">IHb2</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;b1&nbsp;s'évalue&nbsp;en&nbsp;false,&nbsp;le&nbsp;code&nbsp;pour&nbsp;b2&nbsp;est&nbsp;sauté&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
+Qed.</div>
+<br/>
+<h2> 2.4.  Correction du code produit pour les commandes qui terminent </h2>
+<br/>
+<div class="doc">Supposons que la commande <span class="bracket"><span class="id">c</span></span>, démarrée dans l'état <span class="bracket"><span class="id">s</span></span>, termine dans
+    l'état <span class="bracket"><span class="id">s</span>'</span>.  Montrons alors que la machine, à partir du début du
+    code <span class="bracket"><span class="id">compile_com</span> <span class="id">c</span></span> produit pour <span class="bracket"><span class="id">c</span></span> et à partir de l'état <span class="bracket"><span class="id">s</span></span>,
+    effectue un nombre fini de transitions et atteint la fin du code
+    <span class="bracket"><span class="id">compile_com</span> <span class="id">c</span></span> et l'état <span class="bracket"><span class="id">s</span>'</span>.
+    Pour caractériser la terminaison de la commande <span class="bracket"><span class="id">c</span></span>, nous utilisons
+    la sémantique naturelle d'IMP et son prédicat <span class="bracket"><span class="id">exec</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>'</span>.
+    La démonstration se fait sans peine par récurrence sur la dérivation
+    de cette exécution <span class="bracket"><span class="id">exec</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>'</span>.  Une récurrence sur la structure 
+    de <span class="bracket"><span class="id">c</span></span> ne suffirait pas pour gérer le cas des boucles.
+</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="compile_com_correct_terminating">compile_com_correct_terminating</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="id">s</span>' -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">stk</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>), <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id">s</span>').<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof13')">Proof.</div>
+<div class="proofscript" id="proof13">
+&nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;SKIP&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;ASSIGN&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_aexp_correct">compile_aexp_correct</a></span> <span class="kwd">with</span> (<span class="id">a</span> := <span class="id">a</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_setvar">trans_setvar</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;SEQUENCE&nbsp;*)</span> <br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id">IHcexec1</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id">IHcexec2</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;IFTHENELSE&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code1</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c1</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code2</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c2</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">codeb</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_bexp_correct">compile_bexp_correct</a></span> <span class="kwd">with</span> (<span class="id">b</span> := <span class="id">b</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="id">fold</span> <span class="id">codeb</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id">s</span>); <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;la&nbsp;branche&nbsp;"then"&nbsp;est&nbsp;exécutée&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id">IHcexec</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">fold</span> <span class="id">code1</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span> <span class="kwd">with</span> (<span class="id">d</span> := <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;+ <span class="comment">(*&nbsp;la&nbsp;branche&nbsp;"else"&nbsp;est&nbsp;exécutée&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">replace</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codeb</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span> + 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codeb</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + 1 + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span>) <span class="tactic">by</span> <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id">IHcexec</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;WHILE&nbsp;stop&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code_body</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code_branch</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_body</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">d</span> := - (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_branch</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_body</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_bexp_correct">compile_bexp_correct</a></span> <span class="kwd">with</span> (<span class="id">b</span> := <span class="id">b</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id">H</span>. <span class="id">fold</span> <span class="id">code_branch</span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <br/>
+<br/>
+- <span class="comment">(*&nbsp;WHILE&nbsp;loop&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code_body</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code_branch</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_body</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">d</span> := - (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_branch</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_body</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_bexp_correct">compile_bexp_correct</a></span> <span class="kwd">with</span> (<span class="id">b</span> := <span class="id">b</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id">H</span>. <span class="id">fold</span> <span class="id">code_branch</span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">apply</span> <span class="id">IHcexec1</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_one">star_one</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span> <span class="kwd">with</span> (<span class="id">d</span> := <span class="id">d</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">replace</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_branch</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_body</span> + 1 + <span class="id">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> <span class="id">pc</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">by</span> <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">replace</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_branch</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code_body</span> + 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id">b</span> <span class="id">c</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">by</span> (<span class="id">cbn</span>; <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>; <span class="tactic">auto</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id">IHcexec2</span>. <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">En corollaire, nous obtenons la correction du code compilé pour un
+    programme complet <span class="bracket"><span class="id">p</span></span>, dans le cas où il termine. </div>
+<br/>
+<span class="kwd">Theorem</span> <span class="id"><a name="compile_program_correct_terminating">compile_program_correct_terminating</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="id">s</span>' -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#machine_terminates">machine_terminates</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id">s</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof14')">Proof.</div>
+<div class="proofscript" id="proof14">
+&nbsp;&nbsp;<span class="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">CODEAT</span>: <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id">C</span> 0 (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span> ++ <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>)).<br/>
+&nbsp;&nbsp;{ <span class="tactic">replace</span> <span class="id">C</span> <span class="kwd">with</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> ++ <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span> ++ <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#code_at_intro">code_at_intro</a></span>. <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_nil_r">app_nil_r</a></span>; <span class="tactic">auto</span>. }<br/>
+&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Compil.html#machine_terminates">machine_terminates</a></span>.<br/>
+&nbsp;&nbsp;<span class="id">exists</span> (0 + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span>)); <span class="tactic">split</span>.<br/>
+- <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_com_correct_terminating">compile_com_correct_terminating</a></span>. <span class="tactic">auto</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+- <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+Qed.</div>
+<br/>
+<h3> Exercice (2 étoiles) </h3>
+<br/>
+<div class="doc">Dans un exercice précédent, vous avez modifié <span class="bracket"><span class="id">compile_com</span></span> afin
+    d'utiliser <span class="bracket"><span class="id">smart_Ibranch</span></span> au lieu de <span class="bracket"><span class="id">Ibranch</span></span> et de produire
+    du code plus efficace.  Il vous reste à adapter la démonstration
+    de <span class="bracket"><span class="id">compile_com_correct_terminating</span></span> en conséquence.
+    Indication: montrer d'abord le lemme ci-dessous. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="transitions_smart_Ibranch">transitions_smart_Ibranch</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">d</span> <span class="id">pc</span>' <span class="id">stk</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#smart_Ibranch">smart_Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d">d</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1 + <span class="id"><a href="CDF.Compil.html#d">d</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', <span class="id"><a href="CDF.Compil.html#stk">stk</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof15')">Proof.</div>
+<div class="proofscript" id="proof15">
+&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Compil.html#smart_Ibranch">smart_Ibranch</a></span>; <span class="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;À&nbsp;COMPLÉTER&nbsp;*)</span><br/>
+Abort.</div>
+<br/>
+<h3> Exercice (4 étoiles). </h3>
+<br/>
+<div class="doc">Considérons une boucle avec un test d'arrêt simple, comme par exemple
+    <span class="bracket"><span class="id">WHILE</span> (<span class="id">LESSEQUAL</span> <span class="id">a1</span> <span class="id">a2</span>) <span class="id">c</span></span>.  Le code compilé exécute deux branchements
+    par itération de la boucle: un branchement conditionnel <span class="bracket"><span class="id">Ible</span></span> pour
+    tester la condition d'arrêt, et un branchement inconditionnel <span class="bracket"><span class="id">Ibranch</span></span>
+    pour retourner au début de la boucle.  On peut se ramener à un
+    seul branchement par itération en mettant le code pour <span class="bracket"><span class="id">c</span></span> avant
+    le code qui teste la condition <span class="bracket"><span class="id">b</span></span>:
+<pre>
+     compile_com c ++ compile_bexp b delta1 0</pre>
+    avec <span class="bracket"><span class="id">delta1</span></span> choisi de sorte à retourner au début du code <span class="bracket"><span class="id">compile_com</span> <span class="id">c</span></span>
+    lorsque <span class="bracket"><span class="id">b</span></span> est vraie.
+    En soi, cette approche implémente une boucle de type do-while, 
+    où la première itération de la boucle est toujours exécutée.
+    Pour une boucle de type while, à la première itération il faut
+    sauter par-dessus le code de <span class="bracket"><span class="id">c</span></span> et vers le code qui teste <span class="bracket"><span class="id">b</span></span>:
+<pre>
+    Ibranch (codesize(compile_com c)) :: compile_com c ++ compile_bexp b delta1 0</pre>
+    Le but de cet exercice est de modifier <span class="bracket"><span class="id">compile_com</span></span> pour implémenter
+    cette compilation améliorée des boucles, puis de démontrer sa correction
+    en ajustant l'énoncé et la démonstration de <span class="bracket"><span class="id">compile_com_correct_terminating</span></span>.
+    La difficulté, et la raison pour les 4 étoiles, est que l'hypothèse
+    <span class="bracket"><span class="id">code_at</span> <span class="id">C</span> <span class="id">pc</span> (<span class="id">compile_com</span> <span class="id">c</span>)</span> n'est plus vraie si <span class="bracket"><span class="id">c</span></span> est une boucle
+    et nous sommes à la deuxième itération de la boucle.  Il faut inventer
+    une hypothèse plus faible, qui laisse plus de flexibilité dans 
+    la relation entre <span class="bracket"><span class="id">c</span></span> et <span class="bracket"><span class="id">pc</span></span>. </div>
+<br/>
+<h2> 2.5.  Correction du code produit pour les commandes, cas général </h2>
+<br/>
+<div class="doc">Nous allons maintenant renforcer le résultat de préservation sémantique
+    de la section 2.4 afin qu'il ne soit plus restreint aux programmes IMP
+    qui terminent, mais s'applique aussi aux programmes qui divergent.
+    Pour ce faire, nous abandonnons la sémantique naturelle des commandes
+    et passons à la sémantique par transitions et continuations.
+    Ensuite, nous allons montrer un diagramme de simulation qui montre
+    que chaque transition dans l'exécution du programme source est
+    simulée (en un sens que nous allons définir) par zéro, une ou plusieurs
+    transitions de la machine qui exécute le code compilé. </div>
+<br/>
+<div class="doc">La première chose à faire est de relier les configurations <span class="bracket">(<span class="id">c</span>, <span class="id">k</span>, <span class="id">s</span>)</span>
+    de la sémantique à continuations avec les configurations <span class="bracket">(<span class="id">C</span>, <span class="id">pc</span>, <span class="id">stk</span>, <span class="id">s</span>)</span>
+    de la machine.  Nous savons déjà comment relier une commande <span class="bracket"><span class="id">c</span></span>
+    et le code compilé qui lui correspond, à l'aide du prédicat <span class="bracket"><span class="id">code_at</span></span>.
+    Il faut maintenant définir une relation entre une continuation <span class="bracket"><span class="id">k</span></span>
+    et le code compilé.
+    Intuitivement, lorsque la machine a terminé l'exécution du code
+    produit pour la commande <span class="bracket"><span class="id">c</span></span>, c'est-à-dire lorsqu'elle atteint
+    le point de programme <span class="bracket"><span class="id">pc</span> + <span class="id">codelen</span>(<span class="id">compile_com</span> <span class="id">c</span>)</span>, la machine
+    devrait ensuite exécuter des instructions qui effectuent les calculs
+    en attente décrits par la continuation <span class="bracket"><span class="id">k</span></span>, pour enfin atteindre
+    une instruction <span class="bracket"><span class="id">Ihalt</span></span> qui arrête la machine.
+    Le prédicat inductif <span class="bracket"><span class="id">compile_cont</span> <span class="id">C</span> <span class="id">k</span> <span class="id">pc</span></span> ci-dessous formalise cette
+    intuition.  Il dit que, à partir du pointeur de code <span class="bracket"><span class="id">pc</span></span>,
+    il y a dans <span class="bracket"><span class="id">C</span></span> des instructions qui effectuent les calculs en attente
+    décrits dans <span class="bracket"><span class="id">k</span></span>, puis atteignent une instruction <span class="bracket"><span class="id">Ihalt</span></span>.
+</div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="compile_cont">compile_cont</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>): <span class="id"><a href="CDF.IMP.html#cont">cont</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="ccont_stop">ccont_stop</a></span>: <span class="kwd">forall</span> <span class="id">pc</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="ccont_seq">ccont_seq</a></span>: <span class="kwd">forall</span> <span class="id">c</span> <span class="id">k</span> <span class="id">pc</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> <span class="id">pc</span>' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.IMP.html#Kseq">Kseq</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span>) <span class="id"><a href="CDF.Compil.html#pc">pc</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="ccont_while">ccont_while</a></span>: <span class="kwd">forall</span> <span class="id">b</span> <span class="id">c</span> <span class="id">k</span> <span class="id">pc</span> <span class="id">d</span> <span class="id">pc</span>' <span class="id">pc</span>'',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d">d</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1 + <span class="id"><a href="CDF.Compil.html#d">d</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">pc</span>' (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">pc</span>'' = <span class="id">pc</span>' + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> <span class="id">pc</span>'' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.IMP.html#Kwhile">Kwhile</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span>) <span class="id"><a href="CDF.Compil.html#pc">pc</a></span><br/>
+&nbsp;&nbsp;| <span class="id"><a name="ccont_branch">ccont_branch</a></span>: <span class="kwd">forall</span> <span class="id">d</span> <span class="id">k</span> <span class="id">pc</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span>(<span class="id"><a href="CDF.Compil.html#Ibranch">Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d">d</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1 + <span class="id"><a href="CDF.Compil.html#d">d</a></span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> <span class="id">pc</span>' -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span>.<br/>
+<br/>
+<div class="doc">Dès lors, une configuration <span class="bracket">(<span class="id">c</span>,<span class="id">k</span>,<span class="id">s</span>)</span> de la sémantique à continuations
+    d'IMP est reliée à une configuration <span class="bracket">(<span class="id">C</span>, <span class="id">pc</span>, <span class="id">stk</span>, <span class="id">s</span>')</span> de la machine
+    si les conditions suivantes sont vraies:
+    - Les états mémoire sont identiques: <span class="bracket"><span class="id">s</span>' = <span class="id">s</span></span>.
+    - La pile de la machine est vide: <span class="bracket"><span class="id">stk</span> = <span class="id">nil</span></span>.
+    - Le code machine au point <span class="bracket"><span class="id">pc</span></span> est le code compilé de <span class="bracket"><span class="id">c</span></span>:
+      <span class="bracket"><span class="id">code_at</span> <span class="id">C</span> <span class="id">pc</span> (<span class="id">compile_com</span> <span class="id">c</span>)</span>.
+    - Le code machine au point <span class="bracket"><span class="id">pc</span> + <span class="id">codelen</span> (<span class="id">compile_com</span> <span class="id">c</span>)</span> implémente
+      la continuation <span class="bracket"><span class="id">k</span></span>, au sens du prédicat <span class="bracket"><span class="id">compile_cont</span></span> ci-dessus.
+</div>
+<br/>
+<span class="kwd">Inductive</span> <span class="id"><a name="match_config">match_config</a></span> (<span class="id">C</span>: <span class="id"><a href="CDF.Compil.html#code">code</a></span>): <span class="id"><a href="CDF.IMP.html#com">com</a></span> * <span class="id"><a href="CDF.IMP.html#cont">cont</a></span> * <span class="id"><a href="CDF.IMP.html#store">store</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#config">config</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;| <span class="id"><a name="match_config_intro">match_config_intro</a></span>: <span class="kwd">forall</span> <span class="id">c</span> <span class="id">k</span> <span class="id">st</span> <span class="id">pc</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>)) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#c">c</a></span>, <span class="id"><a href="CDF.Compil.html#k">k</a></span>, <span class="id"><a href="CDF.Compil.html#st">st</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#st">st</a></span>).<br/>
+<br/>
+<div class="doc">Tout est prêt pour démontrer la propriété de simulation attendue.
+    Puisque certaines transitions au niveau IMP correspondent à zéro
+    transitions de la machine, il nous faut un diagramme de simulation
+    de type "étoile" (cf. les transparents).
+<pre>
+                      match_config
+     c / k / st  ----------------------- machconfig
+       |                                   |
+       |                                   | + ou ( * et |c',k'| &lt; |c,k} )
+       |                                   |
+       v                                   v
+    c' / k' / st' ----------------------- machconfig'
+                      match_config </pre>
+    Remarquez la conclusion à droite du diagramme:
+    - ou bien la machine effectue une ou plusieurs transitions,
+    - ou bien la machine effectue zéro, une ou plusieurs transitions,
+      mais la taille de la paire <span class="bracket"><span class="id">c</span>,<span class="id">k</span></span> décroît strictement.
+    Il serait équivalent de montrer que:
+    - ou bien la machine effectue une ou plusieurs transitions,
+    - ou bien la machine effectue zéro transitions
+      mais la taille de la paire <span class="bracket"><span class="id">c</span>,<span class="id">k</span></span> décroît strictement.
+    Il se trouve que la première formulation, avec le cas "zéro une ou
+    plusieurs" transitions, est plus facile à démontrer.
+</div>
+<br/>
+<div class="doc">Trouver la bonne mesure "anti-bégaiement" n'a rien d'évident.
+    Après quelques tâtonnements, on tombe sur la mesure suivante.
+    Elle est égale à la somme de la taille de la commande <span class="bracket"><span class="id">c</span></span> en
+    cours d'examen et des tailles des commandes apparaissant
+    dans les noeuds <span class="bracket"><span class="id">Kseq</span></span> de la continuation <span class="bracket"><span class="id">k</span></span>. </div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="com_size">com_size</a></span> (<span class="id">c</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span> =&gt; 1%<span class="id">nat</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#ASSIGN">ASSIGN</a></span> <span class="id">x</span> <span class="id">a</span> =&gt; 1%<span class="id">nat</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#SEQ">SEQ</a></span> <span class="id">c1</span> <span class="id">c2</span> =&gt; (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c1</span> + <span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c2</span> + 1)%<span class="id">nat</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#IFTHENELSE">IFTHENELSE</a></span> <span class="id">b</span> <span class="id">c1</span> <span class="id">c2</span> =&gt; (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c1</span> + <span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c2</span> + 1)%<span class="id">nat</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id">b</span> <span class="id">c1</span> =&gt; (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c1</span> + 1)%<span class="id">nat</span><br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<span class="kwd">Remark</span> <span class="id"><a name="com_size_nonzero">com_size_nonzero</a></span>: <span class="kwd">forall</span> <span class="id">c</span>, (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> &gt; 0)%<span class="id">nat</span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof16')">Proof.</div>
+<div class="proofscript" id="proof16">
+&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c</span>; <span class="id">cbn</span>; <span class="id">lia</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Fixpoint</span> <span class="id"><a name="cont_size">cont_size</a></span> (<span class="id">k</span>: <span class="id"><a href="CDF.IMP.html#cont">cont</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span> =&gt; 0%<span class="id">nat</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#Kseq">Kseq</a></span> <span class="id">c</span> <span class="id">k</span>' =&gt; (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c</span> + <span class="id"><a href="CDF.Compil.html#cont_size">cont_size</a></span> <span class="id">k</span>')%<span class="id">nat</span><br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.IMP.html#Kwhile">Kwhile</a></span> <span class="id">b</span> <span class="id">c</span> <span class="id">k</span>' =&gt; <span class="id"><a href="CDF.Compil.html#cont_size">cont_size</a></span> <span class="id">k</span>'<br/>
+&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<span class="kwd">Definition</span> <span class="kwd">measure</span> (<span class="id">impconf</span>: <span class="id"><a href="CDF.IMP.html#com">com</a></span> * <span class="id"><a href="CDF.IMP.html#cont">cont</a></span> * <span class="id"><a href="CDF.IMP.html#store">store</a></span>) : <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#impconf">impconf</a></span> <span class="kwd">with</span> (<span class="id">c</span>, <span class="id">k</span>, <span class="id">m</span>) =&gt; (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c</span> + <span class="id"><a href="CDF.Compil.html#cont_size">cont_size</a></span> <span class="id">k</span>)%<span class="id">nat</span> <span class="kwd">end</span>.<br/>
+<br/>
+<div class="doc">Nous aurons besoin de lemmes d'inversion sur le prédicat <span class="bracket"><span class="id">compile_cont</span></span>. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="compile_cont_Kstop_inv">compile_cont_Kstop_inv</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">pc</span>' = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof17')">Proof.</div>
+<div class="proofscript" id="proof17">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>. <br/>
+- <span class="id">exists</span> <span class="id">pc</span>; <span class="tactic">split</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <span class="tactic">auto</span>.<br/>
+- <span class="tactic">destruct</span> <span class="id">IHcompile_cont</span> <span class="kwd">as</span> (<span class="id">pc</span>'' &amp; <span class="id">A</span> &amp; <span class="id">B</span>); <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>''; <span class="tactic">split</span>; <span class="tactic">auto</span>. <br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span>; <span class="tactic">eauto</span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span>; <span class="tactic">eauto</span>. <br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="compile_cont_Kseq_inv">compile_cont_Kseq_inv</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">c</span> <span class="id">k</span> <span class="id">pc</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.IMP.html#Kseq">Kseq</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span>) <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">pc</span>' (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>)<br/>
+&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> (<span class="id">pc</span>' + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span>(<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>)).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof18')">Proof.</div>
+<div class="proofscript" id="proof18">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>. <br/>
+- <span class="id">exists</span> <span class="id">pc</span>; <span class="tactic">split</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <span class="tactic">split</span>; <span class="tactic">congruence</span>. <br/>
+- <span class="id">edestruct</span> <span class="id">IHcompile_cont</span> <span class="kwd">as</span> (<span class="id">pc</span>'' &amp; <span class="id">A</span> &amp; <span class="id">B</span>). <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>''; <span class="tactic">split</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span>; <span class="tactic">eauto</span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span>; <span class="tactic">eauto</span>. <br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="compile_cont_Kwhile_inv">compile_cont_Kwhile_inv</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">b</span> <span class="id">c</span> <span class="id">k</span> <span class="id">pc</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.IMP.html#Kwhile">Kwhile</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span>) <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
+&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">pc</span>' (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>))<br/>
+&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> (<span class="id">pc</span>' + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span>(<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>))).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof19')">Proof.</div>
+<div class="proofscript" id="proof19">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>.<br/>
+- <span class="id">exists</span> (<span class="id">pc</span> + 1 + <span class="id">d</span>); <span class="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#plus_one">plus_one</a></span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span>; <span class="tactic">eauto</span>. <br/>
+&nbsp;&nbsp;<span class="tactic">split</span>; <span class="tactic">congruence</span>.<br/>
+- <span class="id">edestruct</span> <span class="id">IHcompile_cont</span> <span class="kwd">as</span> (<span class="id">pc</span>'' &amp; <span class="id">A</span> &amp; <span class="id">B</span> &amp; <span class="id">D</span>). <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>''; <span class="tactic">split</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#plus_left">plus_left</a></span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span>; <span class="tactic">eauto</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#plus_star">plus_star</a></span>; <span class="tactic">auto</span>. <br/>
+Qed.</div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="match_config_skip">match_config_skip</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">k</span> <span class="id">s</span> <span class="id">pc</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id"><a href="CDF.Compil.html#k">k</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof20')">Proof.</div>
+<div class="proofscript" id="proof20">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="id">constructor</span>.<br/>
+- <span class="id">cbn</span>. <span class="tactic">inversion</span> <span class="id">H</span>; <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+- <span class="id">cbn</span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Voici enfin le diagramme de simulation et sa démonstration. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="simulation_step">simulation_step</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">impconf1</span> <span class="id">impconf2</span>, <span class="id"><a href="CDF.IMP.html#step">step</a></span> <span class="id"><a href="CDF.Compil.html#impconf1">impconf1</a></span> <span class="id"><a href="CDF.Compil.html#impconf2">impconf2</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">machconf1</span>, <span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#impconf1">impconf1</a></span> <span class="id"><a href="CDF.Compil.html#machconf1">machconf1</a></span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">machconf2</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) <span class="id"><a href="CDF.Compil.html#machconf1">machconf1</a></span> <span class="id"><a href="CDF.Compil.html#machconf2">machconf2</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\/ (<span class="id"><a href="CDF.Sequences.html#star">star</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) <span class="id"><a href="CDF.Compil.html#machconf1">machconf1</a></span> <span class="id"><a href="CDF.Compil.html#machconf2">machconf2</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/\ (<span class="kwd">measure</span> <span class="id"><a href="CDF.Compil.html#impconf2">impconf2</a></span> &lt; <span class="kwd">measure</span> <span class="id"><a href="CDF.Compil.html#impconf1">impconf1</a></span>)%<span class="id">nat</span>))<br/>
+&nbsp;&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#impconf2">impconf2</a></span> <span class="id"><a href="CDF.Compil.html#machconf2">machconf2</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof21')">Proof.</div>
+<div class="proofscript" id="proof21">
+&nbsp;&nbsp;<span class="tactic">destruct</span> 1; <span class="tactic">intros</span> <span class="id">machconf1</span> <span class="id">MATCH</span>; <span class="tactic">inversion</span> <span class="id">MATCH</span>; <span class="tactic">clear</span> <span class="id">MATCH</span>; <span class="tactic">subst</span>; <span class="id">cbn</span> <span class="kwd">in</span> *.<br/>
+<br/>
+- <span class="comment">(*&nbsp;assign&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id">econstructor</span>; <span class="tactic">split</span>.<br/>
++ <span class="id">left</span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#plus_right">plus_right</a></span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#compile_aexp_correct">compile_aexp_correct</a></span>; <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#trans_setvar">trans_setvar</a></span>; <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
++ <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> *. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#match_config_skip">match_config_skip</a></span>. <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;seq&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id">econstructor</span>; <span class="tactic">split</span>.<br/>
++ <span class="id">right</span>; <span class="tactic">split</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <span class="id">lia</span>.<br/>
++ <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> *. <span class="id">constructor</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#ccont_seq">ccont_seq</a></span>; <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <br/>
+<br/>
+- <span class="comment">(*&nbsp;if&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code1</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c1</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">codeb</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">code2</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c2</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id">econstructor</span>; <span class="tactic">split</span>.<br/>
++ <span class="id">right</span>; <span class="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_bexp_correct">compile_bexp_correct</a></span> <span class="kwd">with</span> (<span class="id">b</span> := <span class="id">b</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <br/>
+&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id">s</span>); <span class="id">lia</span>.<br/>
++ <span class="id">fold</span> <span class="id">codeb</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id">b</span> <span class="id">s</span>).<br/>
+&nbsp;&nbsp;* <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="id">constructor</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#ccont_branch">ccont_branch</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">eauto</span>. <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">fold</span> <span class="id">code1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">replace</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codeb</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + 1 + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codeb</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span> + 1) <span class="tactic">by</span> <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;* <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="id">constructor</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">fold</span> <span class="id">code2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">replace</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codeb</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + 1 + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="id">pc</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codeb</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code1</span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">code2</span> + 1) <span class="tactic">by</span> <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;while&nbsp;stop&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">codec</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">codeb</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codec</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id">econstructor</span>; <span class="tactic">split</span>.<br/>
++ <span class="id">right</span>; <span class="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_bexp_correct">compile_bexp_correct</a></span> <span class="kwd">with</span> (<span class="id">b</span> := <span class="id">b</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id">c</span> &gt; 0)%<span class="id">nat</span> <span class="tactic">by</span> <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#com_size_nonzero">com_size_nonzero</a></span>. <span class="id">lia</span>.<br/>
++ <span class="tactic">rewrite</span> <span class="id">H</span>. <span class="id">fold</span> <span class="id">codeb</span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> *. <br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#match_config_skip">match_config_skip</a></span>. <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;while&nbsp;loop&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">codec</span> := <span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span>) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">codeb</span> := <span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id">b</span> 0 (<span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id">codec</span> + 1)) <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id">econstructor</span>; <span class="tactic">split</span>.<br/>
++ <span class="id">right</span>; <span class="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#compile_bexp_correct">compile_bexp_correct</a></span> <span class="kwd">with</span> (<span class="id">b</span> := <span class="id">b</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="id">lia</span>.<br/>
++ <span class="tactic">rewrite</span> <span class="id">H</span>. <span class="id">fold</span> <span class="id">codeb</span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> *. <br/>
+&nbsp;&nbsp;<span class="id">constructor</span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#ccont_while">ccont_while</a></span> <span class="kwd">with</span> (<span class="id">pc</span>' := <span class="id">pc</span>). <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="id">fold</span> <span class="id">codec</span>. <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">cbn</span>. <span class="id">fold</span> <span class="id">codec</span>; <span class="id">fold</span> <span class="id">codeb</span>. <span class="tactic">eauto</span>. <br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;skip&nbsp;seq&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id">edestruct</span> <span class="id"><a href="CDF.Compil.html#compile_cont_Kseq_inv">compile_cont_Kseq_inv</a></span> <span class="kwd">as</span> (<span class="id">pc</span>' &amp; <span class="id">X</span> &amp; <span class="id">Y</span> &amp; <span class="id">Z</span>). <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="id">econstructor</span>; <span class="tactic">split</span>.<br/>
++ <span class="id">right</span>; <span class="tactic">split</span>. <span class="tactic">eauto</span>. <span class="id">lia</span>.<br/>
++ <span class="id">constructor</span>; <span class="tactic">auto</span>.<br/>
+<br/>
+- <span class="comment">(*&nbsp;skip&nbsp;while&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id">edestruct</span> <span class="id"><a href="CDF.Compil.html#compile_cont_Kwhile_inv">compile_cont_Kwhile_inv</a></span> <span class="kwd">as</span> (<span class="id">pc</span>' &amp; <span class="id">X</span> &amp; <span class="id">Y</span> &amp; <span class="id">Z</span>). <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="id">econstructor</span>; <span class="tactic">split</span>.<br/>
++ <span class="id">left</span>. <span class="tactic">eauto</span>.<br/>
++ <span class="id">constructor</span>; <span class="tactic">auto</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Le plus dur est fait!  De jolies conséquences vont suivre, à l'aide des
+    théorèmes généraux sur les simulations fournis par le module <span class="bracket"><span class="id">Simulation</span></span>.
+    Tout d'abord, nous obtenons une autre démonstration que les programmes
+    qui terminent sont correctement compilés, utilisant la sémantique
+    à continuations au lieu de la sémantique naturelle pour caractériser
+    les programmes IMP qui terminent. </div>
+<br/>
+<span class="kwd">Lemma</span> <span class="id"><a name="match_initial_configs">match_initial_configs</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) (<span class="id"><a href="CDF.Compil.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (0, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof22')">Proof.</div>
+<div class="proofscript" id="proof22">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id">C</span> 0 (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span> ++ <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>)).<br/>
+&nbsp;&nbsp;{ <span class="tactic">replace</span> <span class="id">C</span> <span class="kwd">with</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> ++ (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span> ++ <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>) ++ <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">constructor</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_nil_r">app_nil_r</a></span>; <span class="tactic">auto</span>. }<br/>
+&nbsp;&nbsp;<span class="id">constructor</span>. <br/>
+- <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+- <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#ccont_stop">ccont_stop</a></span>. <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
+Qed.</div>
+<br/>
+<span class="kwd">Theorem</span> <span class="id"><a name="compile_program_correct_terminating_2">compile_program_correct_terminating_2</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span> <span class="id">s</span>',<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.IMP.html#step">step</a></span> (<span class="id"><a href="CDF.Compil.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id">s</span>') -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#machine_terminates">machine_terminates</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id">s</span>'.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof23')">Proof.</div>
+<div class="proofscript" id="proof23">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
+&nbsp;&nbsp;<span class="id">edestruct</span> (<span class="id"><a href="CDF.Simulation.html#simulation_star">simulation_star</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> (<span class="id"><a href="CDF.Compil.html#simulation_step">simulation_step</a></span> <span class="id">C</span>)) <span class="kwd">as</span> (<span class="id">ms</span> &amp; <span class="id">A</span> &amp; <span class="id">B</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">eauto</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#match_initial_configs">match_initial_configs</a></span>. <br/>
+&nbsp;&nbsp;<span class="tactic">inversion</span> <span class="id">B</span>; <span class="tactic">subst</span>. <br/>
+&nbsp;&nbsp;<span class="id">edestruct</span> <span class="id"><a href="CDF.Compil.html#compile_cont_Kstop_inv">compile_cont_Kstop_inv</a></span> <span class="kwd">as</span> (<span class="id">pc</span>' &amp; <span class="id">D</span> &amp; <span class="id">E</span>). <span class="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>'; <span class="tactic">split</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>. <span class="tactic">eauto</span>. <span class="id">cbn</span> <span class="kwd">in</span> <span class="id">D</span>; <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span> <span class="kwd">in</span> <span class="id">D</span>. <span class="tactic">eauto</span>.<br/>
+Qed.</div>
+<br/>
+<div class="doc">Ensuite, et c'est plus nouveau, nous obtenons la preuve que les programmes
+    qui divergent sont correctement compilés aussi: si le programme source
+    fait une infinité de transitions dans la sémantique d'IMP, la machine
+    exécutant le code compilé fait une infinité de transitions aussi. </div>
+<br/>
+<span class="kwd">Theorem</span> <span class="id"><a name="compile_program_correct_diverging">compile_program_correct_diverging</a></span>:<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span>,<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.IMP.html#step">step</a></span> (<span class="id"><a href="CDF.Compil.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#machine_diverges">machine_diverges</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) <span class="id"><a href="CDF.Compil.html#s">s</a></span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof24')">Proof.</div>
+<div class="proofscript" id="proof24">
+&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
+&nbsp;&nbsp;<span class="tactic">eapply</span> (<span class="id"><a href="CDF.Simulation.html#simulation_infseq">simulation_infseq</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> (<span class="id"><a href="CDF.Compil.html#simulation_step">simulation_step</a></span> <span class="id">C</span>)).<br/>
+&nbsp;&nbsp;<span class="tactic">eauto</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#match_initial_configs">match_initial_configs</a></span>.<br/>
+Qed.</div>
+
+</div>
+<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</div>
+</body>
+</html>
