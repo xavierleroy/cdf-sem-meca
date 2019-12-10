@@ -3,4 +3,6 @@ Sequences.v
 Simulation.v
 IMP.v
 Compil.v
+Fixpoints.v
+Optim.v
 
