@@ -73,41 +73,41 @@ Fixpoint instr_at (C: code) (pc: Z) : option instr :=
 *)
 
 Inductive transition (C: code): config -> config -> Prop :=
-  | trans_const: forall pc stk s n,
+  | trans_const: forall pc σ s n,
       instr_at C pc = Some(Iconst n) ->
-      transition C (pc    , stk     , s) 
-                   (pc + 1, n :: stk, s)
-  | trans_var: forall pc stk s x,
+      transition C (pc    , σ     , s) 
+                   (pc + 1, n :: σ, s)
+  | trans_var: forall pc σ s x,
       instr_at C pc = Some(Ivar x) ->
-      transition C (pc    , stk       , s)
-                   (pc + 1, s x :: stk, s)
-  | trans_setvar: forall pc stk s x n,
+      transition C (pc    , σ       , s)
+                   (pc + 1, s x :: σ, s)
+  | trans_setvar: forall pc σ s x n,
       instr_at C pc = Some(Isetvar x) ->
-      transition C (pc    , n :: stk, s)
-                   (pc + 1, stk     , update x n s)
-  | trans_add: forall pc stk s n1 n2,
+      transition C (pc    , n :: σ, s)
+                   (pc + 1, σ     , update x n s)
+  | trans_add: forall pc σ s n1 n2,
       instr_at C pc = Some(Iadd) ->
-      transition C (pc    , n2 :: n1 :: stk , s)
-                   (pc + 1, (n1 + n2) :: stk, s)
-  | trans_opp: forall pc stk s n,
+      transition C (pc    , n2 :: n1 :: σ , s)
+                   (pc + 1, (n1 + n2) :: σ, s)
+  | trans_opp: forall pc σ s n,
       instr_at C pc = Some(Iopp) ->
-      transition C (pc    , n :: stk    , s)
-                   (pc + 1, (- n) :: stk, s)
-  | trans_branch: forall pc stk s d pc',
+      transition C (pc    , n :: σ    , s)
+                   (pc + 1, (- n) :: σ, s)
+  | trans_branch: forall pc σ s d pc',
       instr_at C pc = Some(Ibranch d) ->
       pc' = pc + 1 + d ->
-      transition C (pc , stk, s)
-                   (pc', stk, s)
-  | trans_beq: forall pc stk s d1 d0 n1 n2 pc',
+      transition C (pc , σ, s)
+                   (pc', σ, s)
+  | trans_beq: forall pc σ s d1 d0 n1 n2 pc',
       instr_at C pc = Some(Ibeq d1 d0) ->
       pc' = pc + 1 + (if n1 =? n2 then d1 else d0) ->
-      transition C (pc , n2 :: n1 :: stk, s)
-                   (pc', stk            , s)
-  | trans_ble: forall pc stk s d1 d0 n1 n2 pc',
+      transition C (pc , n2 :: n1 :: σ, s)
+                   (pc', σ            , s)
+  | trans_ble: forall pc σ s d1 d0 n1 n2 pc',
       instr_at C pc = Some(Ible d1 d0) ->
       pc' = pc + 1 + (if n1 <=? n2 then d1 else d0) ->
-      transition C (pc , n2 :: n1 :: stk, s)
-                   (pc', stk            , s).
+      transition C (pc , n2 :: n1 :: σ, s)
+                   (pc', σ            , s).
 
 (** Comme nous l'avions fait dans le cas de la sémantique à réduction d'IMP,
     nous définissons l'exécution d'un code machine en termes de suites
@@ -134,10 +134,10 @@ Definition machine_diverges (C: code) (s_init: store) : Prop :=
     de transitions. *)
 
 Definition machine_goes_wrong (C: code) (s_init: store) : Prop :=
-  exists pc stk s,
-      transitions C (0, nil, s_init) (pc, stk, s)
-   /\ irred (transition C) (pc, stk, s)
-   /\ (instr_at C pc <> Some Ihalt \/ stk <> nil).
+  exists pc σ s,
+      transitions C (0, nil, s_init) (pc, σ, s)
+   /\ irred (transition C) (pc, σ, s)
+   /\ (instr_at C pc <> Some Ihalt \/ σ <> nil).
 
 (** *** Exercice (2 étoiles). *)
 
@@ -160,13 +160,13 @@ Inductive machine_result : Type :=
 (** Compléter les cas manquants dans la définition ci-dessous. *)
 
 Fixpoint mach_exec (C: code) (fuel: nat)
-                   (pc: Z) (stk: stack) (s: store) : machine_result :=
+                   (pc: Z) (σ: stack) (s: store) : machine_result :=
   match fuel with
   | O => Timeout
   | S fuel' =>
-      match instr_at C pc, stk with
+      match instr_at C pc, σ with
       | Some Ihalt, nil => OK s
-      | Some (Iconst n), stk => mach_exec C fuel' (pc + 1) (n :: stk) s
+      | Some (Iconst n), σ => mach_exec C fuel' (pc + 1) (n :: σ) s
       (* FILL IN HERE *)
       | _, _ => Stuck
       end
@@ -203,7 +203,7 @@ Eval compute in (compile_aexp (PLUS (CONST 1) (CONST 2))).
 
 Eval compute in (compile_aexp (PLUS (VAR "x") (MINUS (VAR "y") (CONST 1)))).
 
-(** Résultat: [Ivar "x" :: Ivar "x" :: Iconst 1 :: Iopp :: Iadd :: Iadd :: nil]. *)
+(** Résultat: [Ivar "x" :: Ivar "y" :: Iconst 1 :: Iopp :: Iadd :: Iadd :: nil]. *)
 
 (** Pour une expressions booléenne [b], notre premier réflexe serait
     de produire du code machine qui laisse [1] ou [0] au sommet de la
@@ -442,11 +442,11 @@ Hint Rewrite codelen_app codelen_cons Z.add_assoc Z.add_0_r : code.
     La démonstration est une jolie récurrence sur la forme de [a]. *)
 
 Lemma compile_aexp_correct:
-  forall C s a pc stk,
+  forall C s a pc σ,
   code_at C pc (compile_aexp a) ->
   transitions C
-       (pc, stk, s)
-       (pc + codelen (compile_aexp a), aeval a s :: stk, s).
+       (pc, σ, s)
+       (pc + codelen (compile_aexp a), aeval a s :: σ, s).
 Proof.
   induction a; simpl; intros.
 
@@ -481,11 +481,11 @@ Qed.
 *)
 
 Lemma compile_bexp_correct:
-  forall C s b d1 d0 pc stk,
+  forall C s b d1 d0 pc σ,
   code_at C pc (compile_bexp b d1 d0) ->
   transitions C
-       (pc, stk, s)
-       (pc + codelen (compile_bexp b d1 d0) + (if beval b s then d1 else d0), stk, s).
+       (pc, σ, s)
+       (pc + codelen (compile_bexp b d1 d0) + (if beval b s then d1 else d0), σ, s).
 Proof.
   induction b; cbn; intros.
 
@@ -552,11 +552,11 @@ Qed.
 Lemma compile_com_correct_terminating:
   forall s c s',
   cexec s c s' ->
-  forall C pc stk,
+  forall C pc σ,
   code_at C pc (compile_com c) ->
   transitions C
-      (pc, stk, s)
-      (pc + codelen (compile_com c), stk, s').
+      (pc, σ, s)
+      (pc + codelen (compile_com c), σ, s').
 Proof.
   induction 1; cbn; intros.
 
@@ -641,10 +641,10 @@ Qed.
     Indication: montrer d'abord le lemme ci-dessous. *)
 
 Lemma transitions_smart_Ibranch:
-  forall C pc d pc' stk s,
+  forall C pc d pc' σ s,
   code_at C pc (smart_Ibranch d) ->
   pc' = pc + 1 + d ->
-  transitions C (pc, stk, s) (pc', stk, s).
+  transitions C (pc, σ, s) (pc', σ, s).
 Proof.
   unfold smart_Ibranch; intros.
   (* À COMPLÉTER *)
@@ -694,7 +694,7 @@ Abort.
     transitions de la machine qui exécute le code compilé. *)
 
 (** La première chose à faire est de relier les configurations [(c, k, s)]
-    de la sémantique à continuations avec les configurations [(C, pc, stk, s)]
+    de la sémantique à continuations avec les configurations [(C, pc, σ, s)]
     de la machine.  Nous savons déjà comment relier une commande [c]
     et le code compilé qui lui correspond, à l'aide du prédicat [code_at].
     Il faut maintenant définir une relation entre une continuation [k]
@@ -736,10 +736,10 @@ Inductive compile_cont (C: code): cont -> Z -> Prop :=
       compile_cont C k pc.
 
 (** Dès lors, une configuration [(c,k,s)] de la sémantique à continuations
-    d'IMP est reliée à une configuration [(C, pc, stk, s')] de la machine
+    d'IMP est reliée à une configuration [(C, pc, σ, s')] de la machine
     si les conditions suivantes sont vraies:
     - Les états mémoire sont identiques: [s' = s].
-    - La pile de la machine est vide: [stk = nil].
+    - La pile de la machine est vide: [σ = nil].
     - Le code machine au point [pc] est le code compilé de [c]:
       [code_at C pc (compile_com c)].
     - Le code machine au point [pc + codelen (compile_com c)] implémente
