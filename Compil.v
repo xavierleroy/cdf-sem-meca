@@ -643,7 +643,7 @@ Qed.
 Lemma transitions_smart_Ibranch:
   forall C pc d pc' σ s,
   code_at C pc (smart_Ibranch d) ->
-  pc' = pc + 1 + d ->
+  pc' = pc + codelen (smart_Ibranch d) + d ->
   transitions C (pc, σ, s) (pc', σ, s).
 Proof.
   unfold smart_Ibranch; intros.
