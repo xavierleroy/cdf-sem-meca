@@ -281,6 +281,16 @@ Definition Euclidean_division :=
 Definition update (x: ident) (v: Z) (s: store) : store :=
   fun y => if string_dec x y then v else s y.
 
+Lemma update_same: forall x v s, (update x v s) x = v.
+Proof.
+  unfold update; intros. destruct (string_dec x x); congruence.
+Qed.
+
+Lemma update_other: forall x v s y, x <> y -> (update x v s) y = s y.
+Proof.
+  unfold update; intros. destruct (string_dec x y); congruence.
+Qed.
+
 (** Naïvement, nous aimerions définir la sémantique d'une commande
     avec une fonction d'exécution [cexec s c] qui exécute la commande [c]
     dans l'état initial [s] et renvoie l'état final au moment où [c] termine. *)
