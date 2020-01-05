@@ -1,4 +1,5 @@
 From Coq Require Import ZArith Psatz Bool String List Wellfounded Program.Equality.
+From Coq Require Import FunctionalExtensionality.
 From CDF Require Import IMP Sequences.
 
 Local Open Scope string_scope.
@@ -119,7 +120,7 @@ Definition aor (P Q: assertion) : assertion :=
 (** L'assertion "l'expression arithmétique [a] s'évalue en la valeur [v]". *)
 
 Definition aequal (a: aexp) (v: Z) : assertion :=
-  fun (s: store) => aeval a s = v.
+  fun s => aeval a s = v.
 
 (** Les assertions "l'expression booléenne [b] s'évalue à vrai / à faux". *)
 
@@ -397,44 +398,40 @@ Qed.
 
 (** Nous pouvons aussi donner une règle de raisonnement sur l'affectation
     qui fonctionne "en avant" (la postcondition est déterminée à partir
-    de la précondition) au lieu de "en arrière" comme la règle de Hoare.
-    Cependant, la règle "en avant" est complexe et sa validité dépend
-    d'une propriété d'égalité extensionnelle des fonctions ([funext]),
-    qui n'est pas démontrable en Coq mais peut être prise en axiome. *)
+    de la précondition) au lieu de "en arrière" comme la règle de Hoare. *)
 
-Definition funext : Prop :=
-  forall (A B: Type) (f g: A -> B), (forall x, f x = g x) -> f = g.
-
-Lemma triple_assign_fwd_1: funext -> forall x a P m n,
+Lemma triple_assign_fwd_1: forall x a P m n,
   {{ P //\\ aequal (VAR x) m //\\ aequal a n }}
   ASSIGN x a
   {{ aupdate x (CONST m) P //\\ aequal (VAR x) n }}.
 Proof.
-  unfold triple, aequal, aupdate; intros FUNEXT; intros.
+  unfold triple, aequal, aupdate; intros.
   destruct H0 as (PRE1 & PRE2 & PRE3). cbn in PRE2.
   inversion H; subst.
   cbn; split.
 - replace (update x (s x) (update x (aeval a s) s)) with s. auto.
-  apply FUNEXT. intros y. unfold update. destruct (string_dec x y); congruence.
-- unfold update. destruct (string_dec x x); congruence.
+  apply functional_extensionality; intros y.
+  unfold update. destruct (string_dec x y); congruence.
+- apply update_same.
 Qed.
 
 Definition aexists {A: Type} (P: A -> assertion) : assertion :=
   fun (s: store) => exists (a: A), P a s.
 
-Lemma triple_assign_fwd: funext -> forall x a P,
+Lemma triple_assign_fwd: forall x a P,
   {{ P }}
   ASSIGN x a 
   {{ aexists (fun m => aexists (fun n =>
      aequal (VAR x) n //\\ aupdate x (CONST m) (P //\\ aequal a n))) }}.
 Proof.
-  unfold triple, aequal, aupdate; intros FUNEXT; intros.
+  intros. unfold triple, aequal, aupdate; intros.
   inversion H; subst.
   exists (s x); exists (aeval a s); cbn.
-  split. unfold update. destruct (string_dec x x); congruence.
+  split. apply update_same.
   replace (update x (s x) (update x (aeval a s) s)) with s.
   split; auto.
-  apply FUNEXT. intros y. unfold update. destruct (string_dec x y); congruence.
+  apply functional_extensionality; intros y.
+  unfold update. destruct (string_dec x y); congruence.
 Qed.
 
 (** Pour finir, nous allons construire une règle d'encadrement
@@ -686,7 +683,7 @@ Inductive com: Type :=
     application des règles de la logique de Hoare.  Seule exception: pour
     les boucles [WHILE], on prend l'invariant déclaré pour la boucle comme
     précondition. *)
-    
+
 Fixpoint pre (c: com) (Q: assertion) : assertion :=
   match c with
   | SKIP => Q
@@ -817,13 +814,13 @@ Proof.
   unfold aimp, aupdate, aand, afalse, atrue, Pre, Post, Inv; cbn.
   intuition auto.
   (* La précondition implique l'invariant de boucle. *)
-  - ring.
+  - lia.
   (* L'invariant et la sortie de boucle impliquent la postcondition. *)
   - apply Z.leb_gt in H0. apply Zdiv_unique with (s "r"). lia. auto.
   - apply Z.leb_gt in H0. apply Zmod_unique with (s "q"). lia. auto.
   (* L'invariant de boucle est préservé *)
   - apply Z.leb_le in H0. lia.
-  - rewrite H3. ring. 
+  - lia. 
 Qed.
 
 (** *** Exercice (1 étoile) *)
@@ -831,7 +828,13 @@ Qed.
     la précondition et de l'invariant.  Comment est-il possible que
     la vérification "passe" même quand le diviseur [b] est nul? *)
 
-(** *** Exercice (2 étoiles) *)
-(** Spécifier et vérifier le programme [slow_add] donné en section 4.1. *)
+(** *** Exercice (3 étoiles) *)
+(** Spécifier et vérifier le programme suivant.  Il calcule dans [r]
+    la racine carrée entière de [a].
+<<
+    r := 0; s := 1;
+    while s <= a do (r := r + 1; s := s + r + r + 1)
+>>
+*)
 
 End VCGEN.
