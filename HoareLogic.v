@@ -78,19 +78,21 @@ Proof.
   intros. eapply REC; eauto. lia.
 Qed.
 
-(** En revanche, la démonstration devient difficile.  Il faut faire une récurrence
-    explicite sur la valeur [v] de la variable ["x"].  Pour exploiter l'hypothèse
-    de récurrence, il faut déterminer manuellement certains états mémoire intermédiaires:
-    l'exécution purement symbolique ne suffit plus.  On ne se voit pas vérifier
+(** En revanche, la démonstration devient difficile.  Il faut faire
+    une récurrence explicite sur la valeur [v] de la variable ["x"].
+    Pour exploiter l'hypothèse de récurrence, il faut déterminer
+    manuellement certains états mémoire intermédiaires: l'exécution
+    purement symbolique ne suffit plus.  On ne se voit pas vérifier
     des programmes beaucoup plus complexes avec ces techniques. *)
 
-(** Les logiques de programmes fournissent des principes de plus haut niveau
-    pour vérifier formellement des programmes.  En particulier, on peut raisonner
-    sur les boucles sans faire de récurrence explicite.  *)
+(** Les logiques de programmes fournissent des principes de plus haut
+    niveau pour vérifier formellement des programmes.  En particulier,
+    on peut raisonner sur les boucles sans faire de récurrence
+    explicite.  *)
 
 (** La logique de programmes la plus connue est la logique de Hoare.
-    Dans ce fichier, nous construisons une logique de Hoare pour raisonner
-    sur les programmes écrits en langage IMP. *)
+    Dans ce fichier, nous construisons une logique de Hoare pour
+    raisonner sur les programmes écrits en langage IMP. *)
 
 (** ** 4.2.  Assertions sur l'état mémoire *)
 
@@ -182,14 +184,14 @@ Inductive Hoare: assertion -> com -> assertion -> Prop :=
 
 (** Quelques règles dérivées. *)
 
-Lemma Hoare_left: forall P P' Q c,
+Lemma Hoare_consequence_pre: forall P P' Q c,
       Hoare P c Q -> P' -->> P ->
       Hoare P' c Q.
 Proof.
   intros. apply Hoare_consequence with (P := P) (Q := Q); unfold aimp; auto.
 Qed.
 
-Lemma Hoare_right: forall P Q Q' c,
+Lemma Hoare_consequence_post: forall P Q Q' c,
       Hoare P c Q -> Q -->> Q' ->
       Hoare P c Q'.
 Proof.
@@ -201,7 +203,8 @@ Lemma Hoare_ifthen: forall b c P Q,
     afalse b //\\ P -->> Q ->
     Hoare P (IFTHENELSE b c SKIP) Q.
 Proof.
-  intros. apply Hoare_ifthenelse; auto. apply Hoare_left with Q; auto using Hoare_skip.
+  intros. apply Hoare_ifthenelse; auto.
+  apply Hoare_consequence_pre with Q; auto using Hoare_skip.
 Qed.
 
 (** Un exemple de dérivation. *)
@@ -212,7 +215,7 @@ Example Hoare_swap_xy: forall m n,
         (aequal (VAR "x") n //\\ aequal (VAR "y") m).
 Proof.
   intros.
-  eapply Hoare_left.
+  eapply Hoare_consequence_pre.
 - unfold swap_xy. eapply Hoare_seq. apply Hoare_assign.
   eapply Hoare_seq. apply Hoare_assign. apply Hoare_assign.
 - unfold aequal, aupdate, aand, aimp; cbn. tauto.
@@ -241,16 +244,18 @@ Admitted.
 
 (** 4.4.  Sûreté de la logique de Hoare *)
 
-(** On va interpréter sémantiquement les énoncés [Hoare P c Q] de la logique de Hoare
-    par la relation [triple P c Q] ci-dessous, définie en termes de la
-    sémantique naturelle d'IMP (la relation [cexec s c s']). *)
+(** On va interpréter sémantiquement les énoncés [Hoare P c Q] de la
+    logique de Hoare par la relation [triple P c Q] ci-dessous,
+    définie en termes de la sémantique naturelle d'IMP
+    (la relation [cexec s c s']). *)
 
 Definition triple (P: assertion) (c: com) (Q: assertion) : Prop :=
   forall s s', cexec s c s' -> P s -> Q s'.
 
 Notation "{{ P }} c {{ Q }}" := (triple P c Q) (at level 90, c at next level).
 
-(** L'interprétation sémantique valide chacune des règles de la logique de Hoare. *)
+(** L'interprétation sémantique valide chacune des règles de la
+    logique de Hoare. *)
 
 Lemma triple_skip: forall P,
      {{P}} SKIP {{P}}.
@@ -339,27 +344,27 @@ Lemma Hoare_wp: forall c Q, Hoare (wp c Q) c Q.
 Proof.
   induction c; intros Q.
 - (* SKIP *)
-  eapply Hoare_left. apply Hoare_skip. 
+  eapply Hoare_consequence_pre. apply Hoare_skip. 
   unfold aimp, wp; intros. apply H. apply cexec_skip.
 - (* ASSIGN *)
-  eapply Hoare_left. apply Hoare_assign.
+  eapply Hoare_consequence_pre. apply Hoare_assign.
   unfold aimp, aupdate, wp; intros. apply H. apply cexec_assign.
 - (* SEQ *)
-  eapply Hoare_left.
+  eapply Hoare_consequence_pre.
   eapply Hoare_seq with (wp c2 Q); eauto.
   unfold aimp, wp; intros. apply H. apply cexec_seq with s'; auto.
 - (* IFTHENELSE *)
   apply Hoare_ifthenelse.
-  + eapply Hoare_left. apply IHc1.
+  + eapply Hoare_consequence_pre. apply IHc1.
     unfold atrue, aand, aimp, wp; intros. destruct H.
     apply H1. apply cexec_ifthenelse. rewrite H; auto.
-  + eapply Hoare_left. apply IHc2.
+  + eapply Hoare_consequence_pre. apply IHc2.
     unfold afalse, aand, aimp, wp; intros. destruct H.
     apply H1. apply cexec_ifthenelse. rewrite H; auto.
 - (* WHILE *)
-  eapply Hoare_right.
+  eapply Hoare_consequence_post.
   + apply Hoare_while.
-    eapply Hoare_left. apply IHc.
+    eapply Hoare_consequence_pre. apply IHc.
     unfold atrue, aand, aimp, wp; intros. destruct H.
     apply H2. apply cexec_while_loop with s'; auto.
   + unfold afalse, aand, aimp, wp; intros. destruct H.
@@ -371,7 +376,7 @@ Qed.
 
 Theorem Hoare_complete: forall P c Q, {{P}} c {{Q}} -> Hoare P c Q.
 Proof.
-  intros. apply Hoare_left with (wp c Q). 
+  intros. apply Hoare_consequence_pre with (wp c Q). 
 - apply Hoare_wp.
 - apply wp_weakest; auto.
 Qed.
@@ -454,12 +459,12 @@ Qed.
     swap_xy
     {{ aequal (VAR "x") n //\\ aequal (VAR "y") m //\\ aequal (VAR "z") p }}
 >>>
-    i.e. "et en plus la valeur de la variable [z] est préservée". *)
+    c'est à dire: "et en plus la valeur de la variable [z] est préservée". *)
 
 (** Ce raisonnement est valide à condition que les faits supplémentaires [R]
-    portent uniquement sur des variables qui sont pas modifiées pendant l'exécution
-    de la commande [c], c'est-à-dire des variables qui n'apparaissent pas 
-    dans une construction [ASSIGN] de [c]. *)
+    portent uniquement sur des variables qui sont pas modifiées
+    pendant l'exécution de la commande [c], c'est-à-dire des variables
+    qui n'apparaissent pas dans une construction [ASSIGN] de [c]. *)
 
 Fixpoint modified_by (c: com) (x: ident) : Prop :=
   match c with
@@ -534,10 +539,10 @@ Definition Triple (P: assertion) (c: com) (Q: assertion) :=
 Notation "[[ P ]] c [[ Q ]]" := (Triple P c Q) (at level 90, c at next level).
 
 (** Notons la différence avec la logique faible:
-- Pour la logique faible [ {{P}} c {{Q}} ], on conclut
-  "si [c] termine alors l'état final [s'] satisfait [Q]".
-- Pour la logique forte [ [[P]] c [[Q]] ], on conclut
-  "[c] termine et l'état final [s'] satisfait [Q]".
+  - Pour la logique faible [ {{P}} c {{Q}} ], on conclut
+    "si [c] termine alors l'état final [s'] satisfait [Q]".
+  - Pour la logique forte [ [[P]] c [[Q]] ], on conclut
+    "[c] termine et l'état final [s'] satisfait [Q]".
 *)
 
 (** Les règles de base de la logique forte sont les mêmes que celles de la
@@ -622,10 +627,11 @@ Qed.
 
 (** *** Exercice (3 étoiles) *)
 
-(** La technique de la "variante" et l'ordre sur les entiers positifs ne suffisent
-    pas toujours à montrer la terminaison d'une boucle [WHILE].  Voici une règle
-    qui utilise deux variantes et l'ordre lexicographique entre paires d'entiers positifs.
-    Montrer que cette règle est valide. *)
+(** La technique de la "variante" et l'ordre sur les entiers positifs
+    ne suffisent pas toujours à montrer la terminaison d'une boucle
+    [WHILE].  Voici une règle qui utilise deux variantes et l'ordre
+    lexicographique entre paires d'entiers positifs.  Montrer que
+    cette règle est valide. *)
 
 Lemma Triple_while_lexico: forall P variant1 variant2 b c,
   (forall v1 v2,
@@ -654,9 +660,9 @@ Admitted.
 <<
     P = aupdate x1 a1 (aupdate x2 a2 Q)
 >>
-    Un tel calcul est beaucoup plus simple qu'une recherche de preuve générale,
-    cette dernière pouvant faire intervenir la règle d'affaiblissement [triple_consequence]
-    à tout moment. *)
+    Un tel calcul est beaucoup plus simple qu'une recherche de preuve
+    générale, cette dernière pouvant faire intervenir la règle
+    d'affaiblissement [triple_consequence] à tout moment. *)
 
 (** Le problème est bien entendu les boucles [WHILE].  L'invariant de la boucle
     ne peut pas être déterminé automatiquement par calcul.
@@ -762,7 +768,8 @@ Proof.
     unfold aimp; auto.
 - destruct H as (V1 & V2 & V3).
   eapply triple_consequence.
-  + apply triple_while. eapply triple_consequence. apply IHc; eauto. eauto. red; auto.
+  + apply triple_while. eapply triple_consequence. apply IHc; eauto.
+    eauto. red; auto.
   + red; auto.
   + auto.
 Qed.
@@ -834,6 +841,17 @@ Qed.
 <<
     r := 0; s := 1;
     while s <= a do (r := r + 1; s := s + r + r + 1)
+>>
+*)
+
+(** *** Exercice (3 étoiles) *)
+(** Spécifier et vérifier le programme suivant.  Il met dans [r]
+    la partie entière de la racine carrée de [a].
+<<
+    r := 0; s := 1;
+    while s <= a do
+        r := r + 1; s := s + r + r + 1
+    done
 >>
 *)
 
