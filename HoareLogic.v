@@ -40,8 +40,8 @@ Qed.
     la propriété attendue. *)
 
 (** Voici un exemple plus compliqué car il fait appel à une boucle.
-    Le programme ajoute ["x"] à ["y"] en incrémentant ["y"] et décrémentant ["x"]
-    jusqu'à ce que ["x"] tombe à zéro. *)
+    Le programme ajoute ["x"] à ["y"] en incrémentant ["y"] et
+    décrémentant ["x"] jusqu'à ce que ["x"] tombe à zéro. *)
 
 Definition slow_add :=
   WHILE (LESSEQUAL (CONST 1) (VAR "x"))
@@ -99,9 +99,9 @@ Qed.
 (** La logique de Hoare manipule des formules / des énoncés / des assertions
     qui "parlent" des valeurs des variables du programme.  Une assertion typique
     est [0 <= x /\ x <= y], signifiant "à ce point du programme, la valeur de
-    la variable [x] est positive et inférieure ou égale à la valeur de [y]".
+    la variable [x] est positive et inférieure ou égale à la valeur de [y]". *)
 
-    Dans notre développement Coq, nous représentons les assertions par
+(** Dans notre développement Coq, nous représentons les assertions par
     des formules logique de Coq (type [Prop]) paramétrées par un état mémoire
     (type [store]) qui donne des valeurs aux variables.
   
@@ -110,8 +110,8 @@ Qed.
     
 Definition assertion : Type := store -> Prop.
 
-(** Voici quelques assertions utiles.  La conjonction et la disjonction de deux
-    assertions. *)
+(** Voici quelques assertions utiles.
+    La conjonction et la  disjonction de deux assertions. *)
 
 Definition aand (P Q: assertion) : assertion :=
   fun s => P s /\ Q s.
@@ -139,8 +139,9 @@ Definition afalse (b: bexp) : assertion :=
 Definition aupdate (x: ident) (a: aexp) (P: assertion) : assertion :=
   fun s => P (update x (aeval a s) s).
 
-(** L'implication point-à-point.  Contrairement à la conjonction et la disjonction,
-    ce n'est pas une assertion sur l'état mémoire, juste une proposition Coq. *)
+(** L'implication point-à-point.  Contrairement à la conjonction et la
+    disjonction, ce n'est pas une assertion sur l'état mémoire, juste
+    une proposition Coq. *)
 
 Definition aimp (P Q: assertion) : Prop :=
   forall s, P s -> Q s.
@@ -159,9 +160,9 @@ Notation "P \\// Q" := (aor P Q) (at level 75, right associativity).
   - [c] le programme ou le fragment de programme sur lequel on raisonne;
   - [Q] la postcondition, que l'on garantit vraie "après" l'exécution de [c].
 
-  Il s'agit d'une logique "faible" au sens où elle ne garantit pas la terminaison
-  de [c].  La seule garantie est que si [c] termine, alors l'état final
-  satisfait la postcondition [Q]. *)
+  Il s'agit d'une logique "faible" au sens où elle ne garantit pas la
+  terminaison de [c].  La seule garantie est que si [c] termine, alors
+  l'état final satisfait la postcondition [Q]. *)
 
 Inductive Hoare: assertion -> com -> assertion -> Prop :=
   | Hoare_skip: forall P,
@@ -242,7 +243,7 @@ Proof.
   (* A COMPLÉTER *)
 Admitted.
 
-(** 4.4.  Sûreté de la logique de Hoare *)
+(** ** 4.4.  Sûreté de la logique de Hoare *)
 
 (** On va interpréter sémantiquement les énoncés [Hoare P c Q] de la
     logique de Hoare par la relation [triple P c Q] ci-dessous,
@@ -311,7 +312,7 @@ Proof.
   triple_ifthenelse, triple_while, triple_consequence.
 Qed.
 
-(** 4.5.  Complétude de la logique de Hoare *)
+(** ** 4.5.  Complétude de la logique de Hoare *)
 
 (** La réciproque du théorème [Hoare_sound] est vraie: un "triplet de Hoare"
     qui est vrai sémantiquement ([{{P}} c {{Q}}]) peut toujours être dérivé
@@ -330,7 +331,8 @@ Proof.
   unfold triple, wp; intros. auto.
 Qed.
 
-(** C'est la plus faible des préconditions: toute autre précondition l'implique. *)
+(** C'est la plus faible des préconditions:
+    toute autre précondition l'implique. *)
 
 Lemma wp_weakest: forall P c Q, {{P}} c {{Q}} -> P -->> wp c Q.
 Proof.
@@ -381,7 +383,7 @@ Proof.
 - apply wp_weakest; auto.
 Qed.
 
-(** 4.6.  Autres règles utiles *)
+(** ** 4.6.  Autres règles utiles *)
 
 (** Avec la définition sémantique des triplets de Hoare, il est très facile
     d'ajouter des règles de raisonnement supplémentaires.  Ce sont juste
@@ -404,21 +406,6 @@ Qed.
 (** Nous pouvons aussi donner une règle de raisonnement sur l'affectation
     qui fonctionne "en avant" (la postcondition est déterminée à partir
     de la précondition) au lieu de "en arrière" comme la règle de Hoare. *)
-
-Lemma triple_assign_fwd_1: forall x a P m n,
-  {{ P //\\ aequal (VAR x) m //\\ aequal a n }}
-  ASSIGN x a
-  {{ aupdate x (CONST m) P //\\ aequal (VAR x) n }}.
-Proof.
-  unfold triple, aequal, aupdate; intros.
-  destruct H0 as (PRE1 & PRE2 & PRE3). cbn in PRE2.
-  inversion H; subst.
-  cbn; split.
-- replace (update x (s x) (update x (aeval a s) s)) with s. auto.
-  apply functional_extensionality; intros y.
-  unfold update. destruct (string_dec x y); congruence.
-- apply update_same.
-Qed.
 
 Definition aexists {A: Type} (P: A -> assertion) : assertion :=
   fun (s: store) => exists (a: A), P a s.
@@ -447,18 +434,18 @@ Qed.
     obtenant une vérification de [{{P //\\ R}} c {{Q //\\ R}}]. *)
 
 (** Par exemple: si on a montré la correction de [swap_xy] comme suit
-<<<
+<<
     {{ aequal (VAR "x") m //\\ aequal (VAR "y") n }}
     swap_xy
     {{ aequal (VAR "x") n //\\ aequal (VAR "y") m }}
->>>
+>>
     on devrait pouvoir, sans refaire la vérification de [swap_xy],
     montrer un triplet plus informatif, comme par exemple
-<<<
+<<
     {{ aequal (VAR "x") m //\\ aequal (VAR "y") n //\\ aequal (VAR "z") p }}
     swap_xy
     {{ aequal (VAR "x") n //\\ aequal (VAR "y") m //\\ aequal (VAR "z") p }}
->>>
+>>
     c'est à dire: "et en plus la valeur de la variable [z] est préservée". *)
 
 (** Ce raisonnement est valide à condition que les faits supplémentaires [R]
@@ -516,7 +503,7 @@ Proof.
   + auto.
 Qed.
 
-(** 4.7.  Triplets de Hoare forts *)
+(** ** 4.7.  Triplets de Hoare forts *)
 
 (** La logique de Hoare que nous avons vue jusqu'ici est dite "faible"
     car elle ne garantit pas la terminaison des programmes, et ne peut
@@ -539,9 +526,9 @@ Definition Triple (P: assertion) (c: com) (Q: assertion) :=
 Notation "[[ P ]] c [[ Q ]]" := (Triple P c Q) (at level 90, c at next level).
 
 (** Notons la différence avec la logique faible:
-  - Pour la logique faible [ {{P}} c {{Q}} ], on conclut
+-   Pour la logique faible [ {{P}} c {{Q}} ], on conclut
     "si [c] termine alors l'état final [s'] satisfait [Q]".
-  - Pour la logique forte [ [[P]] c [[Q]] ], on conclut
+-   Pour la logique forte [ [[P]] c [[Q]] ], on conclut
     "[c] termine et l'état final [s'] satisfait [Q]".
 *)
 
@@ -649,10 +636,11 @@ Admitted.
 
 (** ** 4.8.  Génération des conditions de vérification *)
 
-(** Exceptée la règle pour les boucles [WHILE], les règles de la logique de Hoare
-    pewuvent se lire comme un algorithme qui, étant données une commande [c]
-    et une postcondition [Q], calcule une plus faible précondition [P].
-    Par exemple, si [c] se compose de deux affectations en séquence
+(** Exceptée la règle pour les boucles [WHILE], les règles de la
+    logique de Hoare peuvent se lire comme un algorithme qui, étant
+    données une commande [c] et une postcondition [Q], calcule une
+    plus faible précondition [P].  Par exemple, si [c] se compose de
+    deux affectations en séquence
 <<
     c = ASSIGN x1 a1 ;; ASSIGN x2 a2
 >>
@@ -664,10 +652,10 @@ Admitted.
     générale, cette dernière pouvant faire intervenir la règle
     d'affaiblissement [triple_consequence] à tout moment. *)
 
-(** Le problème est bien entendu les boucles [WHILE].  L'invariant de la boucle
-    ne peut pas être déterminé automatiquement par calcul.
+(** Le problème est bien entendu les boucles [WHILE].  L'invariant de
+    la boucle ne peut pas être déterminé automatiquement par calcul. *)
 
-    Dans ce qui suit, nous développons une approche hybride où les boucles
+(** Dans ce qui suit, nous développons une approche hybride où les boucles
     sont annotées manuellement par leurs invariants de boucle, mais où toutes
     les autres préconditions sont calculées automatiquement à partir des
     postconditions. *)
@@ -703,9 +691,9 @@ Fixpoint pre (c: com) (Q: assertion) : assertion :=
     il faut aussi s'assurer que les invariants déclarés pour les boucles sont
     bien des invariants.  Pour une boucle [WHILE Inv b c] de postcondition [Q],
     il faut que
-  - [afalse b //\\ Inv -->> Q] : 
+-   [afalse b //\\ Inv -->> Q] : 
     quand on sort de la boucle, l'invariant implique la postcondition.
-  - [atrue b //\\ Inv -->> pre c Inv] :
+-   [atrue b //\\ Inv -->> pre c Inv] :
     quand on itère la boucle, l'invariant implique la précondition du corps
     de la boucle.
 
@@ -726,8 +714,8 @@ Fixpoint vcg (c: com) (Q: assertion) : Prop :=
   end.
 
 (** Le triplet [ {{P}} c {{Q}} ] est valide dès lors que
-  - [P] implique la précondition [pre c Q]
-  - les conditions [vcg c Q] sont toutes vraies.
+-   [P] implique la précondition [pre c Q]
+-   les conditions [vcg c Q] sont toutes vraies.
 *)
 
 Definition vcgen (P: assertion) (c: com) (Q: assertion) : Prop :=
@@ -783,7 +771,7 @@ Proof.
   eapply triple_consequence. eapply vcg_sound; eauto. auto. red; auto.
 Qed.
 
-(** Application: la division Euclidienne *)
+(** *** Application: la division Euclidienne *)
 
 Infix ";;" := SEQ (at level 80, right associativity).
 
@@ -841,17 +829,6 @@ Qed.
 <<
     r := 0; s := 1;
     while s <= a do (r := r + 1; s := s + r + r + 1)
->>
-*)
-
-(** *** Exercice (3 étoiles) *)
-(** Spécifier et vérifier le programme suivant.  Il met dans [r]
-    la partie entière de la racine carrée de [a].
-<<
-    r := 0; s := 1;
-    while s <= a do
-        r := r + 1; s := s + r + r + 1
-    done
 >>
 *)
 

@@ -7,9 +7,10 @@ Local Open Scope Z_scope.
 
 (** * 4.  Logiques de programmes: logique de séparation *)
 
-(** 4.9.  Les tas mémoire (heaps) *)
+(** ** 4.9.  Les tas mémoire (heaps) *)
 
-(** Un tas mémoire est une fonction partielle des adresses dans les valeurs, à domaine fini. *)
+(** Un tas mémoire est une fonction partielle des adresses dans les
+    valeurs, à domaine fini. *)
 
 Definition addr := Z.
 
@@ -41,7 +42,8 @@ Program Definition hupdate (l: addr) (v: Z) (h: heap) : heap :=
   {| contents := fun l' => if Z.eq_dec l l' then Some v else h l' |}.
 Next Obligation.
   destruct (isfinite h) as (i & fin).
-  exists (Z.max i (l + 1)); intros. destruct (Z.eq_dec l j). lia. apply fin; lia.
+  exists (Z.max i (l + 1)); intros.
+  destruct (Z.eq_dec l j). lia. apply fin; lia.
 Qed.
 
 Lemma hupdate_same: forall l v h, (hupdate l v h) l = Some v.
@@ -135,9 +137,9 @@ Inductive com: Type :=
   | FREE (a: aexp).             (**r désallocation de l'adresse [a] *)
 
 (** La sémantique à réduction.  Elle opère sur des triplets [(c, s, h)],
-    où [c] est une commande et [(s, h)] l'état mémoire courant.
+    où [c] est une commande et [(s, h)] l'état mémoire courant. *)
 
-    Les 6 premières règles sont celles de IMP.  Le tas [h] est inchangé.
+(** Les 6 premières règles sont celles de IMP.  Le tas [h] est inchangé.
     Les 4 dernières règles donnent la sémantique des opérations sur le tas:
     [ALLOC], [GET], [SET], [FREE].
 *)
@@ -160,6 +162,7 @@ Inductive red: com * store * heap -> com * store * heap -> Prop :=
       red (WHILE b c, s, h) (SEQ c (WHILE b c), s, h)
   | red_alloc: forall x sz s (h: heap) l,
       (forall i, l <= i < l + Z.of_nat sz -> h i = None) ->
+      l <> 0 ->
       red (ALLOC x sz, s, h) (SKIP, update x l s, hinit l sz h)
   | red_get: forall x a s (h: heap) l v,
       l = aeval a s -> h l = Some v ->
@@ -186,9 +189,10 @@ Fixpoint modified_by (c: com) (x: ident) : Prop :=
   | FREE a => False
   end.
 
-(** 4.11.  Les assertions de la logique de séparation *)
+(** ** 4.11.  Les assertions de la logique de séparation *)
 
-(** Les assertions sont des prédicats sur les deux composantes de l'état mémoire. *)
+(** Les assertions sont des prédicats sur les deux composantes de
+    l'état mémoire. *)
 
 Definition assertion : Type := store -> heap -> Prop.
 
@@ -210,7 +214,7 @@ Definition contains (l: addr) (v: Z) : assertion :=
 
 Definition valid (l: addr) : assertion := aexists (contains l).
 
-(** La conjonction séparante *)
+(** La conjonction séparante. *)
 
 Definition sepconj (P Q: assertion) : assertion :=
   fun s h => exists h1 h2, P s h1
@@ -219,28 +223,28 @@ Definition sepconj (P Q: assertion) : assertion :=
 
 Notation "P ** Q" := (sepconj P Q) (at level 60, right associativity).
 
-(** On utilise aussi des assertions "pures", qui ne dépendent pas du tas
-    mais seulement de l'état mémoire.  Ce sont les mêmes que celles
-    de la logique de Hoare. *)
+(** On utilise aussi des assertions simples, qui ne dépendent pas du tas
+    mais seulement de l'état mémoire.  Ce sont les mêmes assertions
+    que celles de la logique de Hoare. *)
 
-Definition pure_assertion : Type := store -> Prop.
+Definition simple_assertion : Type := store -> Prop.
 
 (** L'assertion "l'expression arithmétique [a] s'évalue en la valeur [v]". *)
 
-Definition aequal (a: aexp) (v: Z) : pure_assertion :=
+Definition aequal (a: aexp) (v: Z) : simple_assertion :=
   fun s => aeval a s = v.
 
 (** Les assertions "l'expression booléenne [b] s'évalue à vrai / à faux". *)
 
-Definition atrue (b: bexp) : pure_assertion :=
+Definition atrue (b: bexp) : simple_assertion :=
   fun s => beval b s = true.
 
-Definition afalse (b: bexp) : pure_assertion :=
+Definition afalse (b: bexp) : simple_assertion :=
   fun s => beval b s = false.
 
 (** La conjonction d'une assertion pure et d'une assertion générale. *)
 
-Definition pureconj (P: pure_assertion) (Q: assertion) : assertion :=
+Definition pureconj (P: simple_assertion) (Q: assertion) : assertion :=
   fun s h => P s /\ Q s h.
 
 Notation "P //\\ Q" := (pureconj P Q) (at level 60, right associativity).
@@ -300,7 +304,7 @@ Proof.
   rewrite hunion_empty; auto.
 Qed.
 
-Lemma sepconj_aexists: forall (A: Type) (P: A -> assertion) Q,
+Lemma lift_aexists: forall (A: Type) (P: A -> assertion) Q,
   aexists P ** Q = aexists (fun x => P x ** Q).
 Proof.
   intros; apply assertion_extensionality; intros; split.
@@ -310,7 +314,7 @@ Proof.
   exists h1, h2; intuition auto. exists a; auto.
 Qed.
 
-Lemma pureconj_sepconj_assoc: forall P Q R, (P //\\ Q) ** R = P //\\ (Q ** R).
+Lemma lift_simple_conj: forall P Q R, (P //\\ Q) ** R = P //\\ (Q ** R).
 Proof.
   intros; apply assertion_extensionality; intros; split.
 - intros (h1 & h2 & (P1 & Q1) & R2 & DISJ & EQ). 
@@ -335,16 +339,18 @@ Definition triple_base (P: assertion) (c: com) (Q: assertion) : Prop :=
 
 (** Cette définition ne convient pas, car elle ne valide pas de manière
     évidente la règle d'encadrement (frame rule).
-    Par exemple, si [c] est une allocation [x := ALLOC(1)], on a bien un triplet
+    Par exemple, si [c] est une allocation [x := ALLOC(1)],
+    on a bien un triplet
 <<
        [ emp ]  x := ALLOC(1)  [ aexists (fun l => aequal (VAR "x") l //\\ valid l ]
 >>
-    Cependant, si on encadre avec [R], l'adresse [l] de l'allocation peut tomber
-    dans l'empreinte mémoire de [R].  Et donc la postcondition [R ** aexists ...]
-    peut être fausse. *)
+    Cependant, si on encadre avec [R], l'adresse [l] de l'allocation
+    peut tomber dans l'empreinte mémoire de [R].  Et donc la
+    postcondition [R ** aexists ...]  peut être fausse. *)
 
-(** Une manière simple de contourner ce problème est de quantifier universellement
-    sur tous les encadrements possibles dans la définition même du triplet. *)
+(** Une manière élégante de contourner ce problème est de quantifier
+    universellement sur tous les encadrements possibles dans la
+    définition même du triplet. *)
 
 Definition independent_of (P: assertion) (vars: ident -> Prop) : Prop :=
   forall h s1 s2,
@@ -412,9 +418,10 @@ Lemma triple_alloc: forall x sz,
   [[ aexists (fun l => aequal (VAR x) l //\\ valid_N l sz) ]].
 Proof.
   intros; intros R IND s h (h1 & h2 & EMP & R1 & DISJ & EQ). 
-  destruct (isfinite h) as (l & FIN). 
+  destruct (isfinite h) as (l0 & FIN). 
+  set (l := Z.max l0 1).
   do 2 econstructor; split.
-- apply star_one. apply red_alloc with (l := l). intros; apply FIN; tauto.
+- apply star_one. apply red_alloc with (l := l). intros; apply FIN; lia. lia.
 - exists (hinit l sz hempty), h2; intuition auto.
   + exists l; split. red; cbn. apply update_same.
     assert (REC: forall s1 sz1 l1, valid_N l1 sz1 s1 (hinit l1 sz1 hempty)).
@@ -422,15 +429,17 @@ Proof.
     * red; auto.
     * exists (hupdate l1 0 hempty), (hinit (l1 + 1) sz1 hempty); intuition auto.
       ** exists 0; red; auto.
-      ** red; intros. cbn. destruct (Z.eq_dec l1 l0); auto.
+      ** red; intros. cbn. destruct (Z.eq_dec l1 l2); auto.
          right; apply hinit_outside; lia.
-      ** apply heap_extensionality; intros. cbn. destruct (Z.eq_dec l1 l0); auto.
+      ** apply heap_extensionality; intros. cbn. destruct (Z.eq_dec l1 l2); auto.
     }
     apply REC.
   + apply IND with s; auto. cbn; intros. apply update_other; auto.
   + intros l'. destruct (Z.lt_ge_cases l' l).
     left; apply hinit_outside; auto.
-    right. apply FIN in H. rewrite EQ in H; cbn in H. destruct (h1 l'); congruence.
+    right.
+    assert (L: h l' = None) by (apply FIN; lia).
+    rewrite EQ in L; cbn in L. destruct (h1 l'); congruence.
   + rewrite EQ, EMP, hunion_empty. apply heap_extensionality; intros l'; cbn.
     destruct (Z.lt_ge_cases l' l). rewrite ! hinit_outside by auto. auto. 
     destruct (Z.lt_ge_cases l' (l + Z.of_nat sz)). rewrite ! hinit_inside by auto. auto.
@@ -454,7 +463,8 @@ Proof.
     subst l'. generalize (DISJ l). rewrite P2, hupdate_same. intuition congruence.
 Qed.
 
-(** Les règles pour les autres constructions de IMP. *)
+(** Les règles pour les autres constructions de IMP.  Elles sont proches
+    de celles pour la logique de Hoare forte. *)
 
 Lemma triple_skip:
   [[ emp ]]  SKIP  [[ emp ]].
@@ -508,48 +518,59 @@ Proof.
 - assert (IND1: independent_of R (modified_by c1)).
   { red; intros. apply IND with s1; auto. cbn; intros; apply H1; tauto. }
   destruct (H R IND1 s h) as (s' & h' & EXEC & POST).
-  rewrite pureconj_sepconj_assoc. split; auto.
+  rewrite lift_simple_conj. split; auto.
   exists s', h'; split; auto.
   eapply star_step. apply red_ifthenelse. rewrite B. auto.
 - assert (IND2: independent_of R (modified_by c2)).
   { red; intros. apply IND with s1; auto. cbn; intros; apply H1; tauto. }
   destruct (H0 R IND2 s h) as (s' & h' & EXEC & POST).
-  rewrite pureconj_sepconj_assoc. split; auto.
+  rewrite lift_simple_conj. split; auto.
   exists s', h'; split; auto.
   eapply star_step. apply red_ifthenelse. rewrite B. auto.
 Qed.
 
-Lemma triple_while: 
-  forall b c (A: Type) (ord: A -> A -> Prop) (P: A -> assertion),
-  well_founded ord ->
-  (forall x,
-    [[ atrue b //\\ P x ]] c [[ aexists (fun y => (fun _ => ord y x) //\\ P y) ]])
+Definition alessthan (a: aexp) (v: Z) : simple_assertion :=
+  fun (s: store) => 0 <= aeval a s < v.
+
+Lemma triple_while: forall P variant b c,
+  (forall v,
+     [[ atrue b //\\ aequal variant v //\\ P]]
+     c
+     [[ alessthan variant v //\\ P]])
   ->
-  (forall x,
-    [[ P x ]] WHILE b c [[ aexists (fun y => afalse b //\\ P y) ]]).
+     [[ P ]] WHILE b c [[ afalse b //\\ P ]].
 Proof.
-  intros until P; intros WF TR.
-  induction x using (well_founded_induction WF).
+  intros P variant b c TR.
+  assert (REC: forall v,
+               [[ aequal variant v //\\ P ]]
+               WHILE b c
+               [[ afalse b //\\ P ]]).
+  { induction v using (well_founded_induction (Z.lt_wf 0)).
+    intros R IND s h PRE.
+    assert (IND1: independent_of R (modified_by c)).
+    { red; intros; apply IND with s1; auto. }
+    destruct (beval b s) eqn:B.
+  - destruct (TR v R IND1 s h) as (s1 & h1 & EXEC1 & POST1).
+    rewrite lift_simple_conj. split; auto.
+    rewrite lift_simple_conj in POST1. destruct POST1 as (LT & POST1).
+    destruct (H (aeval variant s1) LT R IND s1 h1) as (s2 & h2 & EXEC2 & POST2).
+    rewrite lift_simple_conj. split; auto. red; auto.
+    exists s2, h2; split; auto.
+    eapply star_step. apply red_while_loop. auto.
+    eapply star_trans. apply star_red_seq_step. eexact EXEC1. 
+    eapply star_step. apply red_seq_done.
+    exact EXEC2.
+  - rewrite lift_simple_conj in PRE. destruct PRE as (EQ & POST1).
+    exists s, h; split.
+    + apply star_one. apply red_while_done. auto.
+    + rewrite lift_simple_conj. split; auto.
+  }
   intros R IND s h PRE.
-  assert (IND1: independent_of R (modified_by c)).
-  { red; intros; apply IND with s1; auto. }
-  destruct (beval b s) eqn:B.
-- destruct (TR x R IND1 s h) as (s1 & h1 & EXEC1 & POST1).
-  rewrite pureconj_sepconj_assoc. split; auto.
-  rewrite sepconj_aexists in POST1. destruct POST1 as (y & POST1).
-  rewrite pureconj_sepconj_assoc in POST1. destruct POST1 as (ORD & POST1).
-  destruct (H y ORD R IND s1 h1 POST1) as (s2 & h2 & EXEC2 & POST2).
-  exists s2, h2; split; auto.
-  eapply star_step. apply red_while_loop. auto.
-  eapply star_trans. apply star_red_seq_step. eexact EXEC1. 
-  eapply star_step. apply red_seq_done.
-  exact EXEC2.
-- exists s, h; split.
-  + apply star_one. apply red_while_done. auto.
-  + rewrite sepconj_aexists. exists x. rewrite pureconj_sepconj_assoc. split; auto.
+  apply (REC (aeval variant s) R IND s h).
+  rewrite lift_simple_conj. split; auto. red; auto.
 Qed.
 
-(** Pour finir, voici la règle de conséquence. *)
+(** La règle de conséquence. *)
 
 Definition aimp (P Q: assertion) : Prop :=
   forall s h, P s h -> Q s h.
@@ -571,7 +592,4 @@ Proof.
   apply aimp_sepconj with P; auto.
   exists s', h'; split; auto. apply aimp_sepconj with Q'; auto.
 Qed.
-
-
-
 
