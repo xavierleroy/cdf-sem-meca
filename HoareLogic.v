@@ -132,9 +132,10 @@ Definition atrue (b: bexp) : assertion :=
 Definition afalse (b: bexp) : assertion :=
   fun s => beval b s = false.
 
-(** L'assertion notée "P[x <- a]" dans les articles.  Substituer [x] par [a]
-    dans [P], cela revient à évaluer [P] dans des états mémoire où
-    la variable [x] est égale à la valeur de l'expression [a]. *)
+(** L'assertion notée "[ P[x <- a] ]" dans les articles.
+    Substituer [x] par [a] dans [P], cela revient à évaluer [P] dans
+    des états mémoire où la variable [x] est égale à la valeur de
+    l'expression [a]. *)
 
 Definition aupdate (x: ident) (a: aexp) (P: assertion) : assertion :=
   fun s => P (update x (aeval a s) s).
@@ -170,7 +171,8 @@ Inductive Hoare: assertion -> com -> assertion -> Prop :=
   | Hoare_assign: forall P x a,
       Hoare (aupdate x a P) (ASSIGN x a) P
   | Hoare_seq: forall P Q R c1 c2,
-      Hoare P c1 Q -> Hoare Q c2 R ->
+      Hoare P c1 Q ->
+      Hoare Q c2 R ->
       Hoare P (c1;;c2) R
   | Hoare_ifthenelse: forall P Q b c1 c2,
       Hoare (atrue b //\\ P) c1 Q ->
@@ -180,20 +182,24 @@ Inductive Hoare: assertion -> com -> assertion -> Prop :=
       Hoare (atrue b //\\ P) c P ->
       Hoare P (WHILE b c) (afalse b //\\ P)
   | Hoare_consequence: forall P Q P' Q' c,
-      Hoare P c Q ->  P' -->> P -> Q -->> Q' ->
+      Hoare P c Q ->
+      P' -->> P ->
+      Q -->> Q' ->
       Hoare P' c Q'.
 
 (** Quelques règles dérivées. *)
 
 Lemma Hoare_consequence_pre: forall P P' Q c,
-      Hoare P c Q -> P' -->> P ->
+      Hoare P c Q ->
+      P' -->> P ->
       Hoare P' c Q.
 Proof.
   intros. apply Hoare_consequence with (P := P) (Q := Q); unfold aimp; auto.
 Qed.
 
 Lemma Hoare_consequence_post: forall P Q Q' c,
-      Hoare P c Q -> Q -->> Q' ->
+      Hoare P c Q ->
+      Q -->> Q' ->
       Hoare P c Q'.
 Proof.
   intros. apply Hoare_consequence with (P := P) (Q := Q); unfold aimp; auto.
@@ -271,7 +277,8 @@ Proof.
 Qed.
 
 Lemma triple_seq: forall P Q R c1 c2,
-      {{P}} c1 {{Q}} -> {{Q}} c2 {{R}} ->
+      {{P}} c1 {{Q}} ->
+      {{Q}} c2 {{R}} ->
       {{P}} c1;;c2 {{R}}.
 Proof.
   unfold triple; intros. inversion H1; subst. eauto.
@@ -296,7 +303,9 @@ Proof.
 Qed.
 
 Lemma triple_consequence: forall P Q P' Q' c,
-      {{P}} c {{Q}} -> P' -->> P -> Q -->> Q' ->
+      {{P}} c {{Q}} ->
+      P' -->> P ->
+      Q -->> Q' ->
       {{P'}} c {{Q'}}.
 Proof.
   unfold triple, aimp; intros. eauto.
@@ -824,7 +833,7 @@ Qed.
     la vérification "passe" même quand le diviseur [b] est nul? *)
 
 (** *** Exercice (3 étoiles) *)
-(** Spécifier et vérifier le programme suivant.  Il calcule dans [r]
+(** Spécifier et vérifier le programme suivant.  Il met dans [r]
     la racine carrée entière de [a].
 <<
     r := 0; s := 1;
