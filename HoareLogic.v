@@ -157,9 +157,9 @@ Notation "P \\// Q" := (aor P Q) (at level 75, right associativity).
 
 (** Voici les règles de base de la logique de Hoare.
     Elles définissent une relation [Hoare P c Q], avec
-  - [P] la précondition, que l'on suppose vraie "avant" l'exécution de [c];
-  - [c] le programme ou le fragment de programme sur lequel on raisonne;
-  - [Q] la postcondition, que l'on garantit vraie "après" l'exécution de [c].
+-   [P] la précondition, que l'on suppose vraie "avant" l'exécution de [c];
+-   [c] le programme ou le fragment de programme sur lequel on raisonne;
+-   [Q] la postcondition, que l'on garantit vraie "après" l'exécution de [c].
 
   Il s'agit d'une logique "faible" au sens où elle ne garantit pas la
   terminaison de [c].  La seule garantie est que si [c] termine, alors
@@ -228,7 +228,7 @@ Proof.
 - unfold aequal, aupdate, aand, aimp; cbn. tauto.
 Qed.
 
-(** *** Exercice (1 étoile) *)
+(** *** Exercice (2 étoiles) *)
 (** Voici une autre manière d'échanger les valeurs de deux variables entières,
     sans utiliser de variable temporaire. *)
 

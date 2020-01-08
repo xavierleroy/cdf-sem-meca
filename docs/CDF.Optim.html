@@ -114,8 +114,8 @@
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="postfixpoint_charact">postfixpoint_charact</a></span>:<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> (<span class="id"><a href="CDF.Optim.html#FIXPOINT.F">F</a></span> <span class="id"><a href="CDF.Optim.html#postfixpoint">postfixpoint</a></span>) <span class="id"><a href="CDF.Optim.html#postfixpoint">postfixpoint</a></span> \/ <span class="id"><a href="CDF.Optim.html#postfixpoint">postfixpoint</a></span> = <span class="id"><a href="CDF.Optim.html#FIXPOINT.default">default</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</div>
-<div class="proofscript" id="proof1">
+<div class="toggleproof" onclick="toggleDisplay('proof88')">Proof.</div>
+<div class="proofscript" id="proof88">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#postfixpoint">postfixpoint</a></span>. <span class="tactic">generalize</span> <span class="id"><a href="CDF.Optim.html#niter">niter</a></span>, <span class="id"><a href="CDF.Optim.html#empty">IdentSet.empty</a></span>. <span class="tactic">induction</span> <span class="id">n</span>; <span class="tactic">intros</span>; <span class="id">cbn</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">destruct</span> (<span class="id"><a href="CDF.Optim.html#subset">IdentSet.subset</a></span> (<span class="id"><a href="CDF.Optim.html#FIXPOINT.F">F</a></span> <span class="id">t</span>) <span class="id">t</span>) <span class="id">eqn</span>:<span class="id">SUBSET</span>.<br/>
@@ -128,8 +128,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="postfixpoint_upper_bound">postfixpoint_upper_bound</a></span>:<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> <span class="id"><a href="CDF.Optim.html#postfixpoint">postfixpoint</a></span> <span class="id"><a href="CDF.Optim.html#FIXPOINT.default">default</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</div>
-<div class="proofscript" id="proof2">
+<div class="toggleproof" onclick="toggleDisplay('proof89')">Proof.</div>
+<div class="proofscript" id="proof89">
 &nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">REC</span>: <span class="kwd">forall</span> <span class="id">n</span> <span class="id">x</span>, <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#FIXPOINT.default">default</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> (<span class="id"><a href="CDF.Optim.html#iter">iter</a></span> <span class="id"><a href="CDF.Optim.html#n">n</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>) <span class="id"><a href="CDF.Optim.html#FIXPOINT.default">default</a></span>).<br/>
 &nbsp;&nbsp;{ <span class="tactic">induction</span> <span class="id">n</span>; <span class="tactic">intros</span>; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;- <span class="id">fsetdec</span>.<br/>
@@ -169,8 +169,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="live_upper_bound">live_upper_bound</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">L</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> (<span class="id"><a href="CDF.Optim.html#live">live</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) (<span class="id"><a href="CDF.Optim.html#union">IdentSet.union</a></span> (<span class="id"><a href="CDF.Optim.html#fv_com">fv_com</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span>) <span class="id"><a href="CDF.Optim.html#L">L</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</div>
-<div class="proofscript" id="proof3">
+<div class="toggleproof" onclick="toggleDisplay('proof90')">Proof.</div>
+<div class="proofscript" id="proof90">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c</span>; <span class="tactic">intros</span>; <span class="tactic">simpl</span>.<br/>
 - <span class="id">fsetdec</span>.<br/>
 - <span class="tactic">destruct</span> (<span class="id"><a href="CDF.Optim.html#mem">IdentSet.mem</a></span> <span class="id">x</span> <span class="id">L</span>) <span class="id">eqn</span>:<span class="id">MEM</span>; <span class="id">fsetdec</span>. <br/>
@@ -188,8 +188,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> (<span class="id"><a href="CDF.Optim.html#fv_bexp">fv_bexp</a></span> <span class="id"><a href="CDF.Optim.html#b">b</a></span>) <span class="id">L</span>'<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id">L</span>'<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> (<span class="id"><a href="CDF.Optim.html#live">live</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id">L</span>') <span class="id">L</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</div>
-<div class="proofscript" id="proof4">
+<div class="toggleproof" onclick="toggleDisplay('proof91')">Proof.</div>
+<div class="proofscript" id="proof91">
 &nbsp;&nbsp;<span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">generalize</span> (<span class="id"><a href="CDF.Optim.html#postfixpoint_charact">postfixpoint_charact</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;(<span class="kwd">fun</span> <span class="id">x</span> : <span class="id"><a href="CDF.Optim.html#t">IdentSet.t</a></span> =&gt; <span class="id"><a href="CDF.Optim.html#union">IdentSet.union</a></span> (<span class="id"><a href="CDF.Optim.html#union">IdentSet.union</a></span> (<span class="id"><a href="CDF.Optim.html#fv_bexp">fv_bexp</a></span> <span class="id">b</span>) <span class="id">L</span>) (<span class="id"><a href="CDF.Optim.html#live">live</a></span> <span class="id">c</span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>))<br/>
@@ -250,8 +250,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="agree_mon">agree_mon</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">L</span> <span class="id">L</span>' <span class="id">s1</span> <span class="id">s2</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#agree">agree</a></span> <span class="id">L</span>' <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id">L</span>' -&gt; <span class="id"><a href="CDF.Optim.html#agree">agree</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</div>
-<div class="proofscript" id="proof5">
+<div class="toggleproof" onclick="toggleDisplay('proof92')">Proof.</div>
+<div class="proofscript" id="proof92">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span>, <span class="id"><a href="CDF.Optim.html#agree">agree</a></span>; <span class="tactic">intros</span>. <span class="tactic">auto</span>.<br/>
 Qed.</div>
 <br/>
@@ -261,8 +261,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="aeval_agree">aeval_agree</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">s1</span> <span class="id">s2</span>, <span class="id"><a href="CDF.Optim.html#agree">agree</a></span> (<span class="id"><a href="CDF.Optim.html#fv_aexp">fv_aexp</a></span> <span class="id"><a href="CDF.Optim.html#a">a</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.Optim.html#a">a</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> = <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.Optim.html#a">a</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof6')">Proof.</div>
-<div class="proofscript" id="proof6">
+<div class="toggleproof" onclick="toggleDisplay('proof93')">Proof.</div>
+<div class="proofscript" id="proof93">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">a</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">fsetdec</span>. <br/>
@@ -272,8 +272,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="beval_agree">beval_agree</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">b</span> <span class="id">s1</span> <span class="id">s2</span>, <span class="id"><a href="CDF.Optim.html#agree">agree</a></span> (<span class="id"><a href="CDF.Optim.html#fv_bexp">fv_bexp</a></span> <span class="id"><a href="CDF.Optim.html#b">b</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.Optim.html#b">b</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> = <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.Optim.html#b">b</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof7')">Proof.</div>
-<div class="proofscript" id="proof7">
+<div class="toggleproof" onclick="toggleDisplay('proof94')">Proof.</div>
+<div class="proofscript" id="proof94">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">b</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
@@ -291,8 +291,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s1</span> <span class="id">s2</span> <span class="id">L</span> <span class="id">x</span> <span class="id">v</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#agree">agree</a></span> (<span class="id"><a href="CDF.Optim.html#remove">IdentSet.remove</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#agree">agree</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#v">v</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>) (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#v">v</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof8')">Proof.</div>
-<div class="proofscript" id="proof8">
+<div class="toggleproof" onclick="toggleDisplay('proof95')">Proof.</div>
+<div class="proofscript" id="proof95">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#agree">agree</a></span>, <span class="id"><a href="CDF.IMP.html#update">update</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>).<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">fsetdec</span>.<br/>
@@ -305,8 +305,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s1</span> <span class="id">s2</span> <span class="id">L</span> <span class="id">x</span> <span class="id">v</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#agree">agree</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; ~<span class="id"><a href="CDF.Optim.html#In">IdentSet.In</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#agree">agree</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#v">v</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>) <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof9')">Proof.</div>
-<div class="proofscript" id="proof9">
+<div class="toggleproof" onclick="toggleDisplay('proof96')">Proof.</div>
+<div class="proofscript" id="proof96">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#agree">agree</a></span>, <span class="id"><a href="CDF.IMP.html#update">update</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>).<br/>
 - <span class="tactic">subst</span> <span class="id">x0</span>. <span class="id">contradiction</span>.<br/>
 - <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">fsetdec</span>.<br/>
@@ -332,8 +332,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">L</span> <span class="id">s1</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#agree">agree</a></span> (<span class="id"><a href="CDF.Optim.html#live">live</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id"><a href="CDF.Optim.html#s">s</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id">exists</span> <span class="id">s1</span>', <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> (<span class="id"><a href="CDF.Optim.html#dce">dce</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id">s1</span>' /\ <span class="id"><a href="CDF.Optim.html#agree">agree</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id">s</span>' <span class="id">s1</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof10')">Proof.</div>
-<div class="proofscript" id="proof10">
+<div class="toggleproof" onclick="toggleDisplay('proof97')">Proof.</div>
+<div class="proofscript" id="proof97">
 &nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="tactic">intros</span> <span class="id">L</span> <span class="id">s1</span> <span class="id">AG</span>.<br/>
 - <span class="comment">(*&nbsp;SKIP&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="id">exists</span> <span class="id">s1</span>; <span class="tactic">split</span>. <span class="id">constructor</span>. <span class="tactic">auto</span>.<br/>
@@ -406,8 +406,8 @@ Qed.</div>
 &nbsp;&nbsp;(<span class="id">exists</span> <span class="id">s1</span>', <span class="tactic">red</span> (<span class="id"><a href="CDF.Optim.html#dce">dce</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>, <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>) (<span class="id"><a href="CDF.Optim.html#dce">dce</a></span> <span class="id">c</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span>, <span class="id">s1</span>') /\ <span class="id"><a href="CDF.Optim.html#agree">agree</a></span> (<span class="id"><a href="CDF.Optim.html#live">live</a></span> <span class="id">c</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id">s</span>' <span class="id">s1</span>')<br/>
 &nbsp;&nbsp;\/<br/>
 &nbsp;&nbsp;((<span class="kwd">measure</span> <span class="id">c</span>' &lt; <span class="kwd">measure</span> <span class="id"><a href="CDF.Optim.html#c">c</a></span>)%<span class="id">nat</span> /\ <span class="id"><a href="CDF.Optim.html#dce">dce</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> = <span class="id"><a href="CDF.Optim.html#dce">dce</a></span> <span class="id">c</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> /\ <span class="id"><a href="CDF.Optim.html#agree">agree</a></span> (<span class="id"><a href="CDF.Optim.html#live">live</a></span> <span class="id">c</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id">s</span>' <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof11')">Proof.</div>
-<div class="proofscript" id="proof11">
+<div class="toggleproof" onclick="toggleDisplay('proof98')">Proof.</div>
+<div class="proofscript" id="proof98">
 &nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">until</span> <span class="id">s</span>'; <span class="tactic">intros</span> <span class="id">STEP</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">STEP</span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="comment">(*&nbsp;A&nbsp;COMPLETER&nbsp;*)</span><br/>
 Abort.</div>
@@ -466,8 +466,8 @@ Abort.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="expr_is_var_correct">expr_is_var_correct</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">x</span>, <span class="id"><a href="CDF.Optim.html#expr_is_var">expr_is_var</a></span> <span class="id"><a href="CDF.Optim.html#a">a</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#a">a</a></span> = <span class="id"><a href="CDF.IMP.html#VAR">VAR</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof12')">Proof.</div>
-<div class="proofscript" id="proof12">
+<div class="toggleproof" onclick="toggleDisplay('proof99')">Proof.</div>
+<div class="proofscript" id="proof99">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#expr_is_var">expr_is_var</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">a</span>; <span class="tactic">congruence</span>.<br/>
 Qed.</div>
 <br/>
@@ -512,8 +512,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id">agree</span>'<span class="id">_mon</span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">L</span> <span class="id">L</span>' <span class="id">s1</span> <span class="id">s2</span>,<br/>
 &nbsp;&nbsp;<span class="id">agree</span>' <span class="id">L</span>' <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id">L</span>' -&gt; <span class="id">agree</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof13')">Proof.</div>
-<div class="proofscript" id="proof13">
+<div class="toggleproof" onclick="toggleDisplay('proof100')">Proof.</div>
+<div class="proofscript" id="proof100">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#Subset">IdentSet.Subset</a></span>, <span class="id">agree</span>'; <span class="tactic">intros</span>. <span class="tactic">auto</span>.<br/>
 Qed.</div>
 <br/>
@@ -523,8 +523,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id">aeval_agree</span>':<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">s1</span> <span class="id">s2</span>, <span class="id">agree</span>' (<span class="id"><a href="CDF.Optim.html#fv_aexp">fv_aexp</a></span> <span class="id"><a href="CDF.Optim.html#a">a</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.Optim.html#a">a</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> = <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> (<span class="id"><a href="CDF.Optim.html#rename_aexp">rename_aexp</a></span> <span class="id"><a href="CDF.Optim.html#a">a</a></span>) <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof14')">Proof.</div>
-<div class="proofscript" id="proof14">
+<div class="toggleproof" onclick="toggleDisplay('proof101')">Proof.</div>
+<div class="proofscript" id="proof101">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">a</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">fsetdec</span>. <br/>
@@ -534,8 +534,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id">beval_agree</span>':<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">b</span> <span class="id">s1</span> <span class="id">s2</span>, <span class="id">agree</span>' (<span class="id"><a href="CDF.Optim.html#fv_bexp">fv_bexp</a></span> <span class="id"><a href="CDF.Optim.html#b">b</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.Optim.html#b">b</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> = <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> (<span class="id"><a href="CDF.Optim.html#rename_bexp">rename_bexp</a></span> <span class="id"><a href="CDF.Optim.html#b">b</a></span>) <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof15')">Proof.</div>
-<div class="proofscript" id="proof15">
+<div class="toggleproof" onclick="toggleDisplay('proof102')">Proof.</div>
+<div class="proofscript" id="proof102">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">b</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
@@ -552,8 +552,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s1</span> <span class="id">s2</span> <span class="id">L</span> <span class="id">x</span> <span class="id">v</span>,<br/>
 &nbsp;&nbsp;<span class="id">agree</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt; ~<span class="id"><a href="CDF.Optim.html#In">IdentSet.In</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id">agree</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#v">v</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>) <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof16')">Proof.</div>
-<div class="proofscript" id="proof16">
+<div class="toggleproof" onclick="toggleDisplay('proof103')">Proof.</div>
+<div class="proofscript" id="proof103">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id">agree</span>', <span class="id"><a href="CDF.IMP.html#update">update</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>).<br/>
 - <span class="tactic">subst</span> <span class="id">x0</span>. <span class="id">contradiction</span>.<br/>
 - <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">fsetdec</span>.<br/>
@@ -570,8 +570,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id">agree</span>' (<span class="id"><a href="CDF.Optim.html#remove">IdentSet.remove</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt;<br/>
 &nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">z</span>, <span class="id"><a href="CDF.Optim.html#In">IdentSet.In</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#x">x</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id">agree</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#v">v</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>) (<span class="id"><a href="CDF.IMP.html#update">update</a></span> (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>) <span class="id"><a href="CDF.Optim.html#v">v</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof17')">Proof.</div>
-<div class="proofscript" id="proof17">
+<div class="toggleproof" onclick="toggleDisplay('proof104')">Proof.</div>
+<div class="proofscript" id="proof104">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id">agree</span>', <span class="id"><a href="CDF.IMP.html#update">update</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>); <span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id">x</span>) (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id">x0</span>)).<br/>
 - <span class="tactic">auto</span>.<br/>
@@ -590,8 +590,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id">agree</span>' (<span class="id"><a href="CDF.Optim.html#union">IdentSet.union</a></span> (<span class="id"><a href="CDF.Optim.html#remove">IdentSet.remove</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) (<span class="id"><a href="CDF.Optim.html#singleton">IdentSet.singleton</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>)) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#s2">s2</a></span> -&gt;<br/>
 &nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">z</span>, <span class="id"><a href="CDF.Optim.html#In">IdentSet.In</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#x">x</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id">agree</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> (<span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>) (<span class="id"><a href="CDF.IMP.html#update">update</a></span> (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>) (<span class="id"><a href="CDF.Optim.html#s2">s2</a></span> (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>)) <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof18')">Proof.</div>
-<div class="proofscript" id="proof18">
+<div class="toggleproof" onclick="toggleDisplay('proof105')">Proof.</div>
+<div class="proofscript" id="proof105">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id">agree</span>', <span class="id"><a href="CDF.IMP.html#update">update</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>); <span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id">x</span>) (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id">x0</span>)).<br/>
 - <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">fsetdec</span>.<br/>
@@ -613,8 +613,8 @@ Qed.</div>
 &nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">z</span>, <span class="id"><a href="CDF.Optim.html#In">IdentSet.In</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#x">x</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span> &lt;&gt; <span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> = <span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id">agree</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> (<span class="id"><a href="CDF.Optim.html#s1">s1</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>) <span class="id"><a href="CDF.Optim.html#s1">s1</a></span>) <span class="id"><a href="CDF.Optim.html#s2">s2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof19')">Proof.</div>
-<div class="proofscript" id="proof19">
+<div class="toggleproof" onclick="toggleDisplay('proof106')">Proof.</div>
+<div class="proofscript" id="proof106">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id">agree</span>', <span class="id"><a href="CDF.IMP.html#update">update</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>); <span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id">x</span>) (<span class="id"><a href="CDF.Optim.html#RENAMING.f">f</a></span> <span class="id">x0</span>)).<br/>
 - <span class="tactic">rewrite</span> &lt;- <span class="id">e0</span>, <span class="id">H1</span>. <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">fsetdec</span>.<br/>
@@ -665,8 +665,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id">agree</span>' (<span class="id"><a href="CDF.Optim.html#live">live</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id"><a href="CDF.Optim.html#s">s</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#correct_allocation">correct_allocation</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id">exists</span> <span class="id">s1</span>', <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.Optim.html#s1">s1</a></span> (<span class="id"><a href="CDF.Optim.html#regalloc">regalloc</a></span> <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id"><a href="CDF.Optim.html#L">L</a></span>) <span class="id">s1</span>' /\ <span class="id">agree</span>' <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="id">s</span>' <span class="id">s1</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof20')">Proof.</div>
-<div class="proofscript" id="proof20">
+<div class="toggleproof" onclick="toggleDisplay('proof107')">Proof.</div>
+<div class="proofscript" id="proof107">
 &nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="tactic">intros</span> <span class="id">L</span> <span class="id">s1</span> <span class="id">AG</span> <span class="id">CORR</span>.<br/>
 - <span class="comment">(*&nbsp;SKIP&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="id">exists</span> <span class="id">s1</span>; <span class="tactic">split</span>. <span class="id">constructor</span>. <span class="tactic">auto</span>.<br/>
@@ -839,12 +839,12 @@ Qed.</div>
 <br/>
 <span class="kwd">Program</span> <span class="kwd">Definition</span> <span class="id"><a name="finset_eq_dec">finset_eq_dec</a></span> (<span class="id">x</span> <span class="id">y</span>: <span class="id"><a href="CDF.Optim.html#finset">finset</a></span>) : {<span class="id"><a href="CDF.Optim.html#finset_eq">finset_eq</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>} + {~<span class="id"><a href="CDF.Optim.html#finset_eq">finset_eq</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>} :=<br/>
 &nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Optim.html#equal">IdentSet.equal</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> <span class="kwd">with</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#left">left</a></span> <span class="id">_</span> | <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#right">right</a></span> <span class="id">_</span> <span class="kwd">end</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof21')">Next Obligation.</div>
-<div class="proofscript" id="proof21">
+<div class="toggleproof" onclick="toggleDisplay('proof108')">Next Obligation.</div>
+<div class="proofscript" id="proof108">
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#equal_2">IdentSet.equal_2</a></span>; <span class="tactic">auto</span>.<br/>
 Qed.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof22')">Next Obligation.</div>
-<div class="proofscript" id="proof22">
+<div class="toggleproof" onclick="toggleDisplay('proof109')">Next Obligation.</div>
+<div class="proofscript" id="proof109">
 &nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#equal_1">IdentSet.equal_1</a></span> <span class="kwd">in</span> <span class="id">H</span>. <span class="tactic">congruence</span>.<br/>
 Qed.</div>
 <br/>
@@ -852,25 +852,25 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_le_trans">finset_le_trans</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">x</span> <span class="id">y</span> <span class="id">z</span>, <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof23')">Proof.</div>
-<div class="proofscript" id="proof23">
+<div class="toggleproof" onclick="toggleDisplay('proof110')">Proof.</div>
+<div class="proofscript" id="proof110">
 &nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">x</span> <span class="id">y</span> <span class="id">z</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#subset_trans">ISProp.subset_trans</a></span>.<br/>
 Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_eq_le">finset_eq_le</a></span>: <span class="kwd">forall</span> <span class="id">x</span> <span class="id">y</span>, <span class="id"><a href="CDF.Optim.html#finset_eq">finset_eq</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof24')">Proof.</div>
-<div class="proofscript" id="proof24">
+<div class="toggleproof" onclick="toggleDisplay('proof111')">Proof.</div>
+<div class="proofscript" id="proof111">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#subset_equal">ISProp.subset_equal</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#equal_sym">ISProp.equal_sym</a></span>. <span class="tactic">apply</span> <span class="id">H</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Program</span> <span class="kwd">Definition</span> <span class="id"><a name="finset_bot">finset_bot</a></span> : <span class="id"><a href="CDF.Optim.html#finset">finset</a></span> := <span class="id"><a href="CDF.Optim.html#empty">IdentSet.empty</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof25')">Next Obligation.</div>
-<div class="proofscript" id="proof25">
+<div class="toggleproof" onclick="toggleDisplay('proof112')">Next Obligation.</div>
+<div class="proofscript" id="proof112">
 &nbsp;&nbsp;<span class="id">fsetdec</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_bot_smallest">finset_bot_smallest</a></span>: <span class="kwd">forall</span> <span class="id">x</span>, <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#finset_bot">finset_bot</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof26')">Proof.</div>
-<div class="proofscript" id="proof26">
+<div class="toggleproof" onclick="toggleDisplay('proof113')">Proof.</div>
+<div class="proofscript" id="proof113">
 &nbsp;&nbsp;<span class="tactic">intros</span>; <span class="tactic">red</span>; <span class="id">fsetdec</span>.<br/>
 Qed.</div>
 <br/>
@@ -883,22 +883,22 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_cardinal_max">finset_cardinal_max</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">x</span>, (<span class="id"><a href="CDF.Optim.html#finset_cardinal">finset_cardinal</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> &lt;= <span class="id"><a href="CDF.Optim.html#cardinal">IdentSet.cardinal</a></span> <span class="id"><a href="CDF.Optim.html#FIXPOINT_FINITE_SETS.U">U</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof27')">Proof.</div>
-<div class="proofscript" id="proof27">
+<div class="toggleproof" onclick="toggleDisplay('proof114')">Proof.</div>
+<div class="proofscript" id="proof114">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#subset_cardinal">ISProp.subset_cardinal</a></span>. <span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj2_sig">proj2_sig</a></span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_cardinal_le">finset_cardinal_le</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">x</span> <span class="id">y</span>, <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt; (<span class="id"><a href="CDF.Optim.html#finset_cardinal">finset_cardinal</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> &lt;= <span class="id"><a href="CDF.Optim.html#finset_cardinal">finset_cardinal</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof28')">Proof.</div>
-<div class="proofscript" id="proof28">
+<div class="toggleproof" onclick="toggleDisplay('proof115')">Proof.</div>
+<div class="proofscript" id="proof115">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#subset_cardinal">ISProp.subset_cardinal</a></span>. <span class="tactic">apply</span> <span class="id">H</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_cardinal_lt">finset_cardinal_lt</a></span>: <span class="kwd">forall</span> <span class="id">x</span> <span class="id">y</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt; ~<span class="id"><a href="CDF.Optim.html#finset_eq">finset_eq</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> -&gt; (<span class="id"><a href="CDF.Optim.html#finset_cardinal">finset_cardinal</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> &lt; <span class="id"><a href="CDF.Optim.html#finset_cardinal">finset_cardinal</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof29')">Proof.</div>
-<div class="proofscript" id="proof29">
+<div class="toggleproof" onclick="toggleDisplay('proof116')">Proof.</div>
+<div class="proofscript" id="proof116">
 &nbsp;&nbsp;<span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.Optim.html#choose">IdentSet.choose</a></span> (<span class="id"><a href="CDF.Optim.html#diff">IdentSet.diff</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj1_sig">proj1_sig</a></span> <span class="id">y</span>) (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj1_sig">proj1_sig</a></span> <span class="id">x</span>))) <span class="kwd">as</span> [<span class="id">elt</span>|] <span class="id">eqn</span>:<span class="id">CHOOSE</span>.<br/>
 - <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#choose_1">IdentSet.choose_1</a></span> <span class="kwd">in</span> <span class="id">CHOOSE</span>.<br/>
@@ -913,8 +913,8 @@ Qed.</div>
 &nbsp;<br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_gt_wf">finset_gt_wf</a></span>:<br/>
 &nbsp;&nbsp;<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#well_founded">well_founded</a></span> (<span class="kwd">fun</span> <span class="id">x</span> <span class="id">y</span> =&gt; <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span> /\ ~<span class="id"><a href="CDF.Optim.html#finset_eq">finset_eq</a></span> <span class="id"><a href="CDF.Optim.html#y">y</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof30')">Proof.</div>
-<div class="proofscript" id="proof30">
+<div class="toggleproof" onclick="toggleDisplay('proof117')">Proof.</div>
+<div class="proofscript" id="proof117">
 &nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">M</span> := <span class="kwd">fun</span> <span class="id">x</span> =&gt; (<span class="id"><a href="CDF.Optim.html#cardinal">IdentSet.cardinal</a></span> <span class="id"><a href="CDF.Optim.html#FIXPOINT_FINITE_SETS.U">U</a></span> - <span class="id"><a href="CDF.Optim.html#finset_cardinal">finset_cardinal</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>)%<span class="id">nat</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Wellfounded.Inclusion.html#wf_incl">wf_incl</a></span> <span class="kwd">with</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Arith.Wf_nat.html#ltof">ltof</a></span> <span class="id">_</span> <span class="id">M</span>).<br/>
 - <span class="tactic">red</span>; <span class="tactic">intros</span> <span class="id">x</span> <span class="id">y</span> [<span class="id">L</span> <span class="id">E</span>]; <span class="tactic">red</span>. <span class="tactic">unfold</span> <span class="id">M</span>.<br/>
@@ -936,15 +936,15 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_fixpoint_eq">finset_fixpoint_eq</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">F</span> <span class="id">M</span>, <span class="id"><a href="CDF.Optim.html#finset_eq">finset_eq</a></span> (<span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span> <span class="id"><a href="CDF.Optim.html#F">F</a></span> <span class="id"><a href="CDF.Optim.html#M">M</a></span>) (<span class="id"><a href="CDF.Optim.html#F">F</a></span> (<span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span> <span class="id"><a href="CDF.Optim.html#F">F</a></span> <span class="id"><a href="CDF.Optim.html#M">M</a></span>)).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof31')">Proof.</div>
-<div class="proofscript" id="proof31">
+<div class="toggleproof" onclick="toggleDisplay('proof118')">Proof.</div>
+<div class="proofscript" id="proof118">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Fixpoints.html#fixpoint_eq">fixpoint_eq</a></span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finset_fixpoint_smallest">finset_fixpoint_smallest</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">F</span> <span class="id">M</span> <span class="id">z</span>, <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> (<span class="id"><a href="CDF.Optim.html#F">F</a></span> <span class="id"><a href="CDF.Optim.html#z">z</a></span>) <span class="id"><a href="CDF.Optim.html#z">z</a></span> -&gt; <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> (<span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span> <span class="id"><a href="CDF.Optim.html#F">F</a></span> <span class="id"><a href="CDF.Optim.html#M">M</a></span>) <span class="id"><a href="CDF.Optim.html#z">z</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof32')">Proof.</div>
-<div class="proofscript" id="proof32">
+<div class="toggleproof" onclick="toggleDisplay('proof119')">Proof.</div>
+<div class="proofscript" id="proof119">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Fixpoints.html#fixpoint_smallest">fixpoint_smallest</a></span>; <span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Optim.html#finset_le_trans">finset_le_trans</a></span>.<br/>
 Qed.</div>
 <br/>
@@ -952,8 +952,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">F1</span> <span class="id">M1</span> <span class="id">F2</span> <span class="id">M2</span>,<br/>
 &nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">x</span>, <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> (<span class="id"><a href="CDF.Optim.html#F1">F1</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>) (<span class="id"><a href="CDF.Optim.html#F2">F2</a></span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>)) -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> (<span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span> <span class="id"><a href="CDF.Optim.html#F1">F1</a></span> <span class="id"><a href="CDF.Optim.html#M1">M1</a></span>) (<span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span> <span class="id"><a href="CDF.Optim.html#F2">F2</a></span> <span class="id"><a href="CDF.Optim.html#M2">M2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof33')">Proof.</div>
-<div class="proofscript" id="proof33">
+<div class="toggleproof" onclick="toggleDisplay('proof120')">Proof.</div>
+<div class="proofscript" id="proof120">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Fixpoints.html#fixpoint_mon">fixpoint_mon</a></span>; <span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Optim.html#finset_le_trans">finset_le_trans</a></span>, <span class="id"><a href="CDF.Optim.html#finset_eq_le">finset_eq_le</a></span>.<br/>
 Qed.</div>
 <br/>
@@ -1009,16 +1009,16 @@ Qed.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">let</span> <span class="id">L</span>' := <span class="id"><a href="CDF.Optim.html#union">IdentSet.union</a></span> (<span class="id"><a href="CDF.Optim.html#fv_bexp">fv_bexp</a></span> <span class="id">b</span>) <span class="id"><a href="CDF.Optim.html#L">L</a></span> <span class="kwd">in</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Optim.html#finset_fixpoint">finset_fixpoint</a></span> (<span class="kwd">fun</span> <span class="id">x</span> =&gt; <span class="id"><a href="CDF.Optim.html#union">IdentSet.union</a></span> <span class="id">L</span>' (<span class="id">live</span>' <span class="id"><a href="CDF.Optim.html#c">c</a></span> <span class="id">_</span> <span class="id"><a href="CDF.Optim.html#x">x</a></span>)) <span class="id">_</span><br/>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof34')">Next Obligation.</div>
-<div class="proofscript" id="proof34">
+<div class="toggleproof" onclick="toggleDisplay('proof121')">Next Obligation.</div>
+<div class="proofscript" id="proof121">
 &nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">auto</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof35')">Next Obligation.</div>
-<div class="proofscript" id="proof35">
+<div class="toggleproof" onclick="toggleDisplay('proof122')">Next Obligation.</div>
+<div class="proofscript" id="proof122">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>. <span class="tactic">generalize</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj2_sig">proj2_sig</a></span> <span class="id">L</span>). <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof36')">Next Obligation.</div>
-<div class="proofscript" id="proof36">
+<div class="toggleproof" onclick="toggleDisplay('proof123')">Next Obligation.</div>
+<div class="proofscript" id="proof123">
 &nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">intros</span>. <span class="tactic">rename</span> <span class="id">x0</span> <span class="id">into</span> <span class="id">L1</span>. <span class="tactic">rename</span> <span class="id">y</span> <span class="id">into</span> <span class="id">L2</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span> <span class="kwd">in</span> *.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.Optim.html#mem">IdentSet.mem</a></span> <span class="id">x</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj1_sig">proj1_sig</a></span> <span class="id">L1</span>)) <span class="id">eqn</span>:<span class="id">M1</span>; <span class="id">cbn</span>.<br/>
 - <span class="tactic">replace</span> (<span class="id"><a href="CDF.Optim.html#mem">IdentSet.mem</a></span> <span class="id">x</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj1_sig">proj1_sig</a></span> <span class="id">L2</span>)) <span class="kwd">with</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span>. <br/>
@@ -1028,53 +1028,53 @@ Defined.</div>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#mem_2">IdentSet.mem_2</a></span> <span class="kwd">in</span> <span class="id">M2</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#not_mem_iff">ISFact.not_mem_iff</a></span> <span class="kwd">in</span> <span class="id">M1</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">intros</span> <span class="id">z</span> <span class="id">IN</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#union_2">IdentSet.union_2</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#remove_2">IdentSet.remove_2</a></span>. <span class="tactic">congruence</span>. <span class="tactic">auto</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof37')">Next Obligation.</div>
-<div class="proofscript" id="proof37">
+<div class="toggleproof" onclick="toggleDisplay('proof124')">Next Obligation.</div>
+<div class="proofscript" id="proof124">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>; <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof38')">Next Obligation.</div>
-<div class="proofscript" id="proof38">
+<div class="toggleproof" onclick="toggleDisplay('proof125')">Next Obligation.</div>
+<div class="proofscript" id="proof125">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>; <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof39')">Next Obligation.</div>
-<div class="proofscript" id="proof39">
+<div class="toggleproof" onclick="toggleDisplay('proof126')">Next Obligation.</div>
+<div class="proofscript" id="proof126">
 &nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">intros</span>. <span class="tactic">auto</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof40')">Next Obligation.</div>
-<div class="proofscript" id="proof40">
+<div class="toggleproof" onclick="toggleDisplay('proof127')">Next Obligation.</div>
+<div class="proofscript" id="proof127">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>; <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof41')">Next Obligation.</div>
-<div class="proofscript" id="proof41">
+<div class="toggleproof" onclick="toggleDisplay('proof128')">Next Obligation.</div>
+<div class="proofscript" id="proof128">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>; <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof42')">Next Obligation.</div>
-<div class="proofscript" id="proof42">
+<div class="toggleproof" onclick="toggleDisplay('proof129')">Next Obligation.</div>
+<div class="proofscript" id="proof129">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>. <span class="tactic">generalize</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj2_sig">proj2_sig</a></span> (<span class="id">x</span> <span class="id">L</span>)), (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj2_sig">proj2_sig</a></span> (<span class="id">x0</span> <span class="id">L</span>)); <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof43')">Next Obligation.</div>
-<div class="proofscript" id="proof43">
+<div class="toggleproof" onclick="toggleDisplay('proof130')">Next Obligation.</div>
+<div class="proofscript" id="proof130">
 &nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">intros</span>; <span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span>; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id">live</span>' <span class="id">c1</span>) <span class="kwd">as</span> [<span class="id">f1</span> <span class="id">M1</span>], (<span class="id">live</span>' <span class="id">c2</span>) <span class="kwd">as</span> [<span class="id">f2</span> <span class="id">M2</span>]. <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#union_subset_5">ISProp.union_subset_5</a></span>.<br/>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#union_s_m">ISProp.FM.union_s_m</a></span>. <span class="tactic">apply</span> <span class="id">M1</span>; <span class="tactic">auto</span>. <span class="tactic">apply</span> <span class="id">M2</span>; <span class="tactic">auto</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof44')">Next Obligation.</div>
-<div class="proofscript" id="proof44">
+<div class="toggleproof" onclick="toggleDisplay('proof131')">Next Obligation.</div>
+<div class="proofscript" id="proof131">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>; <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof45')">Next Obligation.</div>
-<div class="proofscript" id="proof45">
+<div class="toggleproof" onclick="toggleDisplay('proof132')">Next Obligation.</div>
+<div class="proofscript" id="proof132">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>. <span class="tactic">generalize</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj2_sig">proj2_sig</a></span> (<span class="id">x0</span> <span class="id">x</span>)) (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Specif.html#proj2_sig">proj2_sig</a></span> <span class="id">L</span>). <span class="id">fsetdec</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof46')">Next Obligation.</div>
-<div class="proofscript" id="proof46">
+<div class="toggleproof" onclick="toggleDisplay('proof133')">Next Obligation.</div>
+<div class="proofscript" id="proof133">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>. <span class="tactic">red</span>; <span class="tactic">intros</span>; <span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span>; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id">live</span>' <span class="id">c</span>) <span class="kwd">as</span> [<span class="id">f</span> <span class="id">M</span>]; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#union_subset_5">ISProp.union_subset_5</a></span>. <span class="tactic">apply</span> <span class="id">M</span>; <span class="tactic">auto</span>.<br/>
 Defined.</div>
-<div class="toggleproof" onclick="toggleDisplay('proof47')">Next Obligation.</div>
-<div class="proofscript" id="proof47">
+<div class="toggleproof" onclick="toggleDisplay('proof134')">Next Obligation.</div>
+<div class="proofscript" id="proof134">
 &nbsp;&nbsp;<span class="id">cbn</span> <span class="kwd">in</span> <span class="id">CONT</span>. <span class="tactic">red</span>; <span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Optim.html#finset_fixpoint_mon">finset_fixpoint_mon</a></span>.<br/>
 &nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">z</span>; <span class="tactic">unfold</span> <span class="id"><a href="CDF.Optim.html#finset_le">finset_le</a></span>; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id">live</span>' <span class="id">c</span>) <span class="kwd">as</span> [<span class="id">f</span> <span class="id">M</span>]; <span class="id">cbn</span>.<br/>
@@ -1090,6 +1090,6 @@ Defined.</div>
 <span class="kwd">End</span> <span class="id"><a href="CDF.Optim.html#FIXPOINT_FINITE_SETS">FIXPOINT_FINITE_SETS</a></span>.<br/>
 
 </div>
-<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</a></div>
+<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</div>
 </body>
 </html>
