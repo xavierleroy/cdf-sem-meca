@@ -1,4 +1,4 @@
-From Coq Require Import ZArith Psatz Bool String List FMaps Program.Equality.
+From Coq Require Import ZArith Psatz Bool String List FMaps Wellfounded Program.Equality.
 From CDF Require Import Sequences IMP.
 
 Local Open Scope string_scope.
@@ -472,6 +472,16 @@ Module Zinf.
     discriminate.
   Qed.
 
+  Lemma ble_2: forall v1 v2, le v1 v2 -> ble v1 v2 = true.
+  Proof.
+    unfold ble, le, In; intros.
+    destruct v2.
+  - destruct v1.
+    + apply Z.leb_le. apply H; lia.
+    + assert (h + 1 <= h) by auto. lia.
+  - destruct v1; auto.
+  Qed.
+
   Definition max (v1 v2: zinf) : zinf :=
     match v1, v2 with Inf, _ => Inf | _, Inf => Inf | Fin h1, Fin h2 => Fin (Z.max h1 h2) end.
 
@@ -547,18 +557,6 @@ Module Intervals <: VALUE_ABSTRACTION.
   Definition le (v1 v2: t) : Prop :=
     forall n, In n v1 -> In n v2.
 
-(** [ble] is a boolean function that approximates the [le] relation. *)
-  Definition ble (v1 v2: t) : bool :=
-    Zinf.ble (high v1) (high v2) && Zinf.ble (low v1) (low v2).
-
-  Lemma ble_1: forall v1 v2, ble v1 v2 = true -> le v1 v2.
-  Proof.
-    unfold ble, le, In; intros v1 v2 B n [I1 I2].
-    apply andb_prop in B; destruct B as [B1 B2].
-    apply Zinf.ble_1 in B1. apply Zinf.ble_1 in B2.
-    split; auto.
-  Qed.
-
 (** [const n] returns the abstract value for the singleton set [{n}]. *)
   Definition const (n: Z) : t := {| low := Fin (-n); high := Fin n |}.
 
@@ -586,6 +584,34 @@ Module Intervals <: VALUE_ABSTRACTION.
     unfold isempty, In; intros. destruct v as [[l|] [h|]]; try discriminate.
     apply Z.ltb_lt in H. cbn in H0. lia.
   Qed.
+
+(** [ble] is a boolean function that approximates the [le] relation. *)
+  Definition ble (v1 v2: t) : bool :=
+    isempty v1 || (Zinf.ble (high v1) (high v2) && Zinf.ble (low v1) (low v2)).
+
+  Lemma ble_1: forall v1 v2, ble v1 v2 = true -> le v1 v2.
+  Proof.
+    unfold ble, le, In; intros.
+    destruct (isempty v1) eqn:E.
+    elim (isempty_1 _ _ E H0).
+    simpl in H. apply andb_prop in H. destruct H as [B1 B2].
+    apply Zinf.ble_1 in B1. apply Zinf.ble_1 in B2.
+    intuition.
+  Qed.
+
+(*
+  Lemma ble_2: forall v1 v2, le v1 v2 -> ble v1 v2 = true.
+  Proof.
+    unfold ble, isempty, le, In, Zinf.ble; intros.
+    destruct v1 as [ [ l1 | ] [ h1 | ]]; cbn in *.
+  - destruct (Z.ltb_spec h1 (-l1)); auto.
+    apply andb_true_intro; split.
+    destruct (high v2) as [ h2 | ]; auto. apply Z.leb_le. apply H. lia.
+    destruct (low v2) as [ l2 | ]; auto.
+    apply Z.leb_le. replace l1 with (- - l1) by lia. apply H. lia.
+  -  
+*)
+
 
 (** [top] represents the set of all integers. *)
   Definition top: t := {| low := Inf; high := Inf |}.
@@ -774,6 +800,20 @@ Module Intervals <: VALUE_ABSTRACTION.
   Proof.
     unfold le, widen, In; intros; cbn. 
     split; apply Zinf.widen_1; tauto.
+  Qed.
+
+  Remark Zinf_ble_Inf: forall z, Zinf.ble z Inf = true.
+  Proof.
+    destruct z; auto.
+  Qed.
+
+  Definition Zinf_measure (z: zinf) : nat :=
+    match z with Inf => 0%nat | Fin _ => 1%nat end.
+
+  Lemma Zinf_ble_measure_1: forall x y,
+    Zinf.ble x y = true -> (Zinf_measure y <= Zinf_measure x)%nat.
+  Proof.
+    destruct x, y; cbn; intros; auto. discriminate.
   Qed.
 
 End Intervals.
@@ -1079,4 +1119,156 @@ End Ident_Decidable.
 Module IdentMap := FMapWeakList.Make(Ident_Decidable).
 Module IMFact := FMapFacts.WFacts(IdentMap).
 Module IMProp := FMapFacts.WProperties(IdentMap).
+
+Module StateAbstr (VA: VALUE_ABSTRACTION) <: STATE_ABSTRACTION with Module V := VA.
+
+Module V := VA.
+
+Inductive abstr_state : Type :=
+  | Bot
+  | Top_except (m: IdentMap.t V.t).
+
+Definition t := abstr_state.
+
+Definition get (s: t) (x: ident) : V.t :=
+  match s with
+  | Bot => V.bot
+  | Top_except m =>
+      match IdentMap.find x m with
+      | None => V.top
+      | Some v => v
+      end
+  end.
+
+Definition In (st: store) (s: t) : Prop :=
+  forall x, V.In (st x) (get s x).
+
+Definition bot: t := Bot.
+
+Lemma bot_1: forall s, ~(In s bot).
+Proof.
+  unfold In; cbn. intros s IN. apply (V.bot_1 (s "")). apply IN.
+Qed.
+
+Definition top: t := Top_except (IdentMap.empty V.t).
+
+Lemma top_1: forall s, In s top.
+Proof.
+  unfold In, top, get; cbn. intros. apply V.top_1.
+Qed. 
+
+Definition set (s: t) (x: ident) (v: V.t) : t :=
+  match s with
+  | Bot => Bot
+  | Top_except m => Top_except (IdentMap.add x v m)
+  end.
+
+Lemma set_1:
+    forall id n st v s,
+    V.In n v -> In st s -> In (update id n st) (set s id v).
+Proof.
+  unfold In, get, set; intros. destruct s.
+- elim (bot_1 _ H0).
+- rewrite IMFact.add_o. change IdentMap.E.eq_dec with string_dec. unfold update.
+  destruct (string_dec id x); auto.
+Qed. 
+
+Definition le (s1 s2: t) : Prop :=
+  forall st, In st s1 -> In st s2.
+
+Definition ble (s1 s2: t) : bool :=
+  match s1, s2 with
+  | Bot, _ => true
+  | _, Bot => false
+  | Top_except m1, Top_except m2 =>
+      IMProp.for_all (fun x v => V.ble (get s1 x) v) m2
+  end.
+
+Lemma ble_1: forall s1 s2, ble s1 s2 = true -> le s1 s2.
+Proof.
+  unfold ble, le; intros.
+  destruct s1 as [ | m1].
+- elim (bot_1 _ H0).
+- destruct s2 as [ | m2]. discriminate.
+  red; cbn; intros. destruct (IdentMap.find x m2) as [v2|] eqn:F2.
+  + apply IdentMap.find_2 in F2. eapply IMProp.for_all_iff in H; eauto.
+    apply V.ble_1 in H. apply H. apply H0.
+    hnf. intros; subst x0. hnf; intros. subst x0. auto.
+  + apply V.top_1.
+Qed.
+
+Definition join_aux (ov1 ov2: option V.t) : option V.t :=
+  match ov1, ov2 with
+  | Some v1, Some v2 => Some (V.join v1 v2)
+  | _, _ => None
+  end.
+
+Definition join (s1 s2: t) : t :=
+  match s1, s2 with
+  | Bot, _ => s2
+  | _, Bot => s1
+  | Top_except m1, Top_except m2 =>
+      Top_except (IdentMap.map2 join_aux m1 m2)
+  end.
+
+Lemma join_1:
+    forall st s1 s2, In st s1 -> In st (join s1 s2).
+Proof.
+  unfold join; intros. destruct s1 as [ | m1].
+- elim (bot_1 _ H).
+- destruct s2 as [ | m2]; auto.
+  red; unfold get; intros. rewrite IMFact.map2_1bis; auto.
+  unfold join_aux. specialize (H x). unfold get in H.
+  destruct (IdentMap.find x m1). 
+  + destruct (IdentMap.find x m2).
+    * apply V.join_1; auto.
+    * apply V.top_1.
+  + apply V.top_1.
+Qed.
+
+Lemma join_2:
+    forall st s1 s2, In st s2 -> In st (join s1 s2).
+Proof.
+  unfold join; intros. destruct s2 as [ | m2].
+- elim (bot_1 _ H).
+- destruct s1 as [ | m1]; auto.
+  red; unfold get; intros. rewrite IMFact.map2_1bis; auto.
+  unfold join_aux. specialize (H x). unfold get in H.
+  destruct (IdentMap.find x m1). 
+  + destruct (IdentMap.find x m2).
+    * apply V.join_2; auto.
+    * apply V.top_1.
+  + apply V.top_1.
+Qed.
+
+Definition widen_aux (ov1 ov2: option V.t) : option V.t :=
+  match ov1, ov2 with
+  | Some v1, Some v2 => Some (V.widen v1 v2)
+  | _, _ => ov2
+  end.
+
+Definition widen (s1 s2: t) : t :=
+  match s1, s2 with
+  | Bot, _ => s2
+  | _, Bot => s2
+  | Top_except m1, Top_except m2 =>
+      Top_except (IdentMap.map2 widen_aux m1 m2)
+  end.
+
+Lemma widen_1: forall s1 s2, le s2 (widen s1 s2).
+Proof.
+  unfold le, widen; intros.
+  destruct s1 as [ | m1]; auto.
+  destruct s2 as [ | m2]. elim (bot_1 _ H).
+  red; unfold get; intros. specialize (H x); cbn in H.
+  rewrite IMFact.map2_1bis; auto. unfold widen_aux.
+  destruct (IdentMap.find x m1); destruct (IdentMap.find x m2).
+- apply V.widen_1; auto.
+- apply V.top_1.
+- auto.
+- apply V.top_1.
+Qed.
+
+End StateAbstr.
+
 
