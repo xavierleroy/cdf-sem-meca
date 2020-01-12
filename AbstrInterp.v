@@ -28,10 +28,9 @@ Module Type VALUE_ABSTRACTION.
   Definition le (N1 N2: t) : Prop :=
     forall n, In n N1 -> In n N2.
 
-(** [ble] est une fonction à valeurs booléennes qui décide la relation [le]. *)
+(** [ble] est une fonction à valeurs booléennes qui approxime la relation [le]. *)
   Parameter ble: t -> t -> bool.
   Axiom ble_1: forall N1 N2, ble N1 N2 = true -> le N1 N2.
-  Axiom ble_2: forall N1 N2, le N1 N2 -> ble N1 N2 = true.
 
 (** [const n] est la valeur abstraite pour l'ensemble singleton [{n}]. *)
   Parameter const: Z -> t.
@@ -430,15 +429,6 @@ Module FlatInt <: VALUE_ABSTRACTION.
     unfold ble, le, In; intros.
     destruct N1; try contradiction; destruct N2; try discriminate; auto.
     apply Z.eqb_eq in H. lia.
-  Qed.
-
-  Lemma ble_2: forall N1 N2, le N1 N2 -> ble N1 N2 = true.
-  Proof.
-    unfold ble, le, In; intros. destruct N1; auto; destruct N2; auto.
-  - elim (H n); auto.
-  - apply Z.eqb_eq; auto.
-  - elim (H 0); auto.
-  - assert (n + 1 = n) by auto. lia.
   Qed.
 
 (** [const n] est la valeur abstraite pour l'ensemble singleton [{n}]. *)
