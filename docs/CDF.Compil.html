@@ -189,7 +189,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, σ <span class="kwd">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> =&gt; <span class="id"><a href="CDF.Compil.html#OK">OK</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> (<span class="id"><a href="CDF.Compil.html#Iconst">Iconst</a></span> <span class="id">n</span>), σ =&gt; <span class="id"><a href="CDF.Compil.html#mach_exec">mach_exec</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">fuel</span>' (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1) (<span class="id">n</span> :: σ) <span class="id"><a href="CDF.Compil.html#s">s</a></span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;FILL&nbsp;IN&nbsp;HERE&nbsp;*)</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id">_</span>, <span class="id">_</span> =&gt; <span class="id"><a href="CDF.Compil.html#Stuck">Stuck</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
@@ -353,15 +352,15 @@
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="codelen_cons">codelen_cons</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">i</span> <span class="id">c</span>, <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id"><a href="CDF.Compil.html#c">c</a></span>) = <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> + 1.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof26')">Proof.</div>
-<div class="proofscript" id="proof26">
+<div class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</div>
+<div class="proofscript" id="proof1">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>; <span class="id">lia</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="codelen_app">codelen_app</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c2</span>, <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#c1">c1</a></span> ++ <span class="id"><a href="CDF.Compil.html#c2">c2</a></span>) = <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c1">c1</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c2">c2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof27')">Proof.</div>
-<div class="proofscript" id="proof27">
+<div class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</div>
+<div class="proofscript" id="proof2">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c1</span>; <span class="tactic">intros</span>. <br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="id">cbn</span> [<span class="id">app</span>]. <span class="tactic">rewrite</span> ! <span class="id"><a href="CDF.Compil.html#codelen_cons">codelen_cons</a></span>. <span class="tactic">rewrite</span> <span class="id">IHc1</span>. <span class="id">lia</span>.<br/>
@@ -371,8 +370,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">i</span> <span class="id">c2</span> <span class="id">c1</span> <span class="id">pc</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#c1">c1</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> (<span class="id"><a href="CDF.Compil.html#c1">c1</a></span> ++ <span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id"><a href="CDF.Compil.html#c2">c2</a></span>) <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#i">i</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof28')">Proof.</div>
-<div class="proofscript" id="proof28">
+<div class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</div>
+<div class="proofscript" id="proof3">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c1</span>; <span class="tactic">simpl</span>; <span class="tactic">intros</span>; <span class="tactic">subst</span> <span class="id">pc</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">assert</span> (<span class="id">A</span>: <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id">a</span> :: <span class="id">c1</span>) =? 0 = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span>). <br/>
@@ -384,8 +383,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">i</span> <span class="id">C</span>',<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id">C</span>') -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#i">i</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof29')">Proof.</div>
-<div class="proofscript" id="proof29">
+<div class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</div>
+<div class="proofscript" id="proof4">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">simpl</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#instr_at_app">instr_at_app</a></span>. <span class="tactic">auto</span>.<br/>
 Qed.</div>
 <br/>
@@ -393,8 +392,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">i</span> <span class="id">C</span>',<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#i">i</a></span> :: <span class="id">C</span>') -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + 1) <span class="id">C</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof30')">Proof.</div>
-<div class="proofscript" id="proof30">
+<div class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</div>
+<div class="proofscript" id="proof5">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <br/>
 &nbsp;&nbsp;<span class="id">change</span> (<span class="id">C1</span> ++ (<span class="id">i</span> :: <span class="id">C</span>') ++ <span class="id">C3</span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">with</span> (<span class="id">C1</span> ++ (<span class="id">i</span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>) ++ <span class="id">C</span>' ++ <span class="id">C3</span>).<br/>
@@ -405,8 +404,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span> <span class="id">C2</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#C1">C1</a></span> ++ <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof31')">Proof.</div>
-<div class="proofscript" id="proof31">
+<div class="toggleproof" onclick="toggleDisplay('proof6')">Proof.</div>
+<div class="proofscript" id="proof6">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>. <span class="id">constructor</span>. <span class="tactic">auto</span>.<br/>
 Qed.</div>
 <br/>
@@ -414,8 +413,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span> <span class="id">C2</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#C1">C1</a></span> ++ <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span>) <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof32')">Proof.</div>
-<div class="proofscript" id="proof32">
+<div class="toggleproof" onclick="toggleDisplay('proof7')">Proof.</div>
+<div class="proofscript" id="proof7">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>. <span class="tactic">rewrite</span> &lt;- <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>.<br/>
 &nbsp;&nbsp;<span class="id">constructor</span>. <span class="tactic">rewrite</span> <span class="id"><a href="CDF.Compil.html#codelen_app">codelen_app</a></span>. <span class="tactic">subst</span> <span class="id">pc</span>. <span class="tactic">auto</span>.<br/>
 Qed.</div>
@@ -424,8 +423,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span> <span class="id">C2</span> <span class="id">C3</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#C1">C1</a></span> ++ <span class="id"><a href="CDF.Compil.html#C2">C2</a></span> ++ <span class="id"><a href="CDF.Compil.html#C3">C3</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span>) <span class="id"><a href="CDF.Compil.html#C2">C2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof33')">Proof.</div>
-<div class="proofscript" id="proof33">
+<div class="toggleproof" onclick="toggleDisplay('proof8')">Proof.</div>
+<div class="proofscript" id="proof8">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#code_at_app_right">code_at_app_right</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#code_at_app_left">code_at_app_left</a></span> <span class="kwd">with</span> (<span class="id">C2</span> := <span class="id">C3</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Lists.List.html#app_ass">app_ass</a></span>; <span class="tactic">auto</span>. <br/>
 Qed.</div>
@@ -433,16 +432,16 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="code_at_nil">code_at_nil</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">C1</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="CDF.Compil.html#C1">C1</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof34')">Proof.</div>
-<div class="proofscript" id="proof34">
+<div class="toggleproof" onclick="toggleDisplay('proof9')">Proof.</div>
+<div class="proofscript" id="proof9">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">subst</span>. <span class="id">change</span> (<span class="id">C1</span> ++ <span class="id">C3</span>) <span class="kwd">with</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> ++ <span class="id">C1</span> ++ <span class="id">C3</span>).<br/>
 &nbsp;&nbsp;<span class="id">constructor</span>. <span class="tactic">auto</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="instr_at_code_at_nil">instr_at_code_at_nil</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">pc</span> <span class="id">i</span>, <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#i">i</a></span> -&gt; <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof35')">Proof.</div>
-<div class="proofscript" id="proof35">
+<div class="toggleproof" onclick="toggleDisplay('proof10')">Proof.</div>
+<div class="proofscript" id="proof10">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">C</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="tactic">discriminate</span>.<br/>
 - <span class="tactic">destruct</span> (<span class="id">pc</span> =? 0) <span class="id">eqn</span>:<span class="id">PC</span>.<br/>
@@ -475,8 +474,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, σ, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_aexp">compile_aexp</a></span> <span class="id"><a href="CDF.Compil.html#a">a</a></span>), <span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.Compil.html#a">a</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span> :: σ, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof36')">Proof.</div>
-<div class="proofscript" id="proof36">
+<div class="toggleproof" onclick="toggleDisplay('proof11')">Proof.</div>
+<div class="proofscript" id="proof11">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">a</span>; <span class="tactic">simpl</span>; <span class="tactic">intros</span>.<br/>
 <br/>
 - <span class="comment">(*&nbsp;CONST&nbsp;*)</span><br/>
@@ -515,8 +514,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, σ, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_bexp">compile_bexp</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>) + (<span class="kwd">if</span> <span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.Compil.html#d1">d1</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.Compil.html#d0">d0</a></span>), σ, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof37')">Proof.</div>
-<div class="proofscript" id="proof37">
+<div class="toggleproof" onclick="toggleDisplay('proof12')">Proof.</div>
+<div class="proofscript" id="proof12">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">b</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 <br/>
 - <span class="comment">(*&nbsp;TRUE&nbsp;*)</span><br/>
@@ -586,8 +585,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, σ, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>), σ, <span class="id">s</span>').<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof38')">Proof.</div>
-<div class="proofscript" id="proof38">
+<div class="toggleproof" onclick="toggleDisplay('proof13')">Proof.</div>
+<div class="proofscript" id="proof13">
 &nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 <br/>
 - <span class="comment">(*&nbsp;SKIP&nbsp;*)</span><br/>
@@ -649,8 +648,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">c</span> <span class="id">s</span>',<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> <span class="id">s</span>' -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#machine_terminates">machine_terminates</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id">s</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof39')">Proof.</div>
-<div class="proofscript" id="proof39">
+<div class="toggleproof" onclick="toggleDisplay('proof14')">Proof.</div>
+<div class="proofscript" id="proof14">
 &nbsp;&nbsp;<span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">CODEAT</span>: <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id">C</span> 0 (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span> ++ <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>)).<br/>
@@ -676,8 +675,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> (<span class="id"><a href="CDF.Compil.html#smart_Ibranch">smart_Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d">d</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id">pc</span>' = <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span> (<span class="id"><a href="CDF.Compil.html#smart_Ibranch">smart_Ibranch</a></span> <span class="id"><a href="CDF.Compil.html#d">d</a></span>) + <span class="id"><a href="CDF.Compil.html#d">d</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#transitions">transitions</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, σ, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', σ, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof40')">Proof.</div>
-<div class="proofscript" id="proof40">
+<div class="toggleproof" onclick="toggleDisplay('proof15')">Proof.</div>
+<div class="proofscript" id="proof15">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.Compil.html#smart_Ibranch">smart_Ibranch</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="comment">(*&nbsp;À&nbsp;COMPLÉTER&nbsp;*)</span><br/>
 Abort.</div>
@@ -820,8 +819,8 @@ Abort.</div>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
 <br/>
 <span class="kwd">Remark</span> <span class="id"><a name="com_size_nonzero">com_size_nonzero</a></span>: <span class="kwd">forall</span> <span class="id">c</span>, (<span class="id"><a href="CDF.Compil.html#com_size">com_size</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span> &gt; 0)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof41')">Proof.</div>
-<div class="proofscript" id="proof41">
+<div class="toggleproof" onclick="toggleDisplay('proof16')">Proof.</div>
+<div class="proofscript" id="proof16">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c</span>; <span class="id">cbn</span>; <span class="id">lia</span>.<br/>
 Qed.</div>
 <br/>
@@ -843,8 +842,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id">exists</span> <span class="id">pc</span>',<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#instr_at">instr_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">pc</span>' = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof42')">Proof.</div>
-<div class="proofscript" id="proof42">
+<div class="toggleproof" onclick="toggleDisplay('proof17')">Proof.</div>
+<div class="proofscript" id="proof17">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>. <br/>
 - <span class="id">exists</span> <span class="id">pc</span>; <span class="tactic">split</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <span class="tactic">auto</span>.<br/>
 - <span class="tactic">destruct</span> <span class="id">IHcompile_cont</span> <span class="kwd">as</span> (<span class="id">pc</span>'' &amp; <span class="id">A</span> &amp; <span class="id">B</span>); <span class="tactic">auto</span>.<br/>
@@ -859,8 +858,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">pc</span>' (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>)<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> (<span class="id">pc</span>' + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span>(<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>)).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof43')">Proof.</div>
-<div class="proofscript" id="proof43">
+<div class="toggleproof" onclick="toggleDisplay('proof18')">Proof.</div>
+<div class="proofscript" id="proof18">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>. <br/>
 - <span class="id">exists</span> <span class="id">pc</span>; <span class="tactic">split</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <span class="tactic">split</span>; <span class="tactic">congruence</span>. <br/>
 - <span class="id">edestruct</span> <span class="id">IHcompile_cont</span> <span class="kwd">as</span> (<span class="id">pc</span>'' &amp; <span class="id">A</span> &amp; <span class="id">B</span>). <span class="tactic">eauto</span>.<br/>
@@ -875,8 +874,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id">pc</span>', <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>)<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id">pc</span>' (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>))<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> (<span class="id">pc</span>' + <span class="id"><a href="CDF.Compil.html#codelen">codelen</a></span>(<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> (<span class="id"><a href="CDF.IMP.html#WHILE">WHILE</a></span> <span class="id"><a href="CDF.Compil.html#b">b</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>))).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof44')">Proof.</div>
-<div class="proofscript" id="proof44">
+<div class="toggleproof" onclick="toggleDisplay('proof19')">Proof.</div>
+<div class="proofscript" id="proof19">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">dependent</span> <span class="tactic">induction</span> <span class="id">H</span>.<br/>
 - <span class="id">exists</span> (<span class="id">pc</span> + 1 + <span class="id">d</span>); <span class="tactic">split</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#plus_one">plus_one</a></span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Compil.html#trans_branch">trans_branch</a></span>; <span class="tactic">eauto</span>. <br/>
@@ -890,8 +889,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">C</span> <span class="id">k</span> <span class="id">s</span> <span class="id">pc</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#compile_cont">compile_cont</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#k">k</a></span> <span class="id"><a href="CDF.Compil.html#pc">pc</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id"><a href="CDF.Compil.html#k">k</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id"><a href="CDF.Compil.html#pc">pc</a></span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof45')">Proof.</div>
-<div class="proofscript" id="proof45">
+<div class="toggleproof" onclick="toggleDisplay('proof20')">Proof.</div>
+<div class="proofscript" id="proof20">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="id">constructor</span>.<br/>
 - <span class="id">cbn</span>. <span class="tactic">inversion</span> <span class="id">H</span>; <span class="tactic">eauto</span> <span class="kwd">with</span> <span class="id">code</span>.<br/>
 - <span class="id">cbn</span>. <span class="id">autorewrite</span> <span class="kwd">with</span> <span class="id">code</span>. <span class="tactic">auto</span>.<br/>
@@ -907,8 +906,8 @@ Qed.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\/ (<span class="id"><a href="CDF.Sequences.html#star">star</a></span> (<span class="id"><a href="CDF.Compil.html#transition">transition</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span>) <span class="id"><a href="CDF.Compil.html#machconf1">machconf1</a></span> <span class="id"><a href="CDF.Compil.html#machconf2">machconf2</a></span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/\ (<span class="kwd">measure</span> <span class="id"><a href="CDF.Compil.html#impconf2">impconf2</a></span> &lt; <span class="kwd">measure</span> <span class="id"><a href="CDF.Compil.html#impconf1">impconf1</a></span>)%<span class="id">nat</span>))<br/>
 &nbsp;&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> <span class="id"><a href="CDF.Compil.html#C">C</a></span> <span class="id"><a href="CDF.Compil.html#impconf2">impconf2</a></span> <span class="id"><a href="CDF.Compil.html#machconf2">machconf2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof46')">Proof.</div>
-<div class="proofscript" id="proof46">
+<div class="toggleproof" onclick="toggleDisplay('proof21')">Proof.</div>
+<div class="proofscript" id="proof21">
 &nbsp;&nbsp;<span class="tactic">destruct</span> 1; <span class="tactic">intros</span> <span class="id">machconf1</span> <span class="id">MATCH</span>; <span class="tactic">inversion</span> <span class="id">MATCH</span>; <span class="tactic">clear</span> <span class="id">MATCH</span>; <span class="tactic">subst</span>; <span class="id">cbn</span> <span class="kwd">in</span> *.<br/>
 <br/>
 - <span class="comment">(*&nbsp;assign&nbsp;*)</span><br/>
@@ -994,8 +993,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="match_initial_configs">match_initial_configs</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#match_config">match_config</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) (<span class="id"><a href="CDF.Compil.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (0, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof47')">Proof.</div>
-<div class="proofscript" id="proof47">
+<div class="toggleproof" onclick="toggleDisplay('proof22')">Proof.</div>
+<div class="proofscript" id="proof22">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id"><a href="CDF.Compil.html#code_at">code_at</a></span> <span class="id">C</span> 0 (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span> ++ <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>)).<br/>
 &nbsp;&nbsp;{ <span class="tactic">replace</span> <span class="id">C</span> <span class="kwd">with</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span> ++ (<span class="id"><a href="CDF.Compil.html#compile_com">compile_com</a></span> <span class="id">c</span> ++ <span class="id"><a href="CDF.Compil.html#Ihalt">Ihalt</a></span> :: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>) ++ <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nil">nil</a></span>).<br/>
@@ -1010,8 +1009,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span> <span class="id">s</span>',<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.IMP.html#step">step</a></span> (<span class="id"><a href="CDF.Compil.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) (<span class="id"><a href="CDF.IMP.html#SKIP">SKIP</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id">s</span>') -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#machine_terminates">machine_terminates</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) <span class="id"><a href="CDF.Compil.html#s">s</a></span> <span class="id">s</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof48')">Proof.</div>
-<div class="proofscript" id="proof48">
+<div class="toggleproof" onclick="toggleDisplay('proof23')">Proof.</div>
+<div class="proofscript" id="proof23">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
 &nbsp;&nbsp;<span class="id">edestruct</span> (<span class="id"><a href="CDF.Simulation.html#simulation_star">simulation_star</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> (<span class="id"><a href="CDF.Compil.html#simulation_step">simulation_step</a></span> <span class="id">C</span>)) <span class="kwd">as</span> (<span class="id">ms</span> &amp; <span class="id">A</span> &amp; <span class="id">B</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">eauto</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#match_initial_configs">match_initial_configs</a></span>. <br/>
@@ -1030,8 +1029,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.IMP.html#step">step</a></span> (<span class="id"><a href="CDF.Compil.html#c">c</a></span>, <span class="id"><a href="CDF.IMP.html#Kstop">Kstop</a></span>, <span class="id"><a href="CDF.Compil.html#s">s</a></span>) -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.Compil.html#machine_diverges">machine_diverges</a></span> (<span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id"><a href="CDF.Compil.html#c">c</a></span>) <span class="id"><a href="CDF.Compil.html#s">s</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof49')">Proof.</div>
-<div class="proofscript" id="proof49">
+<div class="toggleproof" onclick="toggleDisplay('proof24')">Proof.</div>
+<div class="proofscript" id="proof24">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">set</span> (<span class="id">C</span> := <span class="id"><a href="CDF.Compil.html#compile_program">compile_program</a></span> <span class="id">c</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">eapply</span> (<span class="id"><a href="CDF.Simulation.html#simulation_infseq">simulation_infseq</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> <span class="id">_</span> (<span class="id"><a href="CDF.Compil.html#simulation_step">simulation_step</a></span> <span class="id">C</span>)).<br/>
 &nbsp;&nbsp;<span class="tactic">eauto</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Compil.html#match_initial_configs">match_initial_configs</a></span>.<br/>

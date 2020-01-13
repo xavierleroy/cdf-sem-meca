@@ -28,8 +28,9 @@ Module Type VALUE_ABSTRACTION.
   Parameter isIn: Z -> t -> bool.
   Axiom isIn_1: forall n N, In n N -> isIn n N = true.
 
-(** Opérateurs abstraits pour l'analyse inverse des comparaisons.
-  Considérons un test [a1 = a2] qui s'évalue à vrai dans le programme.
+(** Opérateurs abstraits pour l'analyse inverse des comparaisons. *)
+
+(** Considérons un test [a1 = a2] qui s'évalue à vrai dans le programme.
   Soit [N1] une abstraction de [a1] et [N2] une abstraction de [a2].
   [eq_inv N1 N2] produit une paire de valeurs abstraites [N1', N2'].
   [N1'] est une abstraction possiblement plus précise pour [a1]
@@ -72,11 +73,9 @@ Module Type VALUE_ABSTRACTION.
     entières positives qui décroît strictement le long de l'itération
     de point fixe avec élargissement. *)
   Parameter measure: t -> nat.
-  Axiom measure_top:
-    measure top = 0%nat.
-  Axiom widen_4:
-    forall N1 N2, (measure (widen N1 N2) <= measure N1)%nat.
-  Axiom widen_5:
+  Axiom measure_top: measure top = 0%nat.
+  Axiom widen_2: forall N1 N2, (measure (widen N1 N2) <= measure N1)%nat.
+  Axiom widen_3:
     forall N1 N2, ble N2 N1 = false -> (measure (widen N1 N2) < measure N1)%nat.
 
 End VALUE_ABSTRACTION.
@@ -89,11 +88,9 @@ Module Type STORE_ABSTRACTION.
   Declare Module V: VALUE_ABSTRACTION.
   Parameter t: Type.
   Parameter get: ident -> t -> V.t.
-  Definition In (s: store) (S: t) : Prop :=
-    forall x, V.In (s x) (get x S).
+  Definition In (s: store) (S: t) : Prop := forall x, V.In (s x) (get x S).
   Parameter set: ident -> V.t -> t -> t.
-  Axiom set_1: forall x n N s S,
-    V.In n N -> In s S -> In (update x n s) (set x N S).
+  Axiom set_1: forall x n N s S, V.In n N -> In s S -> In (update x n s) (set x N S).
   Definition le (S1 S2: t) : Prop :=
     forall s, In s S1 -> In s S2.
   Parameter ble: t -> t -> bool.
@@ -403,7 +400,7 @@ Qed.
 
 End Analysis.
 
-(** ** 5.7.  Un domaine abstrait des états mémoire. *)
+(** ** 5.7.  Un domaine abstrait des états mémoire *)
 
 (** On reprend le domaine abstrait du fichier [AbstrInterp], section 5.3,
     et on lui ajoute l'opérateur d'élargissement et ses propriétés. *)
@@ -680,14 +677,14 @@ Proof.
 - intros y. unfold get. rewrite IMFact.map2_1bis by auto. unfold widen_aux.
   destruct (IdentMap.find y m1) as [ v1 |].
   destruct (IdentMap.find y m2) as [ v2 |].
-  apply V.widen_4.
+  apply V.widen_2.
   rewrite V.measure_top; lia.
   rewrite V.measure_top; lia.
 - exists x. unfold get in *. rewrite IMFact.map2_1bis by auto. unfold widen_aux.
   destruct (IdentMap.find x m1) as [ v1 |].
   destruct (IdentMap.find x m2) as [ v2 |].
-  apply V.widen_5 in BL; auto.
-  apply V.widen_5 in BL; rewrite V.measure_top; lia.
+  apply V.widen_3 in BL; auto.
+  apply V.widen_3 in BL; rewrite V.measure_top; lia.
   assert (T: forall z, V.ble z V.top = true).
   { intros. apply V.ble_2. red; intros. apply V.top_1. }
   rewrite T in BL. congruence.
@@ -837,7 +834,7 @@ Module Zinf.
     destruct N; cbn; lia.
   Qed.
 
-  Lemma widen_4:
+  Lemma widen_2:
     forall N1 N2, (measure (widen N1 N2) <= measure N1)%nat.
   Proof.
     intros. unfold widen. destruct (ble N2 N1) eqn:BLE.
@@ -845,7 +842,7 @@ Module Zinf.
   - destruct N1. cbn; lia. destruct N2; discriminate.
   Qed.
 
-  Lemma widen_5: 
+  Lemma widen_3: 
     forall N1 N2, ble N2 N1 = false -> (measure (widen N1 N2) < measure N1)%nat.
   Proof.
     destruct N1, N2; cbn; intros; auto; try discriminate. 
@@ -862,7 +859,7 @@ End Zinf.
 
 Module Intervals <: VALUE_ABSTRACTION.
 
-(** The type of abstract values. *)
+(** Le type des valeurs abstraites. *)
   Record interval : Type := intv { low: zinf; high: zinf }.
   Definition t := interval.
 
@@ -1135,7 +1132,7 @@ Module Intervals <: VALUE_ABSTRACTION.
     elim (isempty_1 n1 _ E). apply widen_1; auto.
   Qed.
   
-  Lemma widen_4: 
+  Lemma widen_2: 
     forall N1 N2, (measure (widen N1 N2) <= (measure N1))%nat.
   Proof.
     unfold measure; intros.
@@ -1145,10 +1142,10 @@ Module Intervals <: VALUE_ABSTRACTION.
     destruct (isempty N2) eqn:E2. unfold widen; rewrite E1, E2, E1. lia.
     rewrite isempty_widen by auto.
     unfold widen; rewrite E1, E2; cbn.
-    generalize (Zinf.widen_4 (low N1) (low N2)) (Zinf.widen_4 (high N1) (high N2)). lia.
+    generalize (Zinf.widen_2 (low N1) (low N2)) (Zinf.widen_2 (high N1) (high N2)). lia.
   Qed.
 
-  Lemma widen_5: 
+  Lemma widen_3: 
     forall N1 N2, ble N2 N1 = false -> (measure (widen N1 N2) < measure N1)%nat.
   Proof.
     unfold ble, measure; intros.
@@ -1158,10 +1155,10 @@ Module Intervals <: VALUE_ABSTRACTION.
     generalize (Zinf.measure_1 (low N2)) (Zinf.measure_1 (high N2)). lia.
   - rewrite isempty_widen by auto.
     unfold widen; rewrite E1, E2. cbn.
-    generalize (Zinf.widen_4 (low N1) (low N2)) (Zinf.widen_4 (high N1) (high N2)); intros.
+    generalize (Zinf.widen_2 (low N1) (low N2)) (Zinf.widen_2 (high N1) (high N2)); intros.
     destruct (Zinf.ble (high N2) (high N1)) eqn:LE.
-    + cbn in H. apply Zinf.widen_5 in H. lia.
-    + apply Zinf.widen_5 in LE. lia.
+    + cbn in H. apply Zinf.widen_3 in H. lia.
+    + apply Zinf.widen_3 in LE. lia.
   Qed.
 
 End Intervals.

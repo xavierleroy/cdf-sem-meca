@@ -25,8 +25,7 @@ Module Type VALUE_ABSTRACTION.
 
 (** Les valeurs abstraites sont ordonnées par inclusion des ensembles
     qu'elles représentent. *)
-  Definition le (N1 N2: t) : Prop :=
-    forall n, In n N1 -> In n N2.
+  Definition le (N1 N2: t) : Prop := forall n, In n N1 -> In n N2.
 
 (** [ble] est une fonction à valeurs booléennes qui décide la relation [le]. *)
   Parameter ble: t -> t -> bool.
@@ -82,12 +81,11 @@ Module Type STORE_ABSTRACTION.
 
 (** Affectation abstraite à une variable. *)
   Parameter set: ident -> V.t -> t -> t.
-  Axiom set_1: forall x n N s S,
-    V.In n N -> In s S -> In (update x n s) (set x N S).
+  Axiom set_1:
+    forall x n N s S, V.In n N -> In s S -> In (update x n s) (set x N S).
 
 (** L'ordre entre états abstraits. *)
-  Definition le (S1 S2: t) : Prop :=
-    forall s, In s S1 -> In s S2.
+  Definition le (S1 S2: t) : Prop := forall s, In s S1 -> In s S2.
 
   Parameter ble: t -> t -> bool.
   Axiom ble_1: forall S1 S2, ble S1 S2 = true -> le S1 S2.
@@ -118,9 +116,10 @@ Module V := ST.V.
 (** *** Calcul de post-points fixes *)
 
 (** Nous suivons la même approche qu'au 3ième cours, fichier [Optim]:
-    une itération de point fixe qui part de [bot] et s'arrête au bout
-    d'un nombre fixé de tours, renvoyant [top] si un post-point fixe
-    n'a pas été atteint. *)
+    une itération de point fixe qui part de [bot] et s'arrête dès
+    qu'elle trouve un post-point fixe, ou lorsque le nombre maximal
+    de tours est atteint.  Dans le second cas, [top] est renvoyé
+    en résultat. *)
 
 Section FIXPOINT.
 
@@ -230,7 +229,7 @@ Qed.
 
 End Analysis.
 
-(** 5.3.  Un domaine abstrait des états mémoire *)
+(** ** 5.3.  Un domaine abstrait des états mémoire *)
 
 (** On construit ici un domaine abstrait des états mémoire qui est
     utilisable pour toutes les analyses non relationnelles,
@@ -358,8 +357,7 @@ Definition join (S1 S2: t) : t :=
   match S1, S2 with
   | Bot, _ => S2
   | _, Bot => S1
-  | Top_except m1, Top_except m2 =>
-      Top_except (IdentMap.map2 join_aux m1 m2)
+  | Top_except m1, Top_except m2 => Top_except (IdentMap.map2 join_aux m1 m2)
   end.
 
 Lemma join_1:
@@ -394,18 +392,18 @@ Qed.
 
 End StoreAbstr.
 
-(** 5.4.  Une application: l'analyse de propagation des constantes *)
+(** ** 5.4.  Une application: l'analyse de propagation des constantes *)
 
 (** *** Le domaine abstrait «plat» des entiers *)
 
 Module FlatInt <: VALUE_ABSTRACTION.
 
-(** Les valeurs abstraites: vide, plein, ou ensemble singleton. *)
+(** Les valeurs abstraites: vide, ensemble singleton, ou [Z] tout entier. *)
 
   Inductive abstr_value : Type := Bot | Just (n: Z) | Top.
   Definition t := abstr_value.
 
-(** L'appartenance et l'inclusion *)
+(** L'appartenance et l'inclusion. *)
 
   Definition In (n: Z) (N: t) : Prop :=
     match N with
@@ -456,6 +454,7 @@ Module FlatInt <: VALUE_ABSTRACTION.
   Proof.
     intros. cbn. tauto.
   Qed.
+
   Definition top: t := Top.
 
   Lemma top_1: forall n, In n top.
@@ -547,8 +546,9 @@ Definition prog1 :=
 Compute (let S := AConstProp.Cexec prog1 SConstProp.top in
          (SConstProp.get "x" S, SConstProp.get "y" S, SConstProp.get "z" S)).
 
-(** Résultat:
+(** Résultat de l'analyse:
 <<
      = (FlatInt.Top, FlatInt.Just 10, FlatInt.Just 100) 
 >>
+c'est à dire: [x] est inconnu, [y] vaut 10, et [z] vaut 100.
 *)
