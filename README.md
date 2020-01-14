@@ -10,6 +10,8 @@ Un rendu HTML des sources commentés est également disponible:
 * Module [Optim](https://xavierleroy.org/cdf-sem-meca/CDF.Optim.html): optimisations à base d'analyse de vivacité.
 * Module [HoareLogic](https://xavierleroy.org/cdf-sem-meca/CDF.HoareLogic.html): des logiques de Hoare faible et forte pour IMP.
 * Module [SepLogic](https://xavierleroy.org/cdf-sem-meca/CDF.SepLogic.html): une logique de séparation pour IMP plus pointeurs et allocation dynamique.
+* Module [AbstrInterp](https://xavierleroy.org/cdf-sem-meca/CDF.AbstrInterp.html): un analyseur statique par interprétation abstraite.
+* Module [AbstrInterp2](https://xavierleroy.org/cdf-sem-meca/CDF.AbstrInterp2.html): une amélioration de l'analyseur statique précédent.
 * Bibliothèque [Sequences](https://xavierleroy.org/cdf-sem-meca/CDF.Sequences.html): définitions et propriétés des suites de réductions.
 * Bibliothèque [Simulation](https://xavierleroy.org/cdf-sem-meca/CDF.Simulation.html): diagrammes de simulation entre deux systèmes de transitions.
 * Bibliothèque [Fixpoints](https://xavierleroy.org/cdf-sem-meca/CDF.Fixpoints.html): calcul de points fixes par itération de Knaster-Tarski.
