@@ -282,24 +282,27 @@ Definition get (x: ident) (S: t) : V.t :=
   | Top_except m =>
       match IdentMap.find x m with
       | None => V.top
-      | Some v => v
+      | Some N => N
       end
   end.
 
 Definition In (s: store) (S: t) : Prop :=
   forall x, V.In (s x) (get x S).
 
-Definition set (x: ident) (v: V.t) (S: t): t :=
+Definition set (x: ident) (N: V.t) (S: t): t :=
+  if V.ble N V.bot then Bot else 
   match S with
   | Bot => Bot
-  | Top_except m => Top_except (IdentMap.add x v m)
+  | Top_except m => Top_except (IdentMap.add x N m)
   end.
 
 Lemma set_1:
   forall x n N s S,
   V.In n N -> In s S -> In (update x n s) (set x N S).
 Proof.
-  unfold In, get, set; intros. destruct S.
+  unfold In, get, set; intros.
+  destruct (V.ble N V.bot) eqn:BLE; [ | destruct S ].
+- apply V.ble_1 in BLE. apply BLE in H. elim (V.bot_1 n); auto. 
 - elim (V.bot_1 (s "")). auto. 
 - rewrite IMFact.add_o. change IdentMap.E.eq_dec with string_dec. unfold update.
   destruct (string_dec x x0); auto.

@@ -153,8 +153,8 @@
 &nbsp;&nbsp;<span class="kwd">forall</span> (<span class="id">S</span>: <span class="id"><a href="CDF.AbstrInterp2.html#ST.t">ST.t</a></span>) (<span class="id">acc</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#Acc">Acc</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#ST.widen_order">ST.widen_order</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>) (<span class="id">S</span>': <span class="id"><a href="CDF.AbstrInterp2.html#ST.t">ST.t</a></span>),<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#ST.ble">ST.ble</a></span> <span class="id">S</span>' <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#Acc">Acc</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#ST.widen_order">ST.widen_order</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#ST.widen">ST.widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> <span class="id">S</span>').<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</div>
-<div class="proofscript" id="proof1">
+<div class="toggleproof" onclick="toggleDisplay('proof18')">Proof.</div>
+<div class="proofscript" id="proof18">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">eapply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#Acc_inv">Acc_inv</a></span>; <span class="tactic">eauto</span>. <span class="id">exists</span> <span class="id">S</span>'. <span class="tactic">auto</span>. <br/>
 Defined.</div>
 <br/>
@@ -179,8 +179,8 @@ Defined.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="Analysis.iter_up_sound">iter_up_sound</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">S</span> <span class="id">acc</span>, <span class="id"><a href="CDF.AbstrInterp2.html#ST.le">ST.le</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.iter_up">iter_up</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#acc">acc</a></span>)) (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.iter_up">iter_up</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#acc">acc</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</div>
-<div class="proofscript" id="proof2">
+<div class="toggleproof" onclick="toggleDisplay('proof19')">Proof.</div>
+<div class="proofscript" id="proof19">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">S</span> <span class="kwd">using</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#well_founded_induction">well_founded_induction</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#ST.widen_order_wf">ST.widen_order_wf</a></span>). <br/>
 &nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">acc</span>. <span class="tactic">destruct</span> <span class="id">acc</span>. <span class="id">cbn</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.is_true">is_true</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#ST.ble">ST.ble</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> <span class="id">S</span>) <span class="id">S</span>)).<br/>
 - <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#ST.ble_1">ST.ble_1</a></span>; <span class="tactic">auto</span>.<br/>
@@ -189,8 +189,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="Analysis.iter_down_sound">iter_down_sound</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span> <span class="id">S</span>, <span class="id"><a href="CDF.AbstrInterp2.html#ST.le">ST.le</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>) <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#ST.le">ST.le</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.iter_down">iter_down</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>)) (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.iter_down">iter_down</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</div>
-<div class="proofscript" id="proof3">
+<div class="toggleproof" onclick="toggleDisplay('proof20')">Proof.</div>
+<div class="proofscript" id="proof20">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">n</span>; <span class="tactic">intros</span>; <span class="id">cbn</span>.<br/>
 - <span class="tactic">auto</span>.<br/>
 - <span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#ST.ble">ST.ble</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> <span class="id">S</span>)) (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> <span class="id">S</span>)) <span class="id">eqn</span>:<span class="id">BLE</span>.<br/>
@@ -199,8 +199,8 @@ Qed.</div>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="Analysis.postfixpoint_sound">postfixpoint_sound</a></span>: <span class="id"><a href="CDF.AbstrInterp2.html#ST.le">ST.le</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.FIXPOINT.F">F</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.postfixpoint">postfixpoint</a></span>) <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.postfixpoint">postfixpoint</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</div>
-<div class="proofscript" id="proof4">
+<div class="toggleproof" onclick="toggleDisplay('proof21')">Proof.</div>
+<div class="proofscript" id="proof21">
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.iter_down_sound">iter_down_sound</a></span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.iter_up_sound">iter_up_sound</a></span>.<br/>
 Qed.</div>
 <br/>
@@ -221,8 +221,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="Analysis.Aeval_sound">Aeval_sound</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">S</span> <span class="id">a</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#ST.In">ST.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.In">V.In</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a">a</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.Aeval">Aeval</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a">a</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</div>
-<div class="proofscript" id="proof5">
+<div class="toggleproof" onclick="toggleDisplay('proof22')">Proof.</div>
+<div class="proofscript" id="proof22">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">a</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.const_1">V.const_1</a></span>.<br/>
 - <span class="tactic">apply</span> <span class="id">H</span>.<br/>
@@ -261,8 +261,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="Analysis.assume_eval_sound">assume_eval_sound</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">Res</span> <span class="id">S</span> <span class="id">s</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.In">V.In</a></span> (<span class="id"><a href="CDF.IMP.html#aeval">aeval</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a">a</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span>) <span class="id"><a href="CDF.AbstrInterp2.html#Res">Res</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#ST.In">ST.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#ST.In">ST.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.assume_eval">assume_eval</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a">a</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#Res">Res</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof6')">Proof.</div>
-<div class="proofscript" id="proof6">
+<div class="toggleproof" onclick="toggleDisplay('proof23')">Proof.</div>
+<div class="proofscript" id="proof23">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">a</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="comment">(*&nbsp;CONST&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="tactic">rewrite</span> <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.isIn_1">V.isIn_1</a></span> <span class="tactic">by</span> <span class="tactic">auto</span>. <span class="tactic">auto</span>.<br/>
@@ -327,8 +327,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="Analysis.assume_test_sound">assume_test_sound</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">b</span> <span class="id">res</span> <span class="id">S</span> <span class="id">s</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.IMP.html#beval">beval</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#b">b</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> = <span class="id"><a href="CDF.AbstrInterp2.html#res">res</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#ST.In">ST.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#ST.In">ST.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.assume_test">assume_test</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#b">b</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#res">res</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof7')">Proof.</div>
-<div class="proofscript" id="proof7">
+<div class="toggleproof" onclick="toggleDisplay('proof24')">Proof.</div>
+<div class="proofscript" id="proof24">
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">b</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>.<br/>
 - <span class="comment">(*&nbsp;TRUE&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="tactic">subst</span> <span class="id">res</span>; <span class="tactic">auto</span>.<br/>
@@ -388,8 +388,8 @@ Qed.</div>
 <span class="kwd">Theorem</span> <span class="id"><a name="Analysis.Cexec_sound">Cexec_sound</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c</span> <span class="id">s</span> <span class="id">s</span>' <span class="id">S</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#ST.In">ST.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> -&gt; <span class="id"><a href="CDF.IMP.html#cexec">cexec</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#c">c</a></span> <span class="id">s</span>' -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#ST.In">ST.In</a></span> <span class="id">s</span>' (<span class="id"><a href="CDF.AbstrInterp2.html#Analysis.Cexec">Cexec</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#c">c</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof8')">Proof.</div>
-<div class="proofscript" id="proof8">
+<div class="toggleproof" onclick="toggleDisplay('proof25')">Proof.</div>
+<div class="proofscript" id="proof25">
 <span class="id">Opaque</span> <span class="id"><a href="CDF.AbstrInterp2.html#Analysis.niter_down">niter_down</a></span>.<br/>
 &nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">c</span>; <span class="tactic">intros</span> <span class="id">s</span> <span class="id">s</span>' <span class="id">S</span> <span class="id">PRE</span> <span class="id">EXEC</span>; <span class="id">cbn</span>.<br/>
 - <span class="comment">(*&nbsp;SKIP&nbsp;*)</span><br/>
@@ -455,18 +455,21 @@ Qed.</div>
 <span class="kwd">Definition</span> <span class="id"><a name="StoreAbstr.In">In</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) (<span class="id">S</span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span>) : <span class="kwd">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">x</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">V.In</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>).<br/>
 <br/>
-<span class="kwd">Definition</span> <span class="tactic">set</span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>) (<span class="id">v</span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">V.t</a></span>) (<span class="id">S</span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span>): <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span> :=<br/>
+<span class="kwd">Definition</span> <span class="tactic">set</span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>) (<span class="id">N</span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">V.t</a></span>) (<span class="id">S</span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span>): <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">V.ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot">V.bot</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Bot">Bot</a></span> <span class="kwd">else</span> <br/>
 &nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> <span class="kwd">with</span><br/>
 &nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Bot">Bot</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Bot">Bot</a></span><br/>
-&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id">m</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.add">IdentMap.add</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> <span class="id">m</span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id">m</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.add">IdentMap.add</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> <span class="id">m</span>)<br/>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.set_1">set_1</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">x</span> <span class="id">n</span> <span class="id">N</span> <span class="id">s</span> <span class="id">S</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">V.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span>) (<span class="tactic">set</span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof9')">Proof.</div>
-<div class="proofscript" id="proof9">
-&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span>, <span class="tactic">set</span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">S</span>.<br/>
+<div class="toggleproof" onclick="toggleDisplay('proof26')">Proof.</div>
+<div class="proofscript" id="proof26">
+&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span>, <span class="tactic">set</span>; <span class="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">V.ble</a></span> <span class="id">N</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot">V.bot</a></span>) <span class="id">eqn</span>:<span class="id">BLE</span>; [ | <span class="tactic">destruct</span> <span class="id">S</span> ].<br/>
+- <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble_1">V.ble_1</a></span> <span class="kwd">in</span> <span class="id">BLE</span>. <span class="tactic">apply</span> <span class="id">BLE</span> <span class="kwd">in</span> <span class="id">H</span>. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot_1">V.bot_1</a></span> <span class="id">n</span>); <span class="tactic">auto</span>. <br/>
 - <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot_1">V.bot_1</a></span> (<span class="id">s</span> "")). <span class="tactic">auto</span>. <br/>
 - <span class="tactic">rewrite</span> <span class="id"><a href="CDF.AbstrInterp2.html#IMFact.add_o">IMFact.add_o</a></span>. <span class="id">change</span> <span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.E.eq_dec">IdentMap.E.eq_dec</a></span> <span class="kwd">with</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.IMP.html#update">update</a></span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>); <span class="tactic">auto</span>.<br/>
@@ -486,8 +489,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.ble_1">ble_1</a></span>: <span class="kwd">forall</span> <span class="id">S1</span> <span class="id">S2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S1">S1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S2">S2</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S1">S1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S2">S2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof10')">Proof.</div>
-<div class="proofscript" id="proof10">
+<div class="toggleproof" onclick="toggleDisplay('proof27')">Proof.</div>
+<div class="proofscript" id="proof27">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">ble</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.le">le</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">S1</span> <span class="kwd">as</span> [ | <span class="id">m1</span>].<br/>
 - <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot_1">V.bot_1</a></span> (<span class="id">s</span> "")). <span class="tactic">apply</span> <span class="id">H0</span>. <br/>
@@ -501,8 +504,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.ble_false">ble_false</a></span>: <span class="kwd">forall</span> <span class="id">s1</span> <span class="id">s2</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#s2">s2</a></span> &lt;&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Bot">Bot</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s1">s1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s2">s2</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt; <span class="id">exists</span> <span class="id">x</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">V.ble</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s1">s1</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s2">s2</a></span>) = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof11')">Proof.</div>
-<div class="proofscript" id="proof11">
+<div class="toggleproof" onclick="toggleDisplay('proof28')">Proof.</div>
+<div class="proofscript" id="proof28">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">ble</a></span>; <span class="tactic">intros</span>. <br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">s1</span> <span class="kwd">as</span> [ | <span class="id">m1</span>]. <span class="tactic">discriminate</span>. <span class="tactic">destruct</span> <span class="id">s2</span> <span class="kwd">as</span> [ | <span class="id">m2</span>]. <span class="tactic">congruence</span>.<br/>
 - <span class="tactic">set</span> (<span class="id">p</span> := <span class="kwd">fun</span> (<span class="id">x</span>: <span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.key">IdentMap.key</a></span>) <span class="id">v</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">V.ble</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id">m1</span>)) <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span>) <span class="kwd">in</span> *.<br/>
@@ -531,16 +534,16 @@ Qed.</div>
 <span class="kwd">Definition</span> <span class="id"><a name="StoreAbstr.bot">bot</a></span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span> := <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Bot">Bot</a></span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.bot_1">bot_1</a></span>: <span class="kwd">forall</span> <span class="id">s</span>, ~(<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot">bot</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof12')">Proof.</div>
-<div class="proofscript" id="proof12">
+<div class="toggleproof" onclick="toggleDisplay('proof29')">Proof.</div>
+<div class="proofscript" id="proof29">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span>; <span class="id">cbn</span>. <span class="tactic">intros</span> <span class="id">s</span> <span class="id">IN</span>. <span class="tactic">apply</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot_1">V.bot_1</a></span> (<span class="id">s</span> "")). <span class="tactic">apply</span> <span class="id">IN</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Definition</span> <span class="id"><a name="StoreAbstr.top">top</a></span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span> := <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.empty">IdentMap.empty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">V.t</a></span>).<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.top_1">top_1</a></span>: <span class="kwd">forall</span> <span class="id">s</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.top">top</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof13')">Proof.</div>
-<div class="proofscript" id="proof13">
+<div class="toggleproof" onclick="toggleDisplay('proof30')">Proof.</div>
+<div class="proofscript" id="proof30">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.top">top</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span>; <span class="id">cbn</span>. <span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.top_1">V.top_1</a></span>.<br/>
 Qed.</div>
 <br/>
@@ -560,8 +563,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.join_1">join_1</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">S1</span> <span class="id">S2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S1">S1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.join">join</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S1">S1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S2">S2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof14')">Proof.</div>
-<div class="proofscript" id="proof14">
+<div class="toggleproof" onclick="toggleDisplay('proof31')">Proof.</div>
+<div class="proofscript" id="proof31">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.join">join</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">S1</span> <span class="kwd">as</span> [ | <span class="id">m1</span>]. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot_1">bot_1</a></span> <span class="id">s</span>); <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">S2</span> <span class="kwd">as</span> [ | <span class="id">m2</span>]. <span class="tactic">auto</span>.<br/>
@@ -576,8 +579,8 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.join_2">join_2</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">s</span> <span class="id">S1</span> <span class="id">S2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S2">S2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s">s</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.join">join</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S1">S1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S2">S2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof15')">Proof.</div>
-<div class="proofscript" id="proof15">
+<div class="toggleproof" onclick="toggleDisplay('proof32')">Proof.</div>
+<div class="proofscript" id="proof32">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.join">join</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">S1</span> <span class="kwd">as</span> [ | <span class="id">m1</span>]. <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">S2</span> <span class="kwd">as</span> [ | <span class="id">m2</span>]. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot_1">bot_1</a></span> <span class="id">s</span>); <span class="tactic">auto</span>.<br/>
@@ -610,8 +613,8 @@ Qed.</div>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.widen_1">widen_1</a></span>: <span class="kwd">forall</span> <span class="id">s1</span> <span class="id">s2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s1">s1</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s1">s1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#s2">s2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof16')">Proof.</div>
-<div class="proofscript" id="proof16">
+<div class="toggleproof" onclick="toggleDisplay('proof33')">Proof.</div>
+<div class="proofscript" id="proof33">
 &nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.le">le</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.widen">widen</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">s1</span> <span class="kwd">as</span> [ | <span class="id">m1</span>]. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.bot_1">bot_1</a></span> <span class="id">_</span> <span class="id">H</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">s2</span> <span class="kwd">as</span> [ | <span class="id">m2</span>]. <span class="tactic">auto</span>. <br/>
@@ -632,16 +635,16 @@ Qed.</div>
 <br/>
 <span class="kwd">Remark</span> <span class="id"><a name="StoreAbstr.measure_map_empty">measure_map_empty</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">m</span>, <span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.Empty">IdentMap.Empty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span> = 0%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof17')">Proof.</div>
-<div class="proofscript" id="proof17">
+<div class="toggleproof" onclick="toggleDisplay('proof34')">Proof.</div>
+<div class="proofscript" id="proof34">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#IMProp.fold_Empty">IMProp.fold_Empty</a></span>; <span class="tactic">auto</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Remark</span> <span class="id"><a name="StoreAbstr.measure_map_add">measure_map_add</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">m</span> <span class="id">x</span> <span class="id">v</span> <span class="id">m</span>', ~<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.In">IdentMap.In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#IMProp.Add">IMProp.Add</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span> <span class="id">m</span>' -&gt;<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id">m</span>' = (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> + <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof18')">Proof.</div>
-<div class="proofscript" id="proof18">
+<div class="toggleproof" onclick="toggleDisplay('proof35')">Proof.</div>
+<div class="proofscript" id="proof35">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span>; <span class="tactic">eapply</span> <span class="id"><a href="CDF.AbstrInterp2.html#IMProp.fold_Add">IMProp.fold_Add</a></span> <span class="kwd">with</span> (<span class="id">f</span> := <span class="kwd">fun</span> <span class="id">x</span> <span class="id">v</span> <span class="id">n</span> =&gt; (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> + <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span>)%<span class="id">nat</span>); <span class="tactic">eauto</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">repeat</span> (<span class="id">hnf</span>; <span class="tactic">intros</span>). <span class="tactic">congruence</span>.<br/>
 &nbsp;&nbsp;<span class="id">hnf</span>; <span class="tactic">intros</span>. <span class="id">lia</span>.<br/>
@@ -650,8 +653,8 @@ Qed.</div>
 <span class="kwd">Remark</span> <span class="id"><a name="StoreAbstr.measure_map_remove">measure_map_remove</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">m</span> <span class="id">x</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span> = (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span>)) + <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.remove">IdentMap.remove</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span>))%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof19')">Proof.</div>
-<div class="proofscript" id="proof19">
+<div class="toggleproof" onclick="toggleDisplay('proof36')">Proof.</div>
+<div class="proofscript" id="proof36">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.find">IdentMap.find</a></span> <span class="id">x</span> <span class="id">m</span>) <span class="kwd">as</span> [<span class="id">v</span>|] <span class="id">eqn</span>:<span class="id">F</span>.<br/>
 - <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map_add">measure_map_add</a></span> <span class="kwd">with</span> <span class="id">x</span>.<br/>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#IMFact.not_find_in_iff">IMFact.not_find_in_iff</a></span>. <span class="tactic">rewrite</span> <span class="id"><a href="CDF.AbstrInterp2.html#IMFact.remove_eq_o">IMFact.remove_eq_o</a></span>; <span class="tactic">auto</span>.<br/>
@@ -667,8 +670,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.measure_map_le">measure_map_le</a></span>: <span class="kwd">forall</span> <span class="id">m1</span> <span class="id">m2</span>,<br/>
 &nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">x</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span>)) &lt;= <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m2">m2</a></span>)))%<span class="id">nat</span> -&gt;<br/>
 &nbsp;&nbsp;(<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span> &lt;= <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m2">m2</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof20')">Proof.</div>
-<div class="proofscript" id="proof20">
+<div class="toggleproof" onclick="toggleDisplay('proof37')">Proof.</div>
+<div class="proofscript" id="proof37">
 &nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">m0</span>. <span class="tactic">pattern</span> <span class="id">m0</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="tactic">at</span> 1; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#IMProp.fold_rec">IMProp.fold_rec</a></span>.<br/>
 - <span class="tactic">intros</span> <span class="id">m</span> <span class="id">EMPTY</span> <span class="id">m2</span> <span class="id">LE</span>. <span class="id">lia</span>.<br/>
 - <span class="tactic">intros</span> <span class="id">x</span> <span class="id">v1</span> <span class="id">n</span> <span class="id">m</span>' <span class="id">m</span>'' <span class="id">MAP</span> <span class="id">NOTIN</span> <span class="id">ADD</span> <span class="id">REC</span> <span class="id">m2</span> <span class="id">LE</span>.<br/>
@@ -688,8 +691,8 @@ Qed.</div>
 &nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">x</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span>)) &lt;= <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m2">m2</a></span>)))%<span class="id">nat</span> -&gt;<br/>
 &nbsp;&nbsp;(<span class="id">exists</span> <span class="id">x</span>, <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span>)) &lt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure">V.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#x">x</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m2">m2</a></span>)))%<span class="id">nat</span> -&gt;<br/>
 &nbsp;&nbsp;(<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span> &lt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m2">m2</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof21')">Proof.</div>
-<div class="proofscript" id="proof21">
+<div class="toggleproof" onclick="toggleDisplay('proof38')">Proof.</div>
+<div class="proofscript" id="proof38">
 &nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">m1</span> <span class="id">m2</span> <span class="id">LE</span> (<span class="id">x</span> &amp; <span class="id">LT</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">rewrite</span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map_remove">measure_map_remove</a></span> <span class="id">m1</span> <span class="id">x</span>), (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map_remove">measure_map_remove</a></span> <span class="id">m2</span> <span class="id">x</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">assert</span> ((<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.remove">IdentMap.remove</a></span> <span class="id">x</span> <span class="id">m1</span>) &lt;= <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.remove">IdentMap.remove</a></span> <span class="id">x</span> <span class="id">m2</span>))%<span class="id">nat</span>).<br/>
@@ -707,8 +710,8 @@ Qed.</div>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.measure_widen_lt">measure_widen_lt</a></span>: <span class="kwd">forall</span> <span class="id">m1</span> <span class="id">m2</span>,<br/>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">ble</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m2">m2</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span>) = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt;<br/>
 &nbsp;&nbsp;(<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#IdentMap.map2">IdentMap.map2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.widen_aux">widen_aux</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m2">m2</a></span>) &lt; <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m1">m1</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof22')">Proof.</div>
-<div class="proofscript" id="proof22">
+<div class="toggleproof" onclick="toggleDisplay('proof39')">Proof.</div>
+<div class="proofscript" id="proof39">
 &nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble_false">ble_false</a></span> <span class="kwd">in</span> <span class="id">H</span>. 2: <span class="tactic">congruence</span>. <span class="tactic">destruct</span> <span class="id">H</span> <span class="kwd">as</span> (<span class="id">x</span> &amp; <span class="id">BL</span>).<br/>
 &nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map_lt">measure_map_lt</a></span>.<br/>
 - <span class="tactic">intros</span> <span class="id">y</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.get">get</a></span>. <span class="tactic">rewrite</span> <span class="id"><a href="CDF.AbstrInterp2.html#IMFact.map2_1bis">IMFact.map2_1bis</a></span> <span class="tactic">by</span> <span class="tactic">auto</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.widen_aux">widen_aux</a></span>.<br/>
@@ -732,8 +735,8 @@ Qed.</div>
 <span class="kwd">Definition</span> <span class="id"><a name="StoreAbstr.widen_order">widen_order</a></span> (<span class="id">S</span> <span class="id">S1</span>: <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.t">t</a></span>) := <span class="id">exists</span> <span class="id">S2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#S">S</a></span> = <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S1">S1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S2">S2</a></span> /\ <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S2">S2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#S1">S1</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.widen_order_wf">widen_order_wf</a></span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#well_founded">well_founded</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.widen_order">widen_order</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof23')">Proof.</div>
-<div class="proofscript" id="proof23">
+<div class="toggleproof" onclick="toggleDisplay('proof40')">Proof.</div>
+<div class="proofscript" id="proof40">
 &nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">A</span>: <span class="kwd">forall</span> <span class="id">m</span>, <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#Acc">Acc</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.widen_order">widen_order</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#m">m</a></span>)).<br/>
 &nbsp;&nbsp;{ <span class="tactic">induction</span> <span class="id">m</span> <span class="kwd">using</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Wf.html#well_founded_ind">well_founded_ind</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Arith.Wf_nat.html#well_founded_ltof">well_founded_ltof</a></span> <span class="id">_</span> <span class="id"><a href="CDF.AbstrInterp2.html#StoreAbstr.measure_map">measure_map</a></span>)).<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id">constructor</span>. <span class="tactic">intros</span> <span class="id">S</span> (<span class="id">S2</span> &amp; <span class="id">EQ</span> &amp; <span class="id">BLE</span>). <span class="tactic">subst</span> <span class="id">S</span>.<br/>
@@ -760,8 +763,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> <span class="kwd">with</span> <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> &lt;= <span class="id">h</span> | <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#True">True</a></span> <span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.In_mono">In_mono</a></span>: <span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">N</span>, <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> &lt;= <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof24')">Proof.</div>
-<div class="proofscript" id="proof24">
+<div class="toggleproof" onclick="toggleDisplay('proof41')">Proof.</div>
+<div class="proofscript" id="proof41">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>; <span class="tactic">destruct</span> <span class="id">N</span>; <span class="tactic">intros</span>. <span class="id">lia</span>. <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -769,23 +772,23 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.le_Fin">le_Fin</a></span>: <span class="kwd">forall</span> <span class="id">n1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span>) <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> &lt;-&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof25')">Proof.</div>
-<div class="proofscript" id="proof25">
+<div class="toggleproof" onclick="toggleDisplay('proof42')">Proof.</div>
+<div class="proofscript" id="proof42">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span>; <span class="id">cbn</span>; <span class="tactic">intros</span>; <span class="tactic">split</span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">apply</span> <span class="id">H</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">destruct</span> <span class="id">N2</span>; <span class="id">cbn</span> <span class="kwd">in</span> *; <span class="tactic">auto</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.le_is_Inf">le_is_Inf</a></span>: <span class="kwd">forall</span> <span class="id">N</span> <span class="id">h</span>, (<span class="kwd">forall</span> <span class="id">n</span>, <span class="id"><a href="CDF.AbstrInterp2.html#h">h</a></span> &lt;= <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span>) -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> = <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof26')">Proof.</div>
-<div class="proofscript" id="proof26">
+<div class="toggleproof" onclick="toggleDisplay('proof43')">Proof.</div>
+<div class="proofscript" id="proof43">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">N</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id">specialize</span> (<span class="id">H</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.max">Z.max</a></span> <span class="id">h0</span> (<span class="id">h</span> + 1))). <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.le_Inf">le_Inf</a></span>: <span class="kwd">forall</span> <span class="id">N</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> &lt;-&gt; <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> = <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof27')">Proof.</div>
-<div class="proofscript" id="proof27">
+<div class="toggleproof" onclick="toggleDisplay('proof44')">Proof.</div>
+<div class="proofscript" id="proof44">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span>; <span class="tactic">intros</span>; <span class="tactic">split</span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le_is_Inf">le_is_Inf</a></span> <span class="kwd">with</span> 0. <span class="tactic">intros</span>; <span class="tactic">apply</span> <span class="id">H</span>; <span class="tactic">exact</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#I">I</a></span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">subst</span> <span class="id">N</span>; <span class="tactic">exact</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#I">I</a></span>.<br/>
@@ -795,8 +798,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> <span class="kwd">with</span> <span class="id">_</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> | <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>, <span class="id">_</span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> | <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h1</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h2</span> =&gt; <span class="id">h1</span> &lt;=? <span class="id">h2</span> <span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.ble_1">ble_1</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof28')">Proof.</div>
-<div class="proofscript" id="proof28">
+<div class="toggleproof" onclick="toggleDisplay('proof45')">Proof.</div>
+<div class="proofscript" id="proof45">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">N1</span>, <span class="id">N2</span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.leb_le">Z.leb_le</a></span> <span class="kwd">in</span> <span class="id">H</span>. <span class="id">lia</span>.<br/>
@@ -804,8 +807,8 @@ Defined.</div>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.ble_2">ble_2</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof29')">Proof.</div>
-<div class="proofscript" id="proof29">
+<div class="toggleproof" onclick="toggleDisplay('proof46')">Proof.</div>
+<div class="proofscript" id="proof46">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N1</span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le_Fin">le_Fin</a></span> <span class="kwd">in</span> <span class="id">H</span>. <span class="tactic">destruct</span> <span class="id">N2</span>; <span class="tactic">auto</span>. <span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.leb_le">Z.leb_le</a></span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le_Inf">le_Inf</a></span> <span class="kwd">in</span> <span class="id">H</span>. <span class="tactic">rewrite</span> <span class="id">H</span>. <span class="tactic">auto</span>.<br/>
@@ -815,14 +818,14 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> <span class="kwd">with</span> <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>, <span class="id">_</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> | <span class="id">_</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> | <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h1</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h2</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.max">Z.max</a></span> <span class="id">h1</span> <span class="id">h2</span>) <span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.max_1">max_1</a></span>: <span class="kwd">forall</span> <span class="id">n</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.max">max</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof30')">Proof.</div>
-<div class="proofscript" id="proof30">
+<div class="toggleproof" onclick="toggleDisplay('proof47')">Proof.</div>
+<div class="proofscript" id="proof47">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.max">max</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N1</span>; <span class="tactic">auto</span>. <span class="tactic">destruct</span> <span class="id">N2</span>; <span class="tactic">auto</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.max_2">max_2</a></span>: <span class="kwd">forall</span> <span class="id">n</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.max">max</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof31')">Proof.</div>
-<div class="proofscript" id="proof31">
+<div class="toggleproof" onclick="toggleDisplay('proof48')">Proof.</div>
+<div class="proofscript" id="proof48">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.max">max</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N1</span>; <span class="tactic">auto</span>. <span class="tactic">destruct</span> <span class="id">N2</span>; <span class="tactic">auto</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -830,8 +833,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> <span class="kwd">with</span> <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>, <span class="id">_</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> | <span class="id">_</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> | <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h1</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h2</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.min">Z.min</a></span> <span class="id">h1</span> <span class="id">h2</span>) <span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.min_1">min_1</a></span>: <span class="kwd">forall</span> <span class="id">n</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.min">min</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof32')">Proof.</div>
-<div class="proofscript" id="proof32">
+<div class="toggleproof" onclick="toggleDisplay('proof49')">Proof.</div>
+<div class="proofscript" id="proof49">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.min">min</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N1</span>; <span class="tactic">auto</span>. <span class="tactic">destruct</span> <span class="id">N2</span>; <span class="tactic">auto</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -839,8 +842,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> <span class="kwd">with</span> <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>, <span class="id">_</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> | <span class="id">_</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> | <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h1</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">h2</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> (<span class="id">h1</span> + <span class="id">h2</span>) <span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.add_1">add_1</a></span>: <span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> + <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.add">add</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof33')">Proof.</div>
-<div class="proofscript" id="proof33">
+<div class="toggleproof" onclick="toggleDisplay('proof50')">Proof.</div>
+<div class="proofscript" id="proof50">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.add">add</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N1</span>; <span class="tactic">auto</span>. <span class="tactic">destruct</span> <span class="id">N2</span>; <span class="tactic">auto</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -849,8 +852,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.isIn_1">isIn_1</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span> <span class="id">N</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.isIn">isIn</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof34')">Proof.</div>
-<div class="proofscript" id="proof34">
+<div class="toggleproof" onclick="toggleDisplay('proof51')">Proof.</div>
+<div class="proofscript" id="proof51">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.isIn">isIn</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N</span>; <span class="tactic">auto</span>. <span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.leb_le">Z.leb_le</a></span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -858,8 +861,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> <span class="kwd">with</span> <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> | <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">n</span> =&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> (<span class="id">n</span> - 1) <span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.pred_1">pred_1</a></span>: <span class="kwd">forall</span> <span class="id">n</span> <span class="id">N</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> - 1) (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.pred">pred</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof35')">Proof.</div>
-<div class="proofscript" id="proof35">
+<div class="toggleproof" onclick="toggleDisplay('proof52')">Proof.</div>
+<div class="proofscript" id="proof52">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.pred">pred</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>; <span class="tactic">intros</span>; <span class="tactic">destruct</span> <span class="id">N</span>; <span class="tactic">auto</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -870,8 +873,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="kwd">else</span> <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.widen_1">widen_1</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof36')">Proof.</div>
-<div class="proofscript" id="proof36">
+<div class="toggleproof" onclick="toggleDisplay('proof53')">Proof.</div>
+<div class="proofscript" id="proof53">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">widen</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span> <span class="id">N2</span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">LE</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">red</span>; <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">In</a></span>; <span class="tactic">auto</span>.<br/>
@@ -881,15 +884,15 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> <span class="kwd">with</span> <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> =&gt; 0%<span class="id">nat</span> | <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id">_</span> =&gt; 1%<span class="id">nat</span> <span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.measure_1">measure_1</a></span>: <span class="kwd">forall</span> <span class="id">N</span>, (<span class="kwd">measure</span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> &lt;= 1)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof37')">Proof.</div>
-<div class="proofscript" id="proof37">
+<div class="toggleproof" onclick="toggleDisplay('proof54')">Proof.</div>
+<div class="proofscript" id="proof54">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">N</span>; <span class="id">cbn</span>; <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.widen_2">widen_2</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, (<span class="kwd">measure</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) &lt;= <span class="kwd">measure</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof38')">Proof.</div>
-<div class="proofscript" id="proof38">
+<div class="toggleproof" onclick="toggleDisplay('proof55')">Proof.</div>
+<div class="proofscript" id="proof55">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">widen</a></span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span> <span class="id">N2</span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">BLE</span>.<br/>
 &nbsp;&nbsp;- <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">destruct</span> <span class="id">N1</span>. <span class="id">cbn</span>; <span class="id">lia</span>. <span class="tactic">destruct</span> <span class="id">N2</span>; <span class="tactic">discriminate</span>.<br/>
@@ -897,8 +900,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Zinf.widen_3">widen_3</a></span>: <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt; (<span class="kwd">measure</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) &lt; <span class="kwd">measure</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof39')">Proof.</div>
-<div class="proofscript" id="proof39">
+<div class="toggleproof" onclick="toggleDisplay('proof56')">Proof.</div>
+<div class="proofscript" id="proof56">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">N1</span>, <span class="id">N2</span>; <span class="id">cbn</span>; <span class="tactic">intros</span>; <span class="tactic">auto</span>; <span class="tactic">try</span> <span class="tactic">discriminate</span>. <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">widen</a></span>. <span class="id">cbn</span>. <span class="tactic">rewrite</span> <span class="id">H</span>. <span class="id">cbn</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
@@ -935,15 +938,15 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.isempty_1">isempty_1</a></span>: <span class="kwd">forall</span> <span class="id">n</span> <span class="id">N</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#False">False</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof40')">Proof.</div>
-<div class="proofscript" id="proof40">
+<div class="toggleproof" onclick="toggleDisplay('proof57')">Proof.</div>
+<div class="proofscript" id="proof57">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N</span> <span class="kwd">as</span> [[<span class="id">l</span>|] [<span class="id">h</span>|]]; <span class="tactic">try</span> <span class="tactic">discriminate</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.ltb_lt">Z.ltb_lt</a></span> <span class="kwd">in</span> <span class="id">H</span>. <span class="id">cbn</span> <span class="kwd">in</span> <span class="id">H0</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.isempty_2">isempty_2</a></span>: <span class="kwd">forall</span> <span class="id">N</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt; <span class="id">exists</span> <span class="id">n</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N">N</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof41')">Proof.</div>
-<div class="proofscript" id="proof41">
+<div class="toggleproof" onclick="toggleDisplay('proof58')">Proof.</div>
+<div class="proofscript" id="proof58">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">N</span> <span class="kwd">as</span> [[<span class="id">l</span>|] [<span class="id">h</span>|]]; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.ltb_ge">Z.ltb_ge</a></span> <span class="kwd">in</span> <span class="id">H</span>. <span class="id">exists</span> <span class="id">h</span>; <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;- <span class="id">exists</span> (- <span class="id">l</span>); <span class="id">lia</span>.<br/>
@@ -953,8 +956,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.nonempty_le">nonempty_le</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt; (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">Zinf.le</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) /\ <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le">Zinf.le</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>)).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof42')">Proof.</div>
-<div class="proofscript" id="proof42">
+<div class="toggleproof" onclick="toggleDisplay('proof59')">Proof.</div>
+<div class="proofscript" id="proof59">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le">le</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">N1</span> <span class="kwd">as</span> [[<span class="id">l1</span> |] [<span class="id">h1</span>|]]; <span class="id">cbn</span> <span class="kwd">in</span> *; <span class="tactic">rewrite</span> ? <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le_Fin">Zinf.le_Fin</a></span>, ? <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.le_Inf">Zinf.le_Inf</a></span>.<br/>
 &nbsp;&nbsp;- <span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.ZArith.BinInt.html#Z.ltb_ge">Z.ltb_ge</a></span> <span class="kwd">in</span> <span class="id">H0</span>. <span class="tactic">split</span>.<br/>
@@ -978,8 +981,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> || (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">Zinf.ble</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) &amp;&amp; <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble">Zinf.ble</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>)).<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.ble_1">ble_1</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof43')">Proof.</div>
-<div class="proofscript" id="proof43">
+<div class="toggleproof" onclick="toggleDisplay('proof60')">Proof.</div>
+<div class="proofscript" id="proof60">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ble">ble</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le">le</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">E</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty_1">isempty_1</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">E</span> <span class="id">H0</span>).<br/>
@@ -989,8 +992,8 @@ Defined.</div>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.ble_2">ble_2</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof44')">Proof.</div>
-<div class="proofscript" id="proof44">
+<div class="toggleproof" onclick="toggleDisplay('proof61')">Proof.</div>
+<div class="proofscript" id="proof61">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ble">ble</a></span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">E</span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.nonempty_le">nonempty_le</a></span> <span class="id">N1</span> <span class="id">N2</span>) <span class="kwd">as</span> [<span class="id">P</span> <span class="id">Q</span>]; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#andb_true_intro">andb_true_intro</a></span>; <span class="tactic">split</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.ble_2">Zinf.ble_2</a></span>; <span class="tactic">auto</span>.<br/>
@@ -1000,8 +1003,8 @@ Defined.</div>
 &nbsp;&nbsp;<span class="kwd">Definition</span> <span class="id"><a name="Intervals.const">const</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) : <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.t">t</a></span> := {| <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.intv">low</a></span> := <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> (-<span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span>); <span class="id">high</span> := <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> |}.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.const_1">const_1</a></span>: <span class="kwd">forall</span> <span class="id">n</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.const">const</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof45')">Proof.</div>
-<div class="proofscript" id="proof45">
+<div class="toggleproof" onclick="toggleDisplay('proof62')">Proof.</div>
+<div class="proofscript" id="proof62">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.const">const</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">Zinf.In</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1009,8 +1012,8 @@ Defined.</div>
 &nbsp;&nbsp;<span class="kwd">Definition</span> <span class="id"><a name="Intervals.bot">bot</a></span>: <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.t">t</a></span> := {| <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.intv">low</a></span> := <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> 0; <span class="id">high</span> := <span class="id"><a href="CDF.AbstrInterp2.html#Fin">Fin</a></span> (-1) |}.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.bot_1">bot_1</a></span>: <span class="kwd">forall</span> <span class="id">n</span>, ~(<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.bot">bot</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof46')">Proof.</div>
-<div class="proofscript" id="proof46">
+<div class="toggleproof" onclick="toggleDisplay('proof63')">Proof.</div>
+<div class="proofscript" id="proof63">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.bot">bot</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In">Zinf.In</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1018,8 +1021,8 @@ Defined.</div>
 &nbsp;&nbsp;<span class="kwd">Definition</span> <span class="id"><a name="Intervals.top">top</a></span>: <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.t">t</a></span> := {| <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.intv">low</a></span> := <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span>; <span class="id">high</span> := <span class="id"><a href="CDF.AbstrInterp2.html#Inf">Inf</a></span> |}.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.top_1">top_1</a></span>: <span class="kwd">forall</span> <span class="id">n</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.top">top</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof47')">Proof.</div>
-<div class="proofscript" id="proof47">
+<div class="toggleproof" onclick="toggleDisplay('proof64')">Proof.</div>
+<div class="proofscript" id="proof64">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">split</span>; <span class="tactic">exact</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#I">I</a></span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1030,15 +1033,15 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.join_1">join_1</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.join">join</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof48')">Proof.</div>
-<div class="proofscript" id="proof48">
+<div class="toggleproof" onclick="toggleDisplay('proof65')">Proof.</div>
+<div class="proofscript" id="proof65">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.join">join</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="tactic">split</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.max_1">Zinf.max_1</a></span>; <span class="tactic">tauto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.join_2">join_2</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.join">join</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof49')">Proof.</div>
-<div class="proofscript" id="proof49">
+<div class="toggleproof" onclick="toggleDisplay('proof66')">Proof.</div>
+<div class="proofscript" id="proof66">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.join">join</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="tactic">split</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.max_2">Zinf.max_2</a></span>; <span class="tactic">tauto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1051,8 +1054,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.add_1">add_1</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> + <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.add">add</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof50')">Proof.</div>
-<div class="proofscript" id="proof50">
+<div class="toggleproof" onclick="toggleDisplay('proof67')">Proof.</div>
+<div class="proofscript" id="proof67">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.add">add</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">E1</span>. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty_1">isempty_1</a></span> <span class="id">n1</span> <span class="id">N1</span>); <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N2</span>) <span class="id">eqn</span>:<span class="id">E2</span>. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty_1">isempty_1</a></span> <span class="id">n2</span> <span class="id">N2</span>); <span class="tactic">auto</span>.<br/>
@@ -1065,8 +1068,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.opp_1">opp_1</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span> <span class="id">v</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> (-<span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.opp">opp</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof51')">Proof.</div>
-<div class="proofscript" id="proof51">
+<div class="toggleproof" onclick="toggleDisplay('proof68')">Proof.</div>
+<div class="proofscript" id="proof68">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.opp">opp</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="tactic">replace</span> (- - <span class="id">n</span>) <span class="kwd">with</span> <span class="id">n</span> <span class="tactic">by</span> <span class="id">lia</span>. <span class="tactic">tauto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1074,8 +1077,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.sub_1">sub_1</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> - <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.sub">sub</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof52')">Proof.</div>
-<div class="proofscript" id="proof52">
+<div class="toggleproof" onclick="toggleDisplay('proof69')">Proof.</div>
+<div class="proofscript" id="proof69">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.add_1">add_1</a></span>; <span class="tactic">auto</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.opp_1">opp_1</a></span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1086,8 +1089,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.meet_1">meet_1</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.meet">meet</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof53')">Proof.</div>
-<div class="proofscript" id="proof53">
+<div class="toggleproof" onclick="toggleDisplay('proof70')">Proof.</div>
+<div class="proofscript" id="proof70">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.meet">meet</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="tactic">split</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.min_1">Zinf.min_1</a></span>; <span class="tactic">tauto</span>. <br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1097,8 +1100,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.isIn_1">isIn_1</a></span>:<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n</span> <span class="id">v</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isIn">isIn</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#true">true</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof54')">Proof.</div>
-<div class="proofscript" id="proof54">
+<div class="toggleproof" onclick="toggleDisplay('proof71')">Proof.</div>
+<div class="proofscript" id="proof71">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isIn">isIn</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#andb_true_intro">andb_true_intro</a></span>; <span class="tactic">split</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.isIn_1">Zinf.isIn_1</a></span>; <span class="tactic">tauto</span>. <br/>
 &nbsp;&nbsp;Qed.</div>
@@ -1111,8 +1114,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">a1</span> <span class="id">a2</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> = <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> -&gt;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst">fst</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.eq_inv">eq_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)) /\ <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd">snd</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.eq_inv">eq_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof55')">Proof.</div>
-<div class="proofscript" id="proof55">
+<div class="toggleproof" onclick="toggleDisplay('proof72')">Proof.</div>
+<div class="proofscript" id="proof72">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intros</span>; <span class="id">cbn</span>. <span class="tactic">subst</span> <span class="id">n2</span>. <span class="tactic">split</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.meet_1">meet_1</a></span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1122,8 +1125,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">a1</span> <span class="id">a2</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> &lt;&gt; <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> -&gt;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst">fst</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ne_inv">ne_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)) /\ <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd">snd</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ne_inv">ne_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof56')">Proof.</div>
-<div class="proofscript" id="proof56">
+<div class="toggleproof" onclick="toggleDisplay('proof73')">Proof.</div>
+<div class="proofscript" id="proof73">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intros</span>; <span class="id">cbn</span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
@@ -1138,8 +1141,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">a1</span> <span class="id">a2</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> &lt;= <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> -&gt;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst">fst</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le_inv">le_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)) /\ <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd">snd</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le_inv">le_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof57')">Proof.</div>
-<div class="proofscript" id="proof57">
+<div class="toggleproof" onclick="toggleDisplay('proof74')">Proof.</div>
+<div class="proofscript" id="proof74">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le_inv">le_inv</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intuition</span> <span class="tactic">auto</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.min_1">Zinf.min_1</a></span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In_mono">Zinf.In_mono</a></span> <span class="kwd">with</span> <span class="id">n2</span>; <span class="tactic">auto</span>.<br/>
@@ -1157,8 +1160,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">n1</span> <span class="id">n2</span> <span class="id">a1</span> <span class="id">a2</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> &gt; <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> -&gt;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n1">n1</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#fst">fst</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.gt_inv">gt_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)) /\ <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#n2">n2</a></span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#snd">snd</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.gt_inv">gt_inv</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a1">a1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#a2">a2</a></span>)).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof58')">Proof.</div>
-<div class="proofscript" id="proof58">
+<div class="toggleproof" onclick="toggleDisplay('proof75')">Proof.</div>
+<div class="proofscript" id="proof75">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.gt_inv">gt_inv</a></span>; <span class="tactic">intros</span>; <span class="id">cbn</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intuition</span> <span class="tactic">auto</span>; <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.min_1">Zinf.min_1</a></span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.In_mono">Zinf.In_mono</a></span> <span class="kwd">with</span> ((-<span class="id">n2</span>) - 1). <span class="id">lia</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.pred_1">Zinf.pred_1</a></span>; <span class="tactic">auto</span>.<br/>
@@ -1173,8 +1176,8 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;{| <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.intv">low</a></span> := <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">Zinf.widen</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>); <span class="id">high</span> := <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.widen">Zinf.widen</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>) (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) |}.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.widen_1">widen_1</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le">le</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>).<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof59')">Proof.</div>
-<div class="proofscript" id="proof59">
+<div class="toggleproof" onclick="toggleDisplay('proof76')">Proof.</div>
+<div class="proofscript" id="proof76">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.le">le</a></span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen">widen</a></span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">E1</span>. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty_1">isempty_1</a></span> <span class="id">n</span> <span class="id">N1</span>); <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N2</span>) <span class="id">eqn</span>:<span class="id">E2</span>. <span class="tactic">auto</span>.<br/>
@@ -1185,16 +1188,16 @@ Defined.</div>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span> <span class="kwd">then</span> 3%<span class="id">nat</span> <span class="kwd">else</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.measure">Zinf.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span>) + <span class="id"><a href="CDF.AbstrInterp2.html#Zinf.measure">Zinf.measure</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#v">v</a></span>))%<span class="id">nat</span>.<br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.measure_top">measure_top</a></span>: <span class="kwd">measure</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.top">top</a></span> = 0%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof60')">Proof.</div>
-<div class="proofscript" id="proof60">
+<div class="toggleproof" onclick="toggleDisplay('proof77')">Proof.</div>
+<div class="proofscript" id="proof77">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;Qed.</div>
 <br/>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Remark</span> <span class="id"><a name="Intervals.isempty_widen">isempty_widen</a></span>: <span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>,<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof61')">Proof.</div>
-<div class="proofscript" id="proof61">
+<div class="toggleproof" onclick="toggleDisplay('proof78')">Proof.</div>
+<div class="proofscript" id="proof78">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen">widen</a></span> <span class="id">N1</span> <span class="id">N2</span>)) <span class="id">eqn</span>:<span class="id">E</span>; <span class="tactic">auto</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty_2">isempty_2</a></span> <span class="id">_</span> <span class="id">H</span>) <span class="kwd">as</span> (<span class="id">n1</span> &amp; <span class="id">IN1</span>).<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty_1">isempty_1</a></span> <span class="id">n1</span> <span class="id">_</span> <span class="id">E</span>). <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen_1">widen_1</a></span>; <span class="tactic">auto</span>.<br/>
@@ -1202,8 +1205,8 @@ Defined.</div>
 &nbsp;&nbsp;<br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.widen_2">widen_2</a></span>: <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, (<span class="kwd">measure</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) &lt;= (<span class="kwd">measure</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>))%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof62')">Proof.</div>
-<div class="proofscript" id="proof62">
+<div class="toggleproof" onclick="toggleDisplay('proof79')">Proof.</div>
+<div class="proofscript" id="proof79">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="kwd">measure</span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">E1</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen">widen</a></span>; <span class="tactic">rewrite</span> <span class="id">E1</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">generalize</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.measure_1">Zinf.measure_1</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.low">low</a></span> <span class="id">N2</span>)) (<span class="id"><a href="CDF.AbstrInterp2.html#Zinf.measure_1">Zinf.measure_1</a></span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.high">high</a></span> <span class="id">N2</span>)); <span class="tactic">intros</span>.<br/>
@@ -1216,8 +1219,8 @@ Defined.</div>
 <br/>
 &nbsp;&nbsp;<span class="kwd">Lemma</span> <span class="id"><a name="Intervals.widen_3">widen_3</a></span>: <br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">N1</span> <span class="id">N2</span>, <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ble">ble</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> = <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#false">false</a></span> -&gt; (<span class="kwd">measure</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.widen">widen</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span> <span class="id"><a href="CDF.AbstrInterp2.html#N2">N2</a></span>) &lt; <span class="kwd">measure</span> <span class="id"><a href="CDF.AbstrInterp2.html#N1">N1</a></span>)%<span class="id">nat</span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof63')">Proof.</div>
-<div class="proofscript" id="proof63">
+<div class="toggleproof" onclick="toggleDisplay('proof80')">Proof.</div>
+<div class="proofscript" id="proof80">
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp2.html#Intervals.ble">ble</a></span>, <span class="kwd">measure</span>; <span class="tactic">intros</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N2</span>) <span class="id">eqn</span>:<span class="id">E2</span>. <span class="tactic">discriminate</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp2.html#Intervals.isempty">isempty</a></span> <span class="id">N1</span>) <span class="id">eqn</span>:<span class="id">E1</span>.<br/>
@@ -1289,6 +1292,6 @@ c'est à dire: <span class="bracket"><span class="id">x</span></span> est dans <
 </div>
 
 </div>
-<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</a></div>
+<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</div>
 </body>
 </html>

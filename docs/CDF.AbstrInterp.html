@@ -300,17 +300,18 @@ Qed.</div>
 &nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id">m</span> =&gt;<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp.html#IdentMap.find">IdentMap.find</a></span> <span class="id"><a href="CDF.AbstrInterp.html#x">x</a></span> <span class="id">m</span> <span class="kwd">with</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#None">None</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.top">V.top</a></span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">v</span> =&gt; <span class="id">v</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#Some">Some</a></span> <span class="id">N</span> =&gt; <span class="id">N</span><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span><br/>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
 <br/>
 <span class="kwd">Definition</span> <span class="id"><a name="StoreAbstr.In">In</a></span> (<span class="id">s</span>: <span class="id"><a href="CDF.IMP.html#store">store</a></span>) (<span class="id">S</span>: <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.t">t</a></span>) : <span class="kwd">Prop</span> :=<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">x</span>, <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.In">V.In</a></span> (<span class="id"><a href="CDF.AbstrInterp.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp.html#x">x</a></span>) (<span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.get">get</a></span> <span class="id"><a href="CDF.AbstrInterp.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp.html#S">S</a></span>).<br/>
 <br/>
-<span class="kwd">Definition</span> <span class="tactic">set</span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>) (<span class="id">v</span>: <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.t">V.t</a></span>) (<span class="id">S</span>: <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.t">t</a></span>): <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.t">t</a></span> :=<br/>
+<span class="kwd">Definition</span> <span class="tactic">set</span> (<span class="id">x</span>: <span class="id"><a href="CDF.IMP.html#ident">ident</a></span>) (<span class="id">N</span>: <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.t">V.t</a></span>) (<span class="id">S</span>: <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.t">t</a></span>): <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.t">t</a></span> :=<br/>
+&nbsp;&nbsp;<span class="kwd">if</span> <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.ble">V.ble</a></span> <span class="id"><a href="CDF.AbstrInterp.html#N">N</a></span> <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.bot">V.bot</a></span> <span class="kwd">then</span> <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Bot">Bot</a></span> <span class="kwd">else</span> <br/>
 &nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp.html#S">S</a></span> <span class="kwd">with</span><br/>
 &nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Bot">Bot</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Bot">Bot</a></span><br/>
-&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id">m</span> =&gt; <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Top_except">Top_except</a></span> (<span class="id"><a href="CDF.AbstrInterp.html#IdentMap.add">IdentMap.add</a></span> <span class="id"><a href="CDF.AbstrInterp.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp.html#v">v</a></span> <span class="id">m</span>)<br/>
+&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Top_except">Top_except</a></span> <span class="id">m</span> =&gt; <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.Top_except">Top_except</a></span> (<span class="id"><a href="CDF.AbstrInterp.html#IdentMap.add">IdentMap.add</a></span> <span class="id"><a href="CDF.AbstrInterp.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp.html#N">N</a></span> <span class="id">m</span>)<br/>
 &nbsp;&nbsp;<span class="kwd">end</span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="StoreAbstr.set_1">set_1</a></span>:<br/>
@@ -318,7 +319,9 @@ Qed.</div>
 &nbsp;&nbsp;<span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.In">V.In</a></span> <span class="id"><a href="CDF.AbstrInterp.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp.html#N">N</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.In">In</a></span> <span class="id"><a href="CDF.AbstrInterp.html#s">s</a></span> <span class="id"><a href="CDF.AbstrInterp.html#S">S</a></span> -&gt; <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.In">In</a></span> (<span class="id"><a href="CDF.IMP.html#update">update</a></span> <span class="id"><a href="CDF.AbstrInterp.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp.html#n">n</a></span> <span class="id"><a href="CDF.AbstrInterp.html#s">s</a></span>) (<span class="tactic">set</span> <span class="id"><a href="CDF.AbstrInterp.html#x">x</a></span> <span class="id"><a href="CDF.AbstrInterp.html#N">N</a></span> <span class="id"><a href="CDF.AbstrInterp.html#S">S</a></span>).<br/>
 <div class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</div>
 <div class="proofscript" id="proof4">
-&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.get">get</a></span>, <span class="tactic">set</span>; <span class="tactic">intros</span>. <span class="tactic">destruct</span> <span class="id">S</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">unfold</span> <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.In">In</a></span>, <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.get">get</a></span>, <span class="tactic">set</span>; <span class="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.ble">V.ble</a></span> <span class="id">N</span> <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.bot">V.bot</a></span>) <span class="id">eqn</span>:<span class="id">BLE</span>; [ | <span class="tactic">destruct</span> <span class="id">S</span> ].<br/>
+- <span class="tactic">apply</span> <span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.ble_1">V.ble_1</a></span> <span class="kwd">in</span> <span class="id">BLE</span>. <span class="tactic">apply</span> <span class="id">BLE</span> <span class="kwd">in</span> <span class="id">H</span>. <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.bot_1">V.bot_1</a></span> <span class="id">n</span>); <span class="tactic">auto</span>. <br/>
 - <span class="tactic">elim</span> (<span class="id"><a href="CDF.AbstrInterp.html#StoreAbstr.bot_1">V.bot_1</a></span> (<span class="id">s</span> "")). <span class="tactic">auto</span>. <br/>
 - <span class="tactic">rewrite</span> <span class="id"><a href="CDF.AbstrInterp.html#IMFact.add_o">IMFact.add_o</a></span>. <span class="id">change</span> <span class="id"><a href="CDF.AbstrInterp.html#IdentMap.E.eq_dec">IdentMap.E.eq_dec</a></span> <span class="kwd">with</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.IMP.html#update">update</a></span>.<br/>
 &nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="http://coq.inria.fr/library/Coq.Strings.String.html#string_dec">string_dec</a></span> <span class="id">x</span> <span class="id">x0</span>); <span class="tactic">auto</span>.<br/>
@@ -582,8 +585,36 @@ Qed.</div>
      = (FlatInt.Top, FlatInt.Just 10, FlatInt.Just 100) </pre>
 c'est à dire: <span class="bracket"><span class="id">x</span></span> est inconnu, <span class="bracket"><span class="id">y</span></span> vaut 10, et <span class="bracket"><span class="id">z</span></span> vaut 100.
 </div>
+<br/>
+<br/>
+<div class="doc">Écrire un domaine abstrait pour l'analyse des signes.
+    Pour chaque variable on veut savoir si sa valeur est
+    toujours positive (ou nulle), toujours négative (strictement),
+    ou de signe inconnu. </div>
+<br/>
+<span class="kwd">Module</span> <span class="id"><a name="Sign">Sign</a></span>  .<br/>
+<br/>
+&nbsp;&nbsp;<span class="kwd">Inductive</span> <span class="id"><a name="Sign.sign">sign</a></span> : <span class="kwd">Type</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a name="Sign.Bot">Bot</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a name="Sign.Pos">Pos</a></span>          <span class="docright">(* positif ou nul  *)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a name="Sign.Neg">Neg</a></span>          <span class="docright">(* strictement négatif  *)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a name="Sign.Top">Top</a></span>.<br/>
+&nbsp;&nbsp;<span class="kwd">Definition</span> <span class="id"><a name="Sign.t">t</a></span> := <span class="id"><a href="CDF.AbstrInterp.html#Sign.sign">sign</a></span>.<br/>
+<br/>
+&nbsp;&nbsp;<span class="kwd">Definition</span> <span class="id"><a name="Sign.In">In</a></span> (<span class="id">n</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Numbers.BinNums.html#Z">Z</a></span>) (<span class="id">N</span>: <span class="id"><a href="CDF.AbstrInterp.html#Sign.t">t</a></span>) : <span class="kwd">Prop</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">match</span> <span class="id"><a href="CDF.AbstrInterp.html#N">N</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#Sign.Bot">Bot</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#False">False</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#Sign.Pos">Pos</a></span> =&gt; 0 &lt;= <span class="id"><a href="CDF.AbstrInterp.html#n">n</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#Sign.Neg">Neg</a></span> =&gt; <span class="id"><a href="CDF.AbstrInterp.html#n">n</a></span> &lt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id"><a href="CDF.AbstrInterp.html#Sign.Top">Top</a></span> =&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#True">True</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">end</span>.<br/>
+<br/>
+<br/>
+<span class="kwd">End</span> <span class="id"><a href="CDF.AbstrInterp.html#Sign">Sign</a></span>.<br/>
+<br/>
+<br/>
 
 </div>
-<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</a></div>
+<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</div>
 </body>
 </html>
