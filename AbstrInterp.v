@@ -106,7 +106,7 @@ End STORE_ABSTRACTION.
 
 (** ** 5.2.  L'analyseur générique *)
 
-(** L'analyseur se présente comme un module paramétrisé par une abstraction
+(** L'analyseur se présente comme un module paramétré par une abstraction
     des états, celle-ci contenant aussi une abstraction des valeurs. *)
 
 Module Analysis (ST: STORE_ABSTRACTION).
@@ -259,7 +259,7 @@ Module IdentMap := FMapWeakList.Make(Ident_Decidable).
 Module IMFact := FMapFacts.WFacts(IdentMap).
 Module IMProp := FMapFacts.WProperties(IdentMap).
 
-(** Le domaine des états abstraits est paramétrisé par un module [VA]
+(** Le domaine des états abstraits est paramétré par un module [VA]
     des valeurs abstraites. *)
 
 Module StoreAbstr (VA: VALUE_ABSTRACTION) <: STORE_ABSTRACTION.
