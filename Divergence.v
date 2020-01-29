@@ -1,7 +1,7 @@
 From Coq Require Import Arith ZArith Psatz Bool String List.
-From CDF Require Import Sequences IMP.
+From CDF Require Import Sequences IMP Compil.
 
-(** * 5.  Sémantiques de la divergence, première partie *)
+(** * 6.  Sémantiques de la divergence, première partie *)
 
 (** Certaines démonstrations de ce fichier ne sont pas constructives
     et utilisent des axiomes de logique classique, à savoir: l'axiome
@@ -10,7 +10,10 @@ From CDF Require Import Sequences IMP.
 
 From Coq Require Import Classical Description.
 
-(** ** 5.1.  L'interpréteur borné *)
+Check classic.
+Check constructive_definite_description.
+
+(** ** 6.1.  L'interpréteur borné *)
 
 (** Nous reprenons l'interpréteur de référence [cexec_f] du fichier [IMP],
     en le réécrivant dans un style plus monadique.  La terminaison
@@ -77,7 +80,7 @@ Proof.
     apply bind_mono. apply IHi; lia. intros; apply IHi; lia.
 Qed.
 
-(** ** 5.2.  De l'interpréteur borné à une sémantique dénotationnelle *)
+(** ** 6.2.  De l'interpréteur borné à une sémantique dénotationnelle *)
 
 (** Toute suite [nat -> option A] qui est croissante pour l'ordre [<<=]
     est stationnaire à partir d'un certain indice.  La valeur à laquelle
@@ -270,7 +273,7 @@ Proof.
   apply cinterp_cexec with i. rewrite LIM by lia. auto.
 Qed.
 
-(** 5.3.  Sémantique naturelle coinductive *)
+(** ** 6.3.  Sémantique naturelle coinductive *)
 
 (** Le prédicat [cexecinf s c] signifie que la commande [c], lancée dans
     l'état initial [s], diverge.  Il est défini dans le style de la
@@ -296,11 +299,11 @@ CoInductive cexecinf: store -> com -> Prop :=
 Remark cexecinf_while_true_skip:
   forall s, cexecinf s (WHILE TRUE SKIP).
 Proof.
-  cofix COH; intros.
+  cofix CIH; intros.
   eapply cexecinf_while_2.
   auto.
   apply cexec_skip.
-  apply COH.
+  apply CIH.
 Qed.
 
 (** Pour aller plus loin, montrons que si [cexecinf s c] est dérivable,
@@ -442,7 +445,7 @@ Qed.
 Lemma diverges_to_cexecinf:
   forall s c, diverges s c -> cexecinf s c.
 Proof.
-  cofix COH; intros s c D. destruct c.
+  cofix CIH; intros s c D. destruct c.
 - (* SKIP *)
   eelim terminates_not_diverges; eauto.  apply star_refl.
 - (* ASSIGN *)
@@ -459,4 +462,95 @@ Proof.
   destruct (diverges_loop_inv _ _ _ D) as (B & [D1 | (s' & T1 & D2)]).
   + apply cexecinf_while_1; auto.
   + apply cexecinf_while_2 with s'; auto using reds_to_cexec.
+Qed.
+
+(** ** 6.4.  Application à la vérification de compilateurs *)
+
+Local Open Scope Z_scope.
+
+(** Dans le deuxième cours, nous avions utilisé la sémantique naturelle
+    pour montrer que les programmes qui terminent sont correctement compilés. *)
+
+Lemma compile_com_correct_terminating:
+  forall s c s',
+  cexec s c s' ->
+  forall C pc σ,
+  code_at C pc (compile_com c) ->
+  transitions C
+      (pc, σ, s)
+      (pc + codelen (compile_com c), σ, s').
+Proof Compil.compile_com_correct_terminating.
+
+(** C'était une jolie démonstration, mais elle ne disait rien sur la compilation
+    des programmes IMP qui ne terminent pas.  Cela nous avait conduit à mettre
+    en place une autre démonstration, plus complexe, à base de sémantique
+    à transitions et de diagrammes de simulation. *)
+
+(** Maintenant que nous disposons d'une sémantique naturelle pour les programmes
+    qui divergent, nous pouvons l'utiliser pour démontrer assez simplement aussi
+    que les programmes qui divergent sont compilés en un code machine qui
+    ne termine pas. *)
+
+Lemma compile_com_productive:
+  forall c s,
+  cexecinf s c ->
+  forall C pc σ,
+  code_at C pc (compile_com c) ->
+  exists c' pc' s',
+     plus (transition C) (pc, σ, s) (pc', σ, s')
+  /\ cexecinf s' c'
+  /\ code_at C pc' (compile_com c').
+Proof.
+  induction c; intros s EXEC C pc σ CODEAT;
+  inversion EXEC; subst; clear EXEC; simpl in CODEAT.
+- (* SEQ, gauche *)
+  eapply IHc1; eauto with code.
+- (* SEQ, droite *)
+  edestruct IHc2 as (c' & pc' & s'' & PLUS & EXEC' & CODEAT'); eauto with code.
+  exists c', pc', s''; split; auto.
+  eapply star_plus_trans. eapply compile_com_correct_terminating; eauto with code. exact PLUS.
+- (* IFTHENELSE *)
+  set (code1 := compile_com c1) in *.
+  set (code2 := compile_com c2) in *.
+  set (codeb := compile_bexp b 0 (codelen code1 + 1)) in *.
+  destruct (beval b s) eqn:B.
+  + (* La branche "then" est exécutée *)
+    edestruct IHc1 as (c' & pc' & s' & PLUS & EXEC' & CODEAT'); eauto with code.
+    exists c', pc', s'; split; auto.
+    eapply star_plus_trans. eapply compile_bexp_correct with (b := b); eauto with code.
+    fold codeb. rewrite B. autorewrite with code. eexact PLUS.
+  + (* La branche "else" est exécutée *)
+    edestruct IHc2 as (c' & pc' & s' & PLUS & EXEC' & CODEAT'); eauto with code.
+    exists c', pc', s'; split; auto.
+    eapply star_plus_trans. eapply compile_bexp_correct with (b := b); eauto with code.
+    fold codeb. rewrite B. autorewrite with code. eexact PLUS.
+- (* WHILE, première itération *)
+    edestruct IHc as (c' & pc' & s' & PLUS & EXEC' & CODEAT'); eauto with code.
+    exists c', pc', s'; split; auto.
+    eapply star_plus_trans. eapply compile_bexp_correct with (b := b); eauto with code.
+    rewrite H2. autorewrite with code. eexact PLUS.
+- (* WHILE, itérations suivantes *)
+  exists (WHILE b c), pc, s'; split; auto.
+  eapply star_plus_trans. eapply compile_bexp_correct with (b := b); eauto with code.
+  rewrite H1. autorewrite with code. 
+  eapply star_plus_trans. eapply compile_com_correct_terminating; eauto with code.
+  apply plus_one. eapply trans_branch. eauto with code. lia.
+Qed.
+
+Corollary compile_com_correct_diverging:
+  forall s c,
+  cexecinf s c ->
+  forall C pc σ,
+  code_at C pc (compile_com c) ->
+  infseq (transition C) (pc, σ, s).
+Proof.
+  intros. 
+  set (X := fun (pcss: config) =>
+              let '(pc, σ, s) := pcss in
+              exists c, cexecinf s c /\ code_at C pc (compile_com c)).
+  apply infseq_coinduction_principle with X.
+- intros [[pc1 σ1] s1] (c1 & EXEC & CODEAT).
+  edestruct (compile_com_productive _ _ EXEC) as (c' & pc' & s' & PLUS & EXEC' & CODEAT'); eauto.
+  exists (pc', σ1, s'); split. exact PLUS. exists c'; auto.
+- exists c; auto.
 Qed.
