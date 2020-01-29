@@ -1,9 +1,9 @@
 From Coq Require Import Arith ZArith Psatz Bool String List.
 From CDF Require Import Sequences IMP.
 
-(** * 5.  Sémantiques de la divergence, seconde partie *)
+(** * 6.  Sémantiques de la divergence, deuxième partie *)
 
-(** ** 5.1.  La monade de partialité *)
+(** ** 6.5.  La monade de partialité *)
 
 (** Le type [delay A] représente les calculs qui produisent un
     résultat de type [A] s'ils terminent, mais peuvent aussi
@@ -202,7 +202,7 @@ End EQUITERMINATION.
 
 Notation "x == y" := (equi x y) (at level 70, no associativity).
 
-(** ** La structure de monade. *)
+(** La structure de monade. *)
 
 Definition ret := now.
 
@@ -268,7 +268,7 @@ Proof.
 - rewrite ! bind_later. constructor. apply CIH; auto.
 Qed.
 
-(** ** 5.2.  Le métalangage monadique *)
+(** ** 6.6.  Le métalangage monadique *)
 
 (** Voici la syntaxe abstraite (coinductive) qui représente des calculs
     dans la monade de partialité.  *)
@@ -418,7 +418,7 @@ Proof.
   intros; apply equi_refl.
 Qed.
 
-(** ** 5.3.  Application: un interpréteur pour IMP *)
+(** ** 6.7.  Application: un interpréteur / une sémantique dénotationnelle pour IMP *)
 
 CoFixpoint cinterp (c: com) (s: store) : mon store :=
   match c with
