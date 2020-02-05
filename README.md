@@ -29,3 +29,6 @@ Un rendu HTML des sources commentés est également disponible:
 6. Sémantiques de la divergence
    * Module [Divergence](https://xavierleroy.org/cdf-sem-meca/CDF.Divergence.html): sémantique dénotationnelle classique, sémantique naturelle coinductive.
    * Module [Partiality](https://xavierleroy.org/cdf-sem-meca/CDF.Partiality.html): monade de partialité et sémantique dénotationnelle constructive.
+
+7. Sémantique et typage d'un langage fonctionnel
+   * Module [FUN](https://xavierleroy.org/cdf-sem-meca/CDF.FUN.html): le langage fonctionnel FUN et son système de types.
