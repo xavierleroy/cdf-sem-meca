@@ -68,11 +68,11 @@ Inductive red: term -> term -> Prop :=
       red a a' ->
       red (Cond a ifso ifnot) (Cond a' ifso ifnot).
 
-(** *** Exercice (1 étoile). *)
+(** *** Exercice (1 étoile) *)
 (** Modifier [red] pour obtenir une sémantique en appel par nom.
     Quel est l'impact de ce changement sur les résultats qui suivent? *)
 
-(** *** Exercice (2 à 3 étoiles). *)
+(** *** Exercice (2 étoiles) *)
 (** Enrichir la syntaxe et la sémantique de FUN pour y ajouter une ou
     plusieurs des extensions vues en cours: entiers de Peano,
     produits, sommes, points fixes. *)
@@ -438,12 +438,12 @@ Proof.
   apply CIH with t. apply reduction_preserves_typing with a; auto.
 Qed.
 
-(** *** Exercice (2 à 3 étoiles). *)
+(** *** Exercice (2 à 3 étoiles) *)
 (** Enrichir le système de type pour y ajouter une ou plusieurs des extensions
     vues en cours: entiers de Peano, produits, sommes, points fixes.
     Adapter la démonstration de sûreté du typage. *)
 
-(** *** Exercice (3 étoiles). *)
+(** *** Exercice (3 étoiles) *)
 (** Dans la définition de l'algèbre de types, remplacer [Inductive type ...]
     par [CoInductive type ...].
     Cela permet d'avoir des expressions de types infinies, comme p.ex.
@@ -459,6 +459,30 @@ Remark type_Y: forall t,
   nil ⊢ Y ∈ ((t --> t) --> t).
 Proof.
   intros t D Y.
+  (* A COMPLETER *)
+Abort.
+
+(** *** Exercice (3 étoiles) *)
+(** Écrire un typeur pour ce système de types: une fonction
+    de type [context -> term -> option type]
+    qui vérifie si un terme est bien typé dans un contexte donné.
+    Si oui, le type du terme est renvoyé; si non, [None] est renvoyé.
+    Montrer que ce typeur est sûr et complet vis-à-vis des règles de typage.
+*)
+Fixpoint typecheck (E: context) (a: term) : option type :=
+  (* A COMPLETER *) None.
+
+Lemma typecheck_sound:
+  forall E a t, typecheck E a = Some t -> has_type E a t.
+Proof.
+  intros E a; revert a E; induction a; cbn; intros E t T.
+  (* A COMPLETER *)
+Abort.
+
+Lemma typecheck_complete:
+  forall E a t, has_type E a t -> typecheck E a = Some t.
+Proof.
+  induction 1; cbn.
   (* A COMPLETER *)
 Abort.
 
@@ -533,7 +557,7 @@ Inductive has_type : context -> term -> type -> Prop :=
 
 where "E '⊢' a '∈' t" := (has_type E a t).
 
-(** *** Exercice (4 étoiles). *)
+(** *** Exercice (4 étoiles) *)
 (** Montrer la sûreté de ce système de types avec sous-typage.
     On peut réutiliser une très grande partie de la démonstration de
     la section 7.2.  Il faudra cependant utiliser les lemmes
