@@ -459,8 +459,9 @@ Qed.
 
 (** Ce raisonnement est valide à condition que les faits supplémentaires [R]
     portent uniquement sur des variables qui sont pas modifiées
-    pendant l'exécution de la commande [c], c'est-à-dire des variables
-    qui n'apparaissent pas dans une construction [ASSIGN] de [c]. *)
+    pendant l'exécution de la commande [c], c'est-à-dire, en première
+    approximation, des variables qui n'apparaissent pas dans une
+    construction [ASSIGN] de [c]. *)
 
 Fixpoint modified_by (c: com) (x: ident) : Prop :=
   match c with

@@ -80,7 +80,7 @@ Definition irred (a: A) : Prop := forall b, ~(R a b).
 Definition all_seq_inf (a: A) : Prop :=
   forall b, star a b -> exists c, R b c.
 
-(** Cependent, ce n'est pas le cas que nous voulons caractériser: le cas où
+(** Cependant, ce n'est pas le cas que nous voulons caractériser: le cas où
   il existe au moins une suite infinie de transitions issue de [a],
   [a --> a1 --> a2 --> ... -> aN -> ...],
   sans que toutes les suites issues de [a] soient nécessairement infinies.
@@ -161,8 +161,8 @@ Proof.
 Qed.
 
 (** Une variante très utile du principe de coinduction s'appuie sur
-  un ensemble [X] where for every [a] in [X], we can make one *or
-  several* transitions to reach a [b] in [X].  *)
+  un ensemble [X] tel que pour tout [a] dans [X], nous pouvons faire
+  une *ou plusieurs* transitions pour atteindre un état [b] qui est dans [X]. *)
 
 Lemma infseq_coinduction_principle:
   forall (X: A -> Prop),
