@@ -4,6 +4,8 @@ Ce dépôt contient les sources Coq pour le cours
 ["Sémantiques mécanisées"](https://www.college-de-france.fr/site/xavier-leroy/course-2019-2020.htm)
 de Xavier Leroy au Collège de France en 2019-2020.
 
+Cette version est commentée en français.  The English version is available [here](https://github.com/xavierleroy/cdf-mech-sem).
+
 Un rendu HTML des sources commentés est également disponible:
 
 1. La sémantique d'un langage impératif
