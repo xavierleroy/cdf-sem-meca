@@ -670,7 +670,7 @@ Abort.
     Pour une boucle de type while, à la première itération il faut
     sauter par-dessus le code de [c] et vers le code qui teste [b]:
 <<
-    Ibranch (codesize(compile_com c)) :: compile_com c ++ compile_bexp b delta1 0
+    Ibranch (codelen(compile_com c)) :: compile_com c ++ compile_bexp b delta1 0
 >>
     Le but de cet exercice est de modifier [compile_com] pour implémenter
     cette compilation améliorée des boucles, puis de démontrer sa correction
