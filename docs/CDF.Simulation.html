@@ -13,8 +13,8 @@
 <body onload="hideAll('proofscript')">
 <h1 class="title">Module Simulation</h1>
 <div class="coq">
-<span class="id">From</span> <span class="id">Coq</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="http://coq.inria.fr/library/Coq.micromega.Psatz.html">Psatz</a></span>.<br/>
-<span class="id">From</span> <span class="id">CDF</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="CDF.Sequences.html">Sequences</a></span>.<br/>
+<span class="kwd">From</span> <span class="id">Coq</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="https://coq.inria.fr/library/Coq.micromega.Psatz.html">Psatz</a></span>.<br/>
+<span class="kwd">From</span> <span class="id">CDF</span> <span class="kwd">Require</span> <span class="kwd">Import</span> <span class="id"><a href="CDF.Sequences.html">Sequences</a></span>.<br/>
 <br/>
 <div class="doc">Un diagramme de simulation générique, pour montrer l'équivalence sémantique
     entre deux programmes à partir de leurs sémantiques "à petits pas". </div>
@@ -35,7 +35,7 @@
 <br/>
 <span class="kwd">Variable</span> <span class="id"><a name="SIMULATION_DIAGRAM.inv">inv</a></span>: <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.C1">C1</a></span> -&gt; <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.C2">C2</a></span> -&gt; <span class="kwd">Prop</span>.     <span class="docright">(* l'invariant  *)</span><br/>
 <br/>
-<span class="kwd">Variable</span> <span class="kwd">measure</span>: <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.C1">C1</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span>.        <span class="docright">(* la mesure qui évite le bégaiement infini  *)</span><br/>
+<span class="kwd">Variable</span> <span class="id"><a name="SIMULATION_DIAGRAM.measure">measure</a></span>: <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.C1">C1</a></span> -&gt; <span class="id"><a href="https://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span>.        <span class="docright">(* la mesure qui évite le bégaiement infini  *)</span><br/>
 <br/>
 <div class="doc">Le diagramme proprement dit est l'hypothèse suivante:
     chaque transition du programme source est simulée par zéro, une ou plusieurs
@@ -43,10 +43,10 @@
     en décrémentant la mesure dans le cas du bégaiement. </div>
 <br/>
 <span class="kwd">Hypothesis</span> <span class="id"><a name="SIMULATION_DIAGRAM.simulation">simulation</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c1</span>', <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> <span class="id">c1</span>' -&gt;<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c2</span>, <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c2</span>',<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> <span class="id">c2</span>' \/ (<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> <span class="id">c2</span>' /\ <span class="kwd">measure</span> <span class="id">c1</span>' &lt; <span class="kwd">measure</span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span>))<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c1</span>', <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id">c1</span> <span class="id">c1</span>' -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c2</span>, <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span> <span class="id">c2</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c2</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id">c2</span> <span class="id">c2</span>' \/ (<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id">c2</span> <span class="id">c2</span>' /\ <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.measure">measure</a></span> <span class="id">c1</span>' &lt; <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.measure">measure</a></span> <span class="id">c1</span>))<br/>
 &nbsp;&nbsp;/\ <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span>' <span class="id">c2</span>'.<br/>
 <br/>
 <div class="doc">Tout d'abord nous étendons la simulation aux suites finies de transitions
@@ -54,20 +54,20 @@
     la préservation sémantique dans le cas où le programme source termine. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="simulation_star">simulation_star</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c1</span>', <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> <span class="id">c1</span>' -&gt;<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c2</span>, <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c2</span>', <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> <span class="id">c2</span>' /\ <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span>' <span class="id">c2</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof384')">Proof.</div>
-<div class="proofscript" id="proof384">
-&nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c1</span>', <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id">c1</span> <span class="id">c1</span>' -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c2</span>, <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span> <span class="id">c2</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c2</span>', <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id">c2</span> <span class="id">c2</span>' /\ <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span>' <span class="id">c2</span>'.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</span></div>
+<div class="proofscript" id="proof1">
+&nbsp;&nbsp;<span class="id">induction</span> 1; <span class="id">intros</span>.<br/>
 - <span class="comment">(*&nbsp;zéro&nbsp;transition&nbsp;*)</span><br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c2</span>; <span class="tactic">split</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c2</span>; <span class="id">split</span>. <span class="id">apply</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>. <span class="id">auto</span>.<br/>
 - <span class="comment">(*&nbsp;une&nbsp;ou&nbsp;plusieurs&nbsp;transitions&nbsp;*)</span><br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.simulation">simulation</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">H</span> <span class="id">_</span> <span class="id">H1</span>) <span class="kwd">as</span> (<span class="id">c2</span>' &amp; <span class="id">P</span> &amp; <span class="id">Q</span>).<br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id">IHstar</span> <span class="id">_</span> <span class="id">Q</span>) <span class="kwd">as</span> (<span class="id">c2</span>'' &amp; <span class="id">U</span> &amp; <span class="id">V</span>).<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c2</span>''; <span class="tactic">split</span>. <br/>
-&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>; <span class="tactic">eauto</span>. <span class="tactic">destruct</span> <span class="id">P</span>. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#plus_star">plus_star</a></span>; <span class="tactic">auto</span>. <span class="tactic">destruct</span> <span class="id">H2</span>; <span class="tactic">auto</span>.<br/>
-&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.simulation">simulation</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">H</span> <span class="id">_</span> <span class="id">H1</span>) <span class="kwd">as</span> (<span class="id">c2</span>' &amp; <span class="id">P</span> &amp; <span class="id">Q</span>).<br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (<span class="id">IHstar</span> <span class="id">_</span> <span class="id">Q</span>) <span class="kwd">as</span> (<span class="id">c2</span>'' &amp; <span class="id">U</span> &amp; <span class="id">V</span>).<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c2</span>''; <span class="id">split</span>. <br/>
+&nbsp;&nbsp;<span class="id">eapply</span> <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>; <span class="id">eauto</span>. <span class="id">destruct</span> <span class="id">P</span>. <span class="id">apply</span> <span class="id"><a href="CDF.Sequences.html#plus_star">plus_star</a></span>; <span class="id">auto</span>. <span class="id">destruct</span> <span class="id">H2</span>; <span class="id">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">Raisonnons maintenant sur un programme source qui effectue
@@ -80,30 +80,30 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="simulation_infseq_productive">simulation_infseq_productive</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">N</span> <span class="id">c1</span> <span class="id">c2</span>,<br/>
-&nbsp;&nbsp;<span class="kwd">measure</span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> &lt; <span class="id"><a href="CDF.Simulation.html#N">N</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c1</span>', <span class="id">exists</span> <span class="id">c2</span>',<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> <span class="id">c2</span>'<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.measure">measure</a></span> <span class="id">c1</span> &lt; <span class="id">N</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id">c1</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span> <span class="id">c2</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c1</span>', <span class="kwd">exists</span> <span class="id">c2</span>',<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id">c2</span> <span class="id">c2</span>'<br/>
 &nbsp;&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id">c1</span>'<br/>
 &nbsp;&nbsp;&nbsp;/\ <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span>' <span class="id">c2</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof385')">Proof.</div>
-<div class="proofscript" id="proof385">
-&nbsp;&nbsp;<span class="tactic">induction</span> <span class="id">N</span>; <span class="tactic">intros</span> <span class="id">c1</span> <span class="id">c2</span> <span class="id">MEAS</span> <span class="id">INF1</span> <span class="id">INV</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</span></div>
+<div class="proofscript" id="proof2">
+&nbsp;&nbsp;<span class="id">induction</span> <span class="id">N</span>; <span class="id">intros</span> <span class="id">c1</span> <span class="id">c2</span> <span class="id">MEAS</span> <span class="id">INF1</span> <span class="id">INV</span>.<br/>
 - <span class="comment">(*&nbsp;N&nbsp;=&nbsp;0&nbsp;*)</span><br/>
 &nbsp;&nbsp;<span class="id">lia</span>.<br/>
 - <span class="comment">(*&nbsp;N&nbsp;&gt;&nbsp;0&nbsp;*)</span><br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">INF1</span>) <span class="kwd">as</span> (<span class="id">c1</span>' &amp; <span class="id">STEP1</span> &amp; <span class="id">INF1</span>').<br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.simulation">simulation</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">STEP1</span> <span class="id">_</span> <span class="id">INV</span>) <span class="kwd">as</span> (<span class="id">c2</span>' &amp; <span class="id">P</span> &amp; <span class="id">INV</span>').<br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> <span class="id">P</span> <span class="kwd">as</span> [<span class="id">STEPS2</span> | [<span class="id">STEPS2</span> <span class="id">MEAS</span>']].<br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">INF1</span>) <span class="kwd">as</span> (<span class="id">c1</span>' &amp; <span class="id">STEP1</span> &amp; <span class="id">INF1</span>').<br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.simulation">simulation</a></span> <span class="id">_</span> <span class="id">_</span> <span class="id">STEP1</span> <span class="id">_</span> <span class="id">INV</span>) <span class="kwd">as</span> (<span class="id">c2</span>' &amp; <span class="id">P</span> &amp; <span class="id">INV</span>').<br/>
+&nbsp;&nbsp;<span class="id">destruct</span> <span class="id">P</span> <span class="kwd">as</span> [<span class="id">STEPS2</span> | [<span class="id">STEPS2</span> <span class="id">MEAS</span>']].<br/>
 &nbsp;&nbsp;+ <span class="comment">(*&nbsp;une&nbsp;ou&nbsp;plusieurs&nbsp;transitions&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c1</span>'; <span class="id">exists</span> <span class="id">c2</span>'; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c1</span>'; <span class="kwd">exists</span> <span class="id">c2</span>'; <span class="id">auto</span>.<br/>
 &nbsp;&nbsp;+ <span class="comment">(*&nbsp;zéro,&nbsp;une&nbsp;ou&nbsp;plusieurs&nbsp;transitions&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">inversion</span> <span class="id">STEPS2</span>; <span class="tactic">subst</span>; <span class="tactic">clear</span> <span class="id">STEPS2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">inversion</span> <span class="id">STEPS2</span>; <span class="id">subst</span>; <span class="id">clear</span> <span class="id">STEPS2</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;* <span class="comment">(*&nbsp;zéro&nbsp;transitions&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tactic">eapply</span> <span class="id">IHN</span>; <span class="tactic">eauto</span>. <span class="id">lia</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">eapply</span> <span class="id">IHN</span>; <span class="id">eauto</span>. <span class="id">lia</span>.<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;* <span class="comment">(*&nbsp;une&nbsp;ou&nbsp;plusieurs&nbsp;transitions&nbsp;*)</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c1</span>'; <span class="id">exists</span> <span class="id">c2</span>'; <span class="tactic">split</span>. <span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#plus_left">plus_left</a></span>; <span class="tactic">eauto</span>. <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c1</span>'; <span class="kwd">exists</span> <span class="id">c2</span>'; <span class="id">split</span>. <span class="id">eapply</span> <span class="id"><a href="CDF.Sequences.html#plus_left">plus_left</a></span>; <span class="id">eauto</span>. <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">En conséquence, le programme transformé effectue une infinité de transitions
@@ -112,25 +112,25 @@ Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="simulation_infseq">simulation_infseq</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">c1</span> <span class="id">c2</span>,<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof386')">Proof.</div>
-<div class="proofscript" id="proof386">
-&nbsp;&nbsp;<span class="tactic">intros</span>. <br/>
-&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#infseq_coinduction_principle">infseq_coinduction_principle</a></span> <span class="kwd">with</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">X</span> := <span class="kwd">fun</span> <span class="id">c2</span> =&gt; <span class="id">exists</span> <span class="id">c1</span>, <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> /\ <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id"><a href="CDF.Simulation.html#c1">c1</a></span> <span class="id"><a href="CDF.Simulation.html#c2">c2</a></span>).<br/>
-- <span class="tactic">clear</span> <span class="id">c1</span> <span class="id">c2</span> <span class="id">H</span> <span class="id">H0</span>. <span class="tactic">intros</span> <span class="id">c2</span> (<span class="id">c1</span> &amp; <span class="id">INF</span> &amp; <span class="id">INV</span>).  <br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.Simulation.html#simulation_infseq_productive">simulation_infseq_productive</a></span> (<span class="kwd">measure</span> <span class="id">c1</span> + 1) <span class="id">c1</span> <span class="id">c2</span>) <br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id">c1</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span> <span class="id">c2</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step2">step2</a></span> <span class="id">c2</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</span></div>
+<div class="proofscript" id="proof3">
+&nbsp;&nbsp;<span class="id">intros</span>. <br/>
+&nbsp;&nbsp;<span class="id">apply</span> <span class="id"><a href="CDF.Sequences.html#infseq_coinduction_principle">infseq_coinduction_principle</a></span> <span class="kwd">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id">X</span> := <span class="kwd">fun</span> <span class="id">c2</span> =&gt; <span class="kwd">exists</span> <span class="id">c1</span>, <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.step1">step1</a></span> <span class="id">c1</span> /\ <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.inv">inv</a></span> <span class="id">c1</span> <span class="id">c2</span>).<br/>
+- <span class="id">clear</span> <span class="id">c1</span> <span class="id">c2</span> <span class="id">H</span> <span class="id">H0</span>. <span class="id">intros</span> <span class="id">c2</span> (<span class="id">c1</span> &amp; <span class="id">INF</span> &amp; <span class="id">INV</span>).  <br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (<span class="id"><a href="CDF.Simulation.html#simulation_infseq_productive">simulation_infseq_productive</a></span> (<span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM.measure">measure</a></span> <span class="id">c1</span> + 1) <span class="id">c1</span> <span class="id">c2</span>) <br/>
 &nbsp;&nbsp;<span class="kwd">as</span> (<span class="id">c1</span>' &amp; <span class="id">c2</span>' &amp; <span class="id">PLUS2</span> &amp; <span class="id">INF</span>' &amp; <span class="id">INV</span>').<br/>
-&nbsp;&nbsp;<span class="id">lia</span>. <span class="tactic">auto</span>. <span class="tactic">auto</span>.<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c2</span>'; <span class="tactic">split</span>. <span class="tactic">auto</span>. <span class="id">exists</span> <span class="id">c1</span>'; <span class="tactic">auto</span>. <br/>
-- <span class="id">exists</span> <span class="id">c1</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">lia</span>. <span class="id">auto</span>. <span class="id">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c2</span>'; <span class="id">split</span>. <span class="id">auto</span>. <span class="kwd">exists</span> <span class="id">c1</span>'; <span class="id">auto</span>. <br/>
+- <span class="kwd">exists</span> <span class="id">c1</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">End</span> <span class="id"><a href="CDF.Simulation.html#SIMULATION_DIAGRAM">SIMULATION_DIAGRAM</a></span>.<br/>
 
 </div>
-<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</div>
+<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</a></div>
 </body>
 </html>

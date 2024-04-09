@@ -650,36 +650,50 @@ Proof.
   (* À COMPLÉTER *)
 Abort.
 
-(** *** Exercice (4 étoiles). *)
+(** *** Exercice (4 étoiles) *)
 
-(** Considérons une boucle avec un test d'arrêt simple, comme par exemple
-    [WHILE (LESSEQUAL a1 a2) c].  Le code compilé exécute deux branchements
-    par itération de la boucle: un branchement conditionnel [Ible] pour
-    tester la condition d'arrêt, et un branchement inconditionnel [Ibranch]
-    pour retourner au début de la boucle.  On peut se ramener à un
-    seul branchement par itération en mettant le code pour [c] avant
-    le code qui teste la condition [b]:
+(** Le déroulage de boucle consiste à exécuter plusieurs itérations
+    de la boucle avant de revenir au début par un saut arrière.
+    Par exemple, la boucle [WHILE b c] déroulée deux fois produit le
+    pseudo-code machine
 <<
-     compile_com c ++ compile_bexp b delta1 0
+  Lloop:
+    if b then skip else goto Lexit
+    c
+    if b then skip else goto Lexit
+    c
+    goto Lloop
+  Lexit:
 >>
-    avec [delta1] choisi de sorte à retourner au début du code [compile_com c]
-    lorsque [b] est vraie.
+    Le nombre de tests [if b] exécutés est le même que sans déroulement,
+    mais le nombre de sauts en arrière [goto Lloop] est divisé par 2.
+    De plus, le déroulage permet souvent d'appliquer davantage d'optimisations 
+    dans le corps de la boucle.
 
-    En soi, cette approche implémente une boucle de type do-while, 
-    où la première itération de la boucle est toujours exécutée.
-    Pour une boucle de type while, à la première itération il faut
-    sauter par-dessus le code de [c] et vers le code qui teste [b]:
+    Dans cet exercice, on va dérouler deux fois toutes les boucles
+    [WHILE] en remplaçant le cas [WHILE] de la fonction [compile_com] par
 <<
-    Ibranch (codelen(compile_com c)) :: compile_com c ++ compile_bexp b delta1 0
+  | WHILE b body =>
+      let code_body := compile_com body in
+      let len_body := codelen code_body in
+      let code_test2 := compile_bexp b 0 (len_body + 1) in
+      let len_test2 := codelen code_test2 in
+      let code_test1 := compile_bexp b 0 (len_body + len_test2 + len_body + 1) in
+      let len_test1 := codelen code_test1 in
+      code_test1
+      ++ code_body
+      ++ code_test2
+      ++ code_body
+      ++ Ibranch (- (len_test1 + len_body + len_test2 + len_body + 1)) :: nil
 >>
-    Le but de cet exercice est de modifier [compile_com] pour implémenter
-    cette compilation améliorée des boucles, puis de démontrer sa correction
-    en ajustant l'énoncé et la démonstration de [compile_com_correct_terminating].
+    Démontrer la correction de ce schéma de compilation en ajustant
+    l'énoncé et la démonstration de [compile_com_correct_terminating].
+
     La difficulté, et la raison pour les 4 étoiles, est que l'hypothèse
     [code_at C pc (compile_com c)] n'est plus vraie si [c] est une boucle
-    et nous sommes à la deuxième itération de la boucle.  Il faut inventer
-    une hypothèse plus faible, qui laisse plus de flexibilité dans 
-    la relation entre [c] et [pc]. *)
+    et nous sommes à la deuxième, quatrième, sixième, etc, itération
+    de la boucle.  Il faut inventer une hypothèse plus faible, qui
+    laisse plus de flexibilité dans la relation entre [c] et [pc]. *)
 
 (** ** 2.5.  Correction du code produit pour les commandes, cas général *)
 

@@ -16,7 +16,7 @@
 <div class="doc">Une bibliothèque d'opérateurs sur les relations
     pour définir les suites de transitions et leurs propriétés. </div>
 <br/>
-<span class="kwd">Set</span> <span class="kwd">Implicit</span> <span class="id">Arguments</span>.<br/>
+<span class="kwd">Set</span> <span class="kwd">Implicit</span> <span class="kwd">Arguments</span>.<br/>
 <br/>
 <span class="kwd">Section</span> <span class="id"><a name="SEQUENCES">SEQUENCES</a></span>.<br/>
 <br/>
@@ -29,69 +29,69 @@
 <br/>
 <span class="kwd">Inductive</span> <span class="id"><a name="star">star</a></span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
 &nbsp;&nbsp;| <span class="id"><a name="star_refl">star_refl</a></span>: <span class="kwd">forall</span> <span class="id">a</span>,<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">star</span> <span class="id">a</span> <span class="id">a</span><br/>
 &nbsp;&nbsp;| <span class="id"><a name="star_step">star_step</a></span>: <span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>,<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id">star</span> <span class="id">b</span> <span class="id">c</span> -&gt; <span class="id">star</span> <span class="id">a</span> <span class="id">c</span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="star_one">star_one</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> (<span class="id">a</span> <span class="id">b</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>), <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof366')">Proof.</div>
-<div class="proofscript" id="proof366">
-&nbsp;&nbsp;<span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> (<span class="id">a</span> <span class="id">b</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>), <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof1')">Proof.</span></div>
+<div class="proofscript" id="proof1">
+&nbsp;&nbsp;<span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="star_trans">star_trans</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> (<span class="id">a</span> <span class="id">b</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>), <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="kwd">forall</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof367')">Proof.</div>
-<div class="proofscript" id="proof367">
-&nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>. <br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> (<span class="id">a</span> <span class="id">b</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>), <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="kwd">forall</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">b</span> <span class="id">c</span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">c</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof2')">Proof.</span></div>
+<div class="proofscript" id="proof2">
+&nbsp;&nbsp;<span class="id">induction</span> 1; <span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>. <br/>
 Qed.</div>
 <br/>
 <div class="doc">Une ou plusieurs transitions: fermeture transitive de <span class="bracket"><span class="id">R</span></span>. </div>
 <br/>
 <span class="kwd">Inductive</span> <span class="id"><a name="plus">plus</a></span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span> -&gt; <span class="kwd">Prop</span> :=<br/>
 &nbsp;&nbsp;| <span class="id"><a name="plus_left">plus_left</a></span>: <span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>,<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">b</span> <span class="id">c</span> -&gt; <span class="id">plus</span> <span class="id">a</span> <span class="id">c</span>.<br/>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="plus_one">plus_one</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof368')">Proof.</div>
-<div class="proofscript" id="proof368">
-&nbsp;&nbsp;<span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>, <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span>. <br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">a</span> <span class="id">b</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof3')">Proof.</span></div>
+<div class="proofscript" id="proof3">
+&nbsp;&nbsp;<span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>, <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span>. <br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="plus_star">plus_star</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>,<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof369')">Proof.</div>
-<div class="proofscript" id="proof369">
-&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>.  <br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof4')">Proof.</span></div>
+<div class="proofscript" id="proof4">
+&nbsp;&nbsp;<span class="id">intros</span>. <span class="id">inversion</span> <span class="id">H</span>. <span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>.  <br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="plus_star_trans">plus_star_trans</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof370')">Proof.</div>
-<div class="proofscript" id="proof370">
-&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H</span>. <span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span>, <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">b</span> <span class="id">c</span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">a</span> <span class="id">c</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof5')">Proof.</span></div>
+<div class="proofscript" id="proof5">
+&nbsp;&nbsp;<span class="id">intros</span>. <span class="id">inversion</span> <span class="id">H</span>. <span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span>, <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="star_plus_trans">star_plus_trans</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof371')">Proof.</div>
-<div class="proofscript" id="proof371">
-&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">inversion</span> <span class="id">H0</span>. <span class="tactic">inversion</span> <span class="id">H</span>; <span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span>, <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">b</span> <span class="id">c</span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">a</span> <span class="id">c</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof6')">Proof.</span></div>
+<div class="proofscript" id="proof6">
+&nbsp;&nbsp;<span class="id">intros</span>. <span class="id">inversion</span> <span class="id">H0</span>. <span class="id">inversion</span> <span class="id">H</span>; <span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span>, <span class="id"><a href="CDF.Sequences.html#star_trans">star_trans</a></span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="plus_right">plus_right</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof372')">Proof.</div>
-<div class="proofscript" id="proof372">
-&nbsp;&nbsp;<span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star_plus_trans">star_plus_trans</a></span>, <span class="id"><a href="CDF.Sequences.html#plus_one">plus_one</a></span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">b</span> <span class="id">c</span> -&gt; <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">a</span> <span class="id">c</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof7')">Proof.</span></div>
+<div class="proofscript" id="proof7">
+&nbsp;&nbsp;<span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star_plus_trans">star_plus_trans</a></span>, <span class="id"><a href="CDF.Sequences.html#plus_one">plus_one</a></span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">Absence de transition depuis un état. </div>
 <br/>
-<span class="kwd">Definition</span> <span class="id"><a name="irred">irred</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>) : <span class="kwd">Prop</span> := <span class="kwd">forall</span> <span class="id">b</span>, ~(<span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>).<br/>
+<span class="kwd">Definition</span> <span class="id"><a name="irred">irred</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>) : <span class="kwd">Prop</span> := <span class="kwd">forall</span> <span class="id">b</span>, ~(<span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span>).<br/>
 <br/>
 <h2> Suites infinies de transitions </h2>
 <br/>
@@ -100,9 +100,9 @@ Qed.</div>
   finie issue de <span class="bracket"><span class="id">a</span></span> peut être prolongée par une transition de plus. </div>
 <br/>
 <span class="kwd">Definition</span> <span class="id"><a name="all_seq_inf">all_seq_inf</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>) : <span class="kwd">Prop</span> :=<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id">exists</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="kwd">exists</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">b</span> <span class="id">c</span>.<br/>
 <br/>
-<div class="doc">Cependent, ce n'est pas le cas que nous voulons caractériser: le cas où
+<div class="doc">Cependant, ce n'est pas le cas que nous voulons caractériser: le cas où
   il existe au moins une suite infinie de transitions issue de <span class="bracket"><span class="id">a</span></span>,
   <span class="bracket"><span class="id">a</span> --&gt; <span class="id">a1</span> --&gt; <span class="id">a2</span> --&gt; ... -&gt; <span class="id">aN</span> -&gt; ...</span>,
   sans que toutes les suites issues de <span class="bracket"><span class="id">a</span></span> soient nécessairement infinies.
@@ -115,7 +115,7 @@ Qed.</div>
   <span class="bracket"><span class="id">i</span></span>-ème état <span class="bracket"><span class="id">ai</span></span> de la suite. </div>
 <br/>
 <span class="kwd">Definition</span> <span class="id"><a name="infseq_with_function">infseq_with_function</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>) : <span class="kwd">Prop</span> :=<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">f</span>: <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>, <span class="id"><a href="CDF.Sequences.html#f">f</a></span> 0 = <span class="id"><a href="CDF.Sequences.html#a">a</a></span> /\ <span class="kwd">forall</span> <span class="id">i</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> (<span class="id"><a href="CDF.Sequences.html#f">f</a></span> <span class="id"><a href="CDF.Sequences.html#i">i</a></span>) (<span class="id"><a href="CDF.Sequences.html#f">f</a></span> (1 + <span class="id"><a href="CDF.Sequences.html#i">i</a></span>)).<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">f</span>: <span class="id"><a href="https://coq.inria.fr/library/Coq.Init.Datatypes.html#nat">nat</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>, <span class="id">f</span> 0 = <span class="id">a</span> /\ <span class="kwd">forall</span> <span class="id">i</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> (<span class="id">f</span> <span class="id">i</span>) (<span class="id">f</span> (1 + <span class="id">i</span>)).<br/>
 <br/>
 <div class="doc">C'est une caractérisation correcte, mais peu pratique en Coq:
   très souvent, la fonction <span class="bracket"><span class="id">f</span></span> n'est pas calculable et ne peut donc
@@ -128,47 +128,47 @@ Qed.</div>
 </div>
 <br/>
 <span class="kwd">Definition</span> <span class="id"><a name="infseq">infseq</a></span> (<span class="id">a</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span>) : <span class="kwd">Prop</span> :=<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">X</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span> -&gt; <span class="kwd">Prop</span>,<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#X">X</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> /\ (<span class="kwd">forall</span> <span class="id">a1</span>, <span class="id"><a href="CDF.Sequences.html#X">X</a></span> <span class="id"><a href="CDF.Sequences.html#a1">a1</a></span> -&gt; <span class="id">exists</span> <span class="id">a2</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a1">a1</a></span> <span class="id"><a href="CDF.Sequences.html#a2">a2</a></span> /\ <span class="id"><a href="CDF.Sequences.html#X">X</a></span> <span class="id"><a href="CDF.Sequences.html#a2">a2</a></span>).<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">X</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span> -&gt; <span class="kwd">Prop</span>,<br/>
+&nbsp;&nbsp;<span class="id">X</span> <span class="id">a</span> /\ (<span class="kwd">forall</span> <span class="id">a1</span>, <span class="id">X</span> <span class="id">a1</span> -&gt; <span class="kwd">exists</span> <span class="id">a2</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a1</span> <span class="id">a2</span> /\ <span class="id">X</span> <span class="id">a2</span>).<br/>
 <br/>
 <div class="doc">Cette définition est essentiellement un principe de coinduction.
     Montrons quelques propriétés attendues.  Par exemple: si la relation
     <span class="bracket"><span class="id">R</span></span> contient un cycle, elle admet une suite infinie. </div>
 <br/>
 <span class="kwd">Remark</span> <span class="id"><a name="cycle_infseq">cycle_infseq</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof373')">Proof.</div>
-<div class="proofscript" id="proof373">
-&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="id">exists</span> (<span class="kwd">fun</span> <span class="id">b</span> =&gt; <span class="id"><a href="CDF.Sequences.html#b">b</a></span> = <span class="id">a</span>); <span class="tactic">split</span>.<br/>
-&nbsp;&nbsp;<span class="tactic">auto</span>.<br/>
-&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">subst</span> <span class="id">a1</span>. <span class="id">exists</span> <span class="id">a</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">a</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof8')">Proof.</span></div>
+<div class="proofscript" id="proof8">
+&nbsp;&nbsp;<span class="id">intros</span>. <span class="kwd">exists</span> (<span class="kwd">fun</span> <span class="id">b</span> =&gt; <span class="id">b</span> = <span class="id">a</span>); <span class="id">split</span>.<br/>
+&nbsp;&nbsp;<span class="id">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">intros</span>. <span class="id">subst</span> <span class="id">a1</span>. <span class="kwd">exists</span> <span class="id">a</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">Plus généralement: si toutes les suites issues de <span class="bracket"><span class="id">a</span></span> sont infinies,
   il existe une suite infinie issue de <span class="bracket"><span class="id">a</span></span>. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="infseq_if_all_seq_inf">infseq_if_all_seq_inf</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof374')">Proof.</div>
-<div class="proofscript" id="proof374">
-&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">a0</span> <span class="id">ALL0</span>. <br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span>; <span class="tactic">split</span>; <span class="tactic">auto</span>.<br/>
-&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">a1</span> <span class="id">ALL1</span>. <span class="tactic">destruct</span> (<span class="id">ALL1</span> <span class="id">a1</span>) <span class="kwd">as</span> [<span class="id">a2</span> <span class="id">R12</span>]. <span class="id">constructor</span>. <br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">a2</span>; <span class="tactic">split</span>; <span class="tactic">auto</span>.<br/>
-&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">a3</span> <span class="id">S23</span>. <span class="tactic">destruct</span> (<span class="id">ALL1</span> <span class="id">a3</span>) <span class="kwd">as</span> [<span class="id">a4</span> <span class="id">R23</span>]. <span class="tactic">apply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span> <span class="kwd">with</span> <span class="id">a2</span>; <span class="tactic">auto</span>.<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">a4</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span> <span class="id">a</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof9')">Proof.</span></div>
+<div class="proofscript" id="proof9">
+&nbsp;&nbsp;<span class="id">intros</span> <span class="id">a0</span> <span class="id">ALL0</span>. <br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span>; <span class="id">split</span>; <span class="id">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">intros</span> <span class="id">a1</span> <span class="id">ALL1</span>. <span class="id">destruct</span> (<span class="id">ALL1</span> <span class="id">a1</span>) <span class="kwd">as</span> [<span class="id">a2</span> <span class="id">R12</span>]. <span class="id">constructor</span>. <br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">a2</span>; <span class="id">split</span>; <span class="id">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id">intros</span> <span class="id">a3</span> <span class="id">S23</span>. <span class="id">destruct</span> (<span class="id">ALL1</span> <span class="id">a3</span>) <span class="kwd">as</span> [<span class="id">a4</span> <span class="id">R23</span>]. <span class="id">apply</span> <span class="id"><a href="CDF.Sequences.html#star_step">star_step</a></span> <span class="kwd">with</span> <span class="id">a2</span>; <span class="id">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">a4</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">De même, la caractérisation à base de fonctions <span class="bracket"><span class="id">infseq_with_function</span></span>
     implique <span class="bracket"><span class="id">infseq</span></span>. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="infseq_from_function">infseq_from_function</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#infseq_with_function">infseq_with_function</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof375')">Proof.</div>
-<div class="proofscript" id="proof375">
-&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">a0</span> (<span class="id">f</span> &amp; <span class="id">F0</span> &amp; <span class="id">Fn</span>). <span class="id">exists</span> (<span class="kwd">fun</span> <span class="id">a</span> =&gt; <span class="id">exists</span> <span class="id">i</span>, <span class="id">f</span> <span class="id"><a href="CDF.Sequences.html#i">i</a></span> = <span class="id"><a href="CDF.Sequences.html#a">a</a></span>); <span class="tactic">split</span>.<br/>
-- <span class="id">exists</span> 0; <span class="tactic">auto</span>.<br/>
-- <span class="tactic">intros</span> <span class="id">a1</span> (<span class="id">i1</span> &amp; <span class="id">F1</span>). <span class="tactic">subst</span> <span class="id">a1</span>. <span class="id">exists</span> (<span class="id">f</span> (1 + <span class="id">i1</span>)); <span class="tactic">split</span>; <span class="tactic">auto</span>. <span class="id">exists</span> (1 + <span class="id">i1</span>); <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#infseq_with_function">infseq_with_function</a></span> <span class="id">a</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof10')">Proof.</span></div>
+<div class="proofscript" id="proof10">
+&nbsp;&nbsp;<span class="id">intros</span> <span class="id">a0</span> (<span class="id">f</span> &amp; <span class="id">F0</span> &amp; <span class="id">Fn</span>). <span class="kwd">exists</span> (<span class="kwd">fun</span> <span class="id">a</span> =&gt; <span class="kwd">exists</span> <span class="id">i</span>, <span class="id">f</span> <span class="id">i</span> = <span class="id">a</span>); <span class="id">split</span>.<br/>
+- <span class="kwd">exists</span> 0; <span class="id">auto</span>.<br/>
+- <span class="id">intros</span> <span class="id">a1</span> (<span class="id">i1</span> &amp; <span class="id">F1</span>). <span class="id">subst</span> <span class="id">a1</span>. <span class="kwd">exists</span> (<span class="id">f</span> (1 + <span class="id">i1</span>)); <span class="id">split</span>; <span class="id">auto</span>. <span class="kwd">exists</span> (1 + <span class="id">i1</span>); <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">Un lemme d'inversion sur <span class="bracket"><span class="id">infseq</span></span>: si <span class="bracket"><span class="id">infseq</span> <span class="id">a</span></span>, i.e. il existe une
@@ -176,30 +176,30 @@ Qed.</div>
   vers un état <span class="bracket"><span class="id">b</span></span> qui lui aussi vérifie <span class="bracket"><span class="id">infseq</span> <span class="id">b</span></span>. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="infseq_inv">infseq_inv</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id">exists</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> /\ <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof376')">Proof.</div>
-<div class="proofscript" id="proof376">
-&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">a</span> (<span class="id">X</span> &amp; <span class="id">Xa</span> &amp; <span class="id">XP</span>). <span class="tactic">destruct</span> (<span class="id">XP</span> <span class="id">a</span> <span class="id">Xa</span>) <span class="kwd">as</span> (<span class="id">b</span> &amp; <span class="id">Rab</span> &amp; <span class="id">Xb</span>). <br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">b</span>; <span class="tactic">split</span>; <span class="tactic">auto</span>. <span class="id">exists</span> <span class="id">X</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span> -&gt; <span class="kwd">exists</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span> /\ <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">b</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof11')">Proof.</span></div>
+<div class="proofscript" id="proof11">
+&nbsp;&nbsp;<span class="id">intros</span> <span class="id">a</span> (<span class="id">X</span> &amp; <span class="id">Xa</span> &amp; <span class="id">XP</span>). <span class="id">destruct</span> (<span class="id">XP</span> <span class="id">a</span> <span class="id">Xa</span>) <span class="kwd">as</span> (<span class="id">b</span> &amp; <span class="id">Rab</span> &amp; <span class="id">Xb</span>). <br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">b</span>; <span class="id">split</span>; <span class="id">auto</span>. <span class="kwd">exists</span> <span class="id">X</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">Une variante très utile du principe de coinduction s'appuie sur
-  un ensemble <span class="bracket"><span class="id">X</span></span> where for every <span class="bracket"><span class="id">a</span></span> in <span class="bracket"><span class="id">X</span></span>, we can make one *or
-  several* transitions to reach a <span class="bracket"><span class="id">b</span></span> in <span class="bracket"><span class="id">X</span></span>.  </div>
+  un ensemble <span class="bracket"><span class="id">X</span></span> tel que pour tout <span class="bracket"><span class="id">a</span></span> dans <span class="bracket"><span class="id">X</span></span>, nous pouvons faire
+  une *ou plusieurs* transitions pour atteindre un état <span class="bracket"><span class="id">b</span></span> qui est dans <span class="bracket"><span class="id">X</span></span>. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="infseq_coinduction_principle">infseq_coinduction_principle</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> (<span class="id">X</span>: <span class="id"><a href="CDF.Sequences.html#SEQUENCES.A">A</a></span> -&gt; <span class="kwd">Prop</span>),<br/>
-&nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#X">X</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id">exists</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> /\ <span class="id"><a href="CDF.Sequences.html#X">X</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>) -&gt;<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#X">X</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof377')">Proof.</div>
-<div class="proofscript" id="proof377">
-&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">X</span> <span class="id">H</span> <span class="id">a0</span> <span class="id">Xa0</span>. <br/>
-&nbsp;&nbsp;<span class="id">exists</span> (<span class="kwd">fun</span> <span class="id">a</span> =&gt; <span class="id">exists</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> /\ <span class="id">X</span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>); <span class="tactic">split</span>.<br/>
-- <span class="id">exists</span> <span class="id">a0</span>; <span class="tactic">auto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
-- <span class="tactic">intros</span> <span class="id">a1</span> (<span class="id">a2</span> &amp; <span class="id">S12</span> &amp; <span class="id">X2</span>). <span class="tactic">inversion</span> <span class="id">S12</span>; <span class="tactic">subst</span>.<br/>
-&nbsp;&nbsp;+ <span class="tactic">destruct</span> (<span class="id">H</span> <span class="id">a2</span> <span class="id">X2</span>) <span class="kwd">as</span> (<span class="id">a3</span> &amp; <span class="id">P23</span> &amp; <span class="id">X3</span>). <span class="tactic">inversion</span> <span class="id">P23</span>; <span class="tactic">subst</span>.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="id">exists</span> <span class="id">b</span>; <span class="tactic">split</span>; <span class="tactic">auto</span>. <span class="id">exists</span> <span class="id">a3</span>; <span class="tactic">auto</span>.<br/>
-&nbsp;&nbsp;+ <span class="id">exists</span> <span class="id">b</span>; <span class="tactic">split</span>; <span class="tactic">auto</span>. <span class="id">exists</span> <span class="id">a2</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;(<span class="kwd">forall</span> <span class="id">a</span>, <span class="id">X</span> <span class="id">a</span> -&gt; <span class="kwd">exists</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#plus">plus</a></span> <span class="id">a</span> <span class="id">b</span> /\ <span class="id">X</span> <span class="id">b</span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id">X</span> <span class="id">a</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof12')">Proof.</span></div>
+<div class="proofscript" id="proof12">
+&nbsp;&nbsp;<span class="id">intros</span> <span class="id">X</span> <span class="id">H</span> <span class="id">a0</span> <span class="id">Xa0</span>. <br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> (<span class="kwd">fun</span> <span class="id">a</span> =&gt; <span class="kwd">exists</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> /\ <span class="id">X</span> <span class="id">b</span>); <span class="id">split</span>.<br/>
+- <span class="kwd">exists</span> <span class="id">a0</span>; <span class="id">auto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star_refl">star_refl</a></span>.<br/>
+- <span class="id">intros</span> <span class="id">a1</span> (<span class="id">a2</span> &amp; <span class="id">S12</span> &amp; <span class="id">X2</span>). <span class="id">inversion</span> <span class="id">S12</span>; <span class="id">subst</span>.<br/>
+&nbsp;&nbsp;+ <span class="id">destruct</span> (<span class="id">H</span> <span class="id">a2</span> <span class="id">X2</span>) <span class="kwd">as</span> (<span class="id">a3</span> &amp; <span class="id">P23</span> &amp; <span class="id">X3</span>). <span class="id">inversion</span> <span class="id">P23</span>; <span class="id">subst</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">b</span>; <span class="id">split</span>; <span class="id">auto</span>. <span class="kwd">exists</span> <span class="id">a3</span>; <span class="id">auto</span>.<br/>
+&nbsp;&nbsp;+ <span class="kwd">exists</span> <span class="id">b</span>; <span class="id">split</span>; <span class="id">auto</span>. <span class="kwd">exists</span> <span class="id">a2</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <h2> Propriétés de déterminisme des relations de transition fonctionnelles </h2>
@@ -208,75 +208,75 @@ Qed.</div>
   une transition vers au plus un autre état. </div>
 <br/>
 <span class="kwd">Hypothesis</span> <span class="id"><a name="SEQUENCES.R_functional">R_functional</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#b">b</a></span> = <span class="id"><a href="CDF.Sequences.html#c">c</a></span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">c</span> -&gt; <span class="id">b</span> = <span class="id">c</span>.<br/>
 <br/>
 <div class="doc">Propriétés d'unicité des suites finies de transitions. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="star_star_inv">star_star_inv</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="kwd">forall</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> \/ <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#c">c</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof378')">Proof.</div>
-<div class="proofscript" id="proof378">
-&nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="tactic">intros</span>.<br/>
-- <span class="tactic">auto</span>.<br/>
-- <span class="tactic">inversion</span> <span class="id">H1</span>; <span class="tactic">subst</span>.<br/>
-+ <span class="id">right</span>. <span class="tactic">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>. <br/>
-+ <span class="tactic">assert</span> (<span class="id">b</span> = <span class="id">b0</span>) <span class="tactic">by</span> (<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R_functional">R_functional</a></span>; <span class="tactic">eauto</span>). <span class="tactic">subst</span> <span class="id">b0</span>. <br/>
-&nbsp;&nbsp;<span class="tactic">apply</span> <span class="id">IHstar</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="kwd">forall</span> <span class="id">c</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">c</span> -&gt; <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">b</span> <span class="id">c</span> \/ <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">c</span> <span class="id">b</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof13')">Proof.</span></div>
+<div class="proofscript" id="proof13">
+&nbsp;&nbsp;<span class="id">induction</span> 1; <span class="id">intros</span>.<br/>
+- <span class="id">auto</span>.<br/>
+- <span class="id">inversion</span> <span class="id">H1</span>; <span class="id">subst</span>.<br/>
++ <span class="id">right</span>. <span class="id">eauto</span> <span class="kwd">using</span> <span class="id"><a href="CDF.Sequences.html#star">star</a></span>. <br/>
++ <span class="id">assert</span> (<span class="id">b</span> = <span class="id">b0</span>) <span class="kwd">by</span> (<span class="id">eapply</span> <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R_functional">R_functional</a></span>; <span class="id">eauto</span>). <span class="id">subst</span> <span class="id">b0</span>. <br/>
+&nbsp;&nbsp;<span class="id">apply</span> <span class="id">IHstar</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="finseq_unique">finseq_unique</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span> <span class="id">b</span>',<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt;<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id">b</span>' -&gt; <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> <span class="id">b</span>' -&gt;<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#b">b</a></span> = <span class="id">b</span>'.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof379')">Proof.</div>
-<div class="proofscript" id="proof379">
-&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">destruct</span> (<span class="id"><a href="CDF.Sequences.html#star_star_inv">star_star_inv</a></span> <span class="id">H</span> <span class="id">H1</span>).<br/>
-- <span class="tactic">inversion</span> <span class="id">H3</span>; <span class="tactic">subst</span>. <span class="tactic">auto</span>. <span class="tactic">elim</span> (<span class="id">H0</span> <span class="id">_</span> <span class="id">H4</span>).<br/>
-- <span class="tactic">inversion</span> <span class="id">H3</span>; <span class="tactic">subst</span>. <span class="tactic">auto</span>. <span class="tactic">elim</span> (<span class="id">H2</span> <span class="id">_</span> <span class="id">H4</span>).<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> <span class="id">b</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span>' -&gt; <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> <span class="id">b</span>' -&gt;<br/>
+&nbsp;&nbsp;<span class="id">b</span> = <span class="id">b</span>'.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof14')">Proof.</span></div>
+<div class="proofscript" id="proof14">
+&nbsp;&nbsp;<span class="id">intros</span>. <span class="id">destruct</span> (<span class="id"><a href="CDF.Sequences.html#star_star_inv">star_star_inv</a></span> <span class="id">H</span> <span class="id">H1</span>).<br/>
+- <span class="id">inversion</span> <span class="id">H3</span>; <span class="id">subst</span>. <span class="id">auto</span>. <span class="id">elim</span> (<span class="id">H0</span> <span class="id">_</span> <span class="id">H4</span>).<br/>
+- <span class="id">inversion</span> <span class="id">H3</span>; <span class="id">subst</span>. <span class="id">auto</span>. <span class="id">elim</span> (<span class="id">H2</span> <span class="id">_</span> <span class="id">H4</span>).<br/>
 Qed.</div>
 <br/>
 <div class="doc">Un état ne peut à la fois diverger et terminer sur un état irréductible. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id">infseq_inv</span>':<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof380')">Proof.</div>
-<div class="proofscript" id="proof380">
-&nbsp;&nbsp;<span class="tactic">intros</span> <span class="id">a</span> <span class="id">b</span> <span class="id">Rab</span> <span class="id">Ia</span>. <br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">Ia</span>) <span class="kwd">as</span> (<span class="id">b</span>' &amp; <span class="id">Rab</span>' &amp; <span class="id">Xb</span>').<br/>
-&nbsp;&nbsp;<span class="tactic">assert</span> (<span class="id">b</span>' = <span class="id">b</span>) <span class="tactic">by</span> (<span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R_functional">R_functional</a></span>; <span class="tactic">eauto</span>). <br/>
-&nbsp;&nbsp;<span class="tactic">subst</span> <span class="id">b</span>'. <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R">R</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">b</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof15')">Proof.</span></div>
+<div class="proofscript" id="proof15">
+&nbsp;&nbsp;<span class="id">intros</span> <span class="id">a</span> <span class="id">b</span> <span class="id">Rab</span> <span class="id">Ia</span>. <br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">Ia</span>) <span class="kwd">as</span> (<span class="id">b</span>' &amp; <span class="id">Rab</span>' &amp; <span class="id">Xb</span>').<br/>
+&nbsp;&nbsp;<span class="id">assert</span> (<span class="id">b</span>' = <span class="id">b</span>) <span class="kwd">by</span> (<span class="id">eapply</span> <span class="id"><a href="CDF.Sequences.html#SEQUENCES.R_functional">R_functional</a></span>; <span class="id">eauto</span>). <br/>
+&nbsp;&nbsp;<span class="id">subst</span> <span class="id">b</span>'. <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="infseq_star_inv">infseq_star_inv</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof381')">Proof.</div>
-<div class="proofscript" id="proof381">
-&nbsp;&nbsp;<span class="tactic">induction</span> 1; <span class="tactic">intros</span>.<br/>
-- <span class="tactic">auto</span>. <br/>
-- <span class="tactic">apply</span> <span class="id">IHstar</span>. <span class="tactic">apply</span> <span class="id">infseq_inv</span>' <span class="kwd">with</span> <span class="id">a</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>, <span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">b</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof16')">Proof.</span></div>
+<div class="proofscript" id="proof16">
+&nbsp;&nbsp;<span class="id">induction</span> 1; <span class="id">intros</span>.<br/>
+- <span class="id">auto</span>. <br/>
+- <span class="id">apply</span> <span class="id">IHstar</span>. <span class="id">apply</span> <span class="id">infseq_inv</span>' <span class="kwd">with</span> <span class="id">a</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="infseq_finseq_excl">infseq_finseq_excl</a></span>:<br/>
 &nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span> <span class="id">b</span>,<br/>
-&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> <span class="id"><a href="CDF.Sequences.html#b">b</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="http://coq.inria.fr/library/Coq.Init.Logic.html#False">False</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof382')">Proof.</div>
-<div class="proofscript" id="proof382">
-&nbsp;&nbsp;<span class="tactic">intros</span>.<br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (@<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">b</span>) <span class="kwd">as</span> (<span class="id">c</span> &amp; <span class="id">Rbc</span> &amp; <span class="id">_</span>). <span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#infseq_star_inv">infseq_star_inv</a></span>; <span class="tactic">eauto</span>. <br/>
-&nbsp;&nbsp;<span class="tactic">apply</span> (<span class="id">H0</span> <span class="id">c</span>); <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id"><a href="CDF.Sequences.html#star">star</a></span> <span class="id">a</span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#irred">irred</a></span> <span class="id">b</span> -&gt; <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span> -&gt; <span class="id"><a href="https://coq.inria.fr/library/Coq.Init.Logic.html#False">False</a></span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof17')">Proof.</span></div>
+<div class="proofscript" id="proof17">
+&nbsp;&nbsp;<span class="id">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (@<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">b</span>) <span class="kwd">as</span> (<span class="id">c</span> &amp; <span class="id">Rbc</span> &amp; <span class="id">_</span>). <span class="id">eapply</span> <span class="id"><a href="CDF.Sequences.html#infseq_star_inv">infseq_star_inv</a></span>; <span class="id">eauto</span>. <br/>
+&nbsp;&nbsp;<span class="id">apply</span> (<span class="id">H0</span> <span class="id">c</span>); <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <div class="doc">S'il existe une suite infinie de transitions depuis <span class="bracket"><span class="id">a</span></span>, toutes
   les suites de transitions depuis <span class="bracket"><span class="id">a</span></span> sont infinies. </div>
 <br/>
 <span class="kwd">Lemma</span> <span class="id"><a name="infseq_all_seq_inf">infseq_all_seq_inf</a></span>:<br/>
-&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span> -&gt; <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span> <span class="id"><a href="CDF.Sequences.html#a">a</a></span>.<br/>
-<div class="toggleproof" onclick="toggleDisplay('proof383')">Proof.</div>
-<div class="proofscript" id="proof383">
-&nbsp;&nbsp;<span class="tactic">intros</span>. <span class="tactic">unfold</span> <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span>. <span class="tactic">intros</span>.<br/>
-&nbsp;&nbsp;<span class="tactic">destruct</span> (@<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">b</span>) <span class="kwd">as</span> (<span class="id">c</span> &amp; <span class="id">Rbc</span> &amp; <span class="id">_</span>). <span class="tactic">eapply</span> <span class="id"><a href="CDF.Sequences.html#infseq_star_inv">infseq_star_inv</a></span>; <span class="tactic">eauto</span>.<br/>
-&nbsp;&nbsp;<span class="id">exists</span> <span class="id">c</span>; <span class="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">forall</span> <span class="id">a</span>, <span class="id"><a href="CDF.Sequences.html#infseq">infseq</a></span> <span class="id">a</span> -&gt; <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span> <span class="id">a</span>.<br/>
+<div><span class="toggleproof" onclick="toggleDisplay('proof18')">Proof.</span></div>
+<div class="proofscript" id="proof18">
+&nbsp;&nbsp;<span class="id">intros</span>. <span class="id">unfold</span> <span class="id"><a href="CDF.Sequences.html#all_seq_inf">all_seq_inf</a></span>. <span class="id">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id">destruct</span> (@<span class="id"><a href="CDF.Sequences.html#infseq_inv">infseq_inv</a></span> <span class="id">b</span>) <span class="kwd">as</span> (<span class="id">c</span> &amp; <span class="id">Rbc</span> &amp; <span class="id">_</span>). <span class="id">eapply</span> <span class="id"><a href="CDF.Sequences.html#infseq_star_inv">infseq_star_inv</a></span>; <span class="id">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="kwd">exists</span> <span class="id">c</span>; <span class="id">auto</span>.<br/>
 Qed.</div>
 <br/>
 <span class="kwd">End</span> <span class="id"><a href="CDF.Sequences.html#SEQUENCES">SEQUENCES</a></span>.<br/>
@@ -285,6 +285,6 @@ Qed.</div>
 <br/>
 
 </div>
-<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</div>
+<div class="footer"><hr/>Generated by <a href="https://github.com/xavierleroy/coq2html/">coq2html</a></div>
 </body>
 </html>
