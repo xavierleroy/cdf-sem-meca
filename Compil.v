@@ -695,6 +695,49 @@ Abort.
     de la boucle.  Il faut inventer une hypothèse plus faible, qui
     laisse plus de flexibilité dans la relation entre [c] et [pc]. *)
 
+(** *** Exercice (4 étoiles). *)
+
+(** Considérons une boucle avec un test d'arrêt simple, comme par exemple
+    [WHILE (LESSEQUAL a1 a2) c].  Le code compilé exécute deux branchements
+    par itération de la boucle: un branchement conditionnel [Ible] pour
+    tester la condition d'arrêt, et un branchement inconditionnel [Ibranch]
+    pour retourner au début de la boucle.  On peut se ramener à un
+    seul branchement par itération en mettant le code pour [c] avant
+    le code qui teste la condition [b]:
+<<
+     compile_com c ++ compile_bexp b delta1 0
+>>
+    avec [delta1] choisi de sorte à retourner au début du code [compile_com c]
+    lorsque [b] est vraie.
+
+    En soi, cette approche implémente une boucle de type do-while, 
+    où la première itération de la boucle est toujours exécutée.
+    Pour une boucle de type while, à la première itération il faut
+    sauter par-dessus le code de [c] et vers le code qui teste [b]:
+<<
+    Ibranch (codelen(compile_com c)) :: compile_com c ++ compile_bexp b delta1 0
+>>
+    Le but de cet exercice est de modifier [compile_com] pour implémenter
+    cette compilation améliorée des boucles, puis de démontrer sa correction
+    en ajustant l'énoncé et la démonstration de [compile_com_correct_terminating].
+
+    Il y a deux difficultés majeures, qui justifient les 4 étoiles.
+    La première est le calcul de la quantité notée [delta1] ci-dessus,
+    car elle dépend de la taille du code [compile_bexp b delta1 0],
+    ce qui crée une circularité!  Une approche possible est de se restreindre
+    à des expressions booléennes [b] qui ne contiennent ni [TRUE] ni [FALSE],
+    et de montrer que dans ce cas la taille du code [compile_bexp b d1 d0]
+    est indépendante de [d1] et [d0].  On pourra ensuite chercher à simplifier
+    les expressions [b] pour que ni [TRUE] ni [FALSE] n'apparaissent,
+    quitte à compiler spécialement [WHILE TRUE c] et [WHILE FALSE c].
+
+    La seconde difficulté est celle déjà mentionnée dans le précédent
+    exercice 4 étoiles: l'hypothèse [code_at C pc (compile_com c)] de
+    [compile_com_correct_terminating] n'est plus vraie si [c] est une
+    boucle et nous sommes à la deuxième itération de la boucle.  Là
+    encore, il faut inventer une hypothèse plus faible, qui laisse
+    plus de flexibilité dans la relation entre [c] et [pc]. *)
+
 (** ** 2.5.  Correction du code produit pour les commandes, cas général *)
 
 (** Nous allons maintenant renforcer le résultat de préservation sémantique
